@@ -1,0 +1,1187 @@
+[
+  {
+    "id": "claude-code-001",
+    "domain": "claude-code",
+    "difficulty": 1,
+    "question": "A platform team wants to understand how Claude Code resolves CLAUDE.md files before starting a session in a project directory. Which order correctly describes the loading hierarchy from broadest to most specific?",
+    "choices": [
+      "Managed policy, then user (~/.claude/CLAUDE.md), then project (./CLAUDE.md or ./.claude/CLAUDE.md), then CLAUDE.local.md, then directory-level files loaded on demand",
+      "User (~/.claude/CLAUDE.md), then managed policy, then project, then directory-level files, then CLAUDE.local.md",
+      "Project (./CLAUDE.md), then user, then managed policy, then CLAUDE.local.md, then directory-level files",
+      "Directory-level files first, then project, then user, then managed policy, then CLAUDE.local.md"
+    ],
+    "answer": 0,
+    "explanation": "正解は、managed policy（組織管理者による強制設定）が最も広いスコープで最初に適用され、次にuser、project、CLAUDE.local.md、最後にオンデマンドで読み込まれるdirectory-levelファイルという順序です。選択肢2はuserとmanaged policyの順序が逆で誤りです。選択肢3はprojectを最初に置いており、実際には最も広いスコープが最初に来るべきで誤りです。選択肢4はdirectory-levelを最初に置いていますが、これはオンデマンドで読み込まれる最も限定的なスコープであり誤りです。",
+    "tags": [
+      "CLAUDE.md",
+      "loading-hierarchy",
+      "configuration"
+    ],
+    "ref": "D2 CLAUDE.md hierarchy"
+  },
+  {
+    "id": "claude-code-002",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A developer on a shared team repository adds personal notes about their local debugging setup and wants to make sure these notes are never committed to version control, while the team's shared conventions in CLAUDE.md remain versioned. Where should the developer put these personal notes?",
+    "choices": [
+      "Append them to ./CLAUDE.md since it is the canonical project file",
+      "Create ./.claude/CLAUDE.md and add it to .gitignore manually",
+      "Create ./CLAUDE.local.md, which is designed to be personal and gitignored",
+      "Put them in ~/.claude/CLAUDE.md so they apply across all projects on the machine"
+    ],
+    "answer": 2,
+    "explanation": "正解はCLAUDE.local.mdで、これは個人用でgit管理対象外（gitignored）として設計されたファイルです。選択肢1のCLAUDE.mdはプロジェクト共有・バージョン管理対象のファイルであり個人メモには不適切です。選択肢2は.claude/CLAUDE.mdもプロジェクト共有ファイルであり、手動でgitignoreするのは意図された設計ではなく誤ったパターンです。選択肢4のuserレベルファイルは全プロジェクトに適用されてしまい、このプロジェクト固有のデバッグ設定には過剰なスコープです。",
+    "tags": [
+      "CLAUDE.local.md",
+      "gitignore",
+      "team-workflow"
+    ],
+    "ref": "D2 project-shared vs personal trap"
+  },
+  {
+    "id": "claude-code-003",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A team already maintains an AGENTS.md file used by multiple AI coding tools and wants Claude Code to follow the same instructions without duplicating content. What is the correct way to achieve this?",
+    "choices": [
+      "Rename AGENTS.md to CLAUDE.md since Claude Code cannot read AGENTS.md directly",
+      "Claude Code automatically detects and parses AGENTS.md natively without any additional file",
+      "Copy the contents of AGENTS.md into .claude/settings.json",
+      "Create CLAUDE.md containing an @AGENTS.md import so Claude Code reads AGENTS.md as its single source of truth"
+    ],
+    "answer": 3,
+    "explanation": "正解は、Claude CodeはCLAUDE.mdを読み込む仕組みであり、AGENTS.mdは直接読み込まないため、CLAUDE.md内で@AGENTS.mdインポートを使うことで単一の情報源を維持できるという点です。選択肢1はリネームすると他ツールとの共有ができなくなり本来の目的に反します。選択肢2はClaude CodeがAGENTS.mdをネイティブに解釈するという誤った前提です。選択肢3はsettings.jsonが設定ファイルであり指示文書の置き場所として不適切です。",
+    "tags": [
+      "AGENTS.md",
+      "import",
+      "interop"
+    ],
+    "ref": "D2 AGENTS.md interop via @AGENTS.md"
+  },
+  {
+    "id": "claude-code-004",
+    "domain": "claude-code",
+    "difficulty": 3,
+    "question": "A CLAUDE.md file imports a rules file using @docs/style.md, and that file in turn imports five more files, each importing another, creating a long import chain. What behavior should the team expect from Claude Code's @import resolution?",
+    "choices": [
+      "Imports are capped at a maximum depth of 5 hops, so files beyond that depth in the chain will not be loaded",
+      "All imports resolve regardless of chain length since there is no depth limit",
+      "Only the first import in any file is honored; subsequent @import lines in the same file are ignored",
+      "Nested imports are disallowed entirely, so @docs/style.md importing further files would fail immediately"
+    ],
+    "answer": 0,
+    "explanation": "正解は、@importのネストは許可されているものの、最大深度5ホップという制限があり、それを超えるファイルは読み込まれないという点です。選択肢2は深度制限がないとする誤りです。選択肢3は同一ファイル内で複数の@importが可能であるにもかかわらず最初の1つしか有効にならないとする誤った制約です。選択肢4はネストされたインポート自体は許可されているため誤りです。",
+    "tags": [
+      "import",
+      "depth-limit",
+      "nested-imports"
+    ],
+    "ref": "D2 @import depth 5"
+  },
+  {
+    "id": "claude-code-005",
+    "domain": "claude-code",
+    "difficulty": 1,
+    "question": "In a CLAUDE.md file, an engineer writes an import that begins with @~/shared-conventions.md. Relative to what location does this import resolve?",
+    "choices": [
+      "Relative to the current working directory where Claude Code was launched",
+      "Relative to the importing file's own directory",
+      "Relative to the user's home directory",
+      "Relative to the project root regardless of where the importing file lives"
+    ],
+    "answer": 2,
+    "explanation": "正解は、@~/はホームディレクトリを指す特別な記法であるという点です。選択肢1と4は通常の相対パスの挙動と混同しており、@~/構文の意味を正しく反映していません。選択肢2は通常の相対importの挙動（インポート元ファイルからの相対パス）であり、@~/という特殊記法とは異なります。",
+    "tags": [
+      "import",
+      "home-directory",
+      "syntax"
+    ],
+    "ref": "D2 @~/ import syntax"
+  },
+  {
+    "id": "claude-code-006",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A team creates .claude/rules/testing.md with no frontmatter at all. What is the expected loading behavior for this rules file?",
+    "choices": [
+      "It is never loaded because rules files require paths: frontmatter to be recognized",
+      "It is loaded only when Claude Code edits a file matching a test file glob pattern",
+      "It is loaded at session start regardless of which files are being touched",
+      "It is loaded only when explicitly referenced via @import from CLAUDE.md"
+    ],
+    "answer": 2,
+    "explanation": "正解は、frontmatterがない.claude/rules/配下のファイルはセッション開始時に無条件で読み込まれるという点です。選択肢1はfrontmatterが必須であるという誤った前提です。選択肢2はpaths: globフロントマターがある場合の条件付き読み込みの説明であり、frontmatterなしのケースには当てはまりません。選択肢4は明示的なインポートが必要という誤った制約を追加しています。",
+    "tags": [
+      ".claude/rules",
+      "frontmatter",
+      "session-start"
+    ],
+    "ref": "D2 rules without frontmatter load at session start"
+  },
+  {
+    "id": "claude-code-007",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A team wants a rule file that only gets loaded into context when Claude Code is actively working on TypeScript test files, to avoid polluting context for unrelated work. Which configuration achieves this?",
+    "choices": [
+      "Add the rule content directly to the root CLAUDE.md file",
+      "Create a directory-level CLAUDE.md inside every folder containing test files",
+      "Create .claude/rules/testing.md with paths: [\"**/*.test.ts\"] frontmatter so it loads conditionally",
+      "Create .claude/rules/testing.md with no frontmatter so it always loads"
+    ],
+    "answer": 2,
+    "explanation": "正解は、paths: glob frontmatterを使うことで、指定したパターンにマッチするファイルを扱う際にのみ条件付きで読み込まれるという点です。選択肢1はルートCLAUDE.mdに書くと常に読み込まれてしまい条件付きにならないため誤りです。選択肢2はディレクトリ単位のCLAUDE.mdを大量に作る必要があり非効率で、テストファイルが散在する場合に対応できません。選択肢4はfrontmatterなしだと常にセッション開始時に読み込まれてしまい、条件付き読み込みにはなりません。",
+    "tags": [
+      ".claude/rules",
+      "paths-glob",
+      "conditional-loading"
+    ],
+    "ref": "D2 paths glob frontmatter"
+  },
+  {
+    "id": "claude-code-008",
+    "domain": "claude-code",
+    "difficulty": 3,
+    "question": "A monorepo has conventions that apply to all files matching **/*.graphql across many unrelated directories (api/, services/, tools/). The team is deciding between creating a directory-level CLAUDE.md in each relevant folder versus a single .claude/rules/graphql.md with paths frontmatter. Which approach is more maintainable and why?",
+    "choices": [
+      "Directory-level CLAUDE.md per folder, because it keeps instructions closest to the code they describe",
+      "Path-specific rules via .claude/rules/, because a single glob-scoped rule file covers the convention across all matching directories without duplicating it per folder",
+      "Neither approach works for cross-directory conventions; only the root CLAUDE.md can apply rules across folders",
+      "Directory-level CLAUDE.md per folder, because rules files cannot use glob patterns spanning multiple directories"
+    ],
+    "answer": 1,
+    "explanation": "正解は、クロスディレクトリな規約にはpath-specificなrulesファイルの方が適しているという点です。1つのglobパターンで全ての該当ディレクトリをカバーでき、重複を避けられます。選択肢1はディレクトリごとにCLAUDE.mdを複製する必要があり保守性が低く、これは名指しされたアンチパターンです。選択肢3はルートCLAUDE.mdでは全ファイルに適用されてしまい特定パターンへの絞り込みができないため誤りです。選択肢4はrulesファイルのpaths frontmatterが複数ディレクトリにまたがるglobパターンをサポートしないという誤った制約です。",
+    "tags": [
+      "path-specific-rules",
+      "directory-CLAUDE.md",
+      "monorepo"
+    ],
+    "ref": "D2 path-specific rules beat per-directory CLAUDE.md"
+  },
+  {
+    "id": "claude-code-009",
+    "domain": "claude-code",
+    "difficulty": 1,
+    "question": "A developer notices that Claude Code loaded a CLAUDE.md file located at ./src/api/CLAUDE.md only after Claude began editing files inside that folder, not at the start of the session. What explains this behavior?",
+    "choices": [
+      "Directory-level CLAUDE.md files are loaded on demand when Claude Code touches files in that directory",
+      "This is a bug; all CLAUDE.md files should load at session start",
+      "The file was cached from a previous session and only appeared to load late",
+      "Directory-level CLAUDE.md files require an explicit --add-dir flag to load at all"
+    ],
+    "answer": 0,
+    "explanation": "正解は、ディレクトリ単位のCLAUDE.mdはそのディレクトリ内のファイルにClaudeが触れた時点でオンデマンドに読み込まれる、という仕様通りの挙動です。選択肢1(誤答2)はこれをバグとしていますが、これは意図された設計です。選択肢3はキャッシュの話にすり替えており誤りです。選択肢4は--add-dirフラグが必須という誤った前提で、これはmonorepoでの追加ディレクトリ探索に関するフラグであり直接の関係はありません。",
+    "tags": [
+      "directory-level-CLAUDE.md",
+      "on-demand-loading"
+    ],
+    "ref": "D2 directory-level CLAUDE.md loaded on demand"
+  },
+  {
+    "id": "claude-code-010",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "After several long sessions, a developer notices Claude Code recalling facts about earlier debugging work without those facts being explicitly re-stated in the current session's CLAUDE.md. Where is this information most likely coming from?",
+    "choices": [
+      "Claude re-read the entire git history of the repository automatically",
+      "The auto memory MEMORY.md file under ~/.claude/projects/<project>/memory/, loaded at session start",
+      "It was hallucinated based on typical debugging patterns",
+      "It came from CLAUDE.local.md, which persists debugging notes automatically"
+    ],
+    "answer": 1,
+    "explanation": "正解は、自動メモリ機能により~/.claude/projects/<project>/memory/MEMORY.mdがセッション開始時に読み込まれ、過去の発見事項が保持されているという点です。選択肢1はgit履歴の自動読み込みという誤った仕組みです。選択肢3はハルシネーションとしていますが、実際には正規の永続化機構によるものです。選択肢4のCLAUDE.local.mdは手動で書く個人メモファイルであり、自動的にデバッグ内容を記録する機能ではありません。",
+    "tags": [
+      "auto-memory",
+      "MEMORY.md",
+      "session-start"
+    ],
+    "ref": "D2 auto memory MEMORY.md"
+  },
+  {
+    "id": "claude-code-011",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A project's auto-generated MEMORY.md file has grown to 40 KB over many sessions. According to how Claude Code's auto memory system loads this file at session start, what will actually be loaded into context?",
+    "choices": [
+      "The entire 40 KB file is always loaded in full at session start",
+      "Nothing loads automatically; the developer must manually @import MEMORY.md",
+      "Only the first 200 lines or 25 KB of MEMORY.md, whichever limit is hit first",
+      "Only the last 200 lines of MEMORY.md, since recent entries are considered most relevant"
+    ],
+    "answer": 2,
+    "explanation": "正解は、MEMORY.mdの読み込みは先頭200行または25KBのいずれか早い方の上限で制限されるという点です。選択肢1は40KB全体を読み込むとしており、実際の上限を超えているため誤りです。選択肢2はauto importが不要な自動機構であるにもかかわらず手動インポートが必要としており誤りです。選択肢4は「末尾200行」としていますが、実際には先頭からの制限であり誤りです。",
+    "tags": [
+      "MEMORY.md",
+      "auto-memory",
+      "context-limit"
+    ],
+    "ref": "D2 MEMORY.md 200 lines/25KB"
+  },
+  {
+    "id": "claude-code-012",
+    "domain": "claude-code",
+    "difficulty": 3,
+    "question": "A team shares a single Claude Code worktree setup across two engineers working on different machines, each with their own local clone connected to the same project directory structure. They are surprised to find that auto memory topic files like debugging.md are NOT shared between their machines even though they reference the same project. What best explains this?",
+    "choices": [
+      "Auto memory is machine-local, so topic files created on one machine's ~/.claude/projects/<project>/memory/ do not appear on another machine",
+      "Auto memory topic files are versioned in the project's git repository and should have synced automatically",
+      "This indicates a misconfiguration; auto memory is designed to sync across all worktrees of the same project regardless of machine",
+      "Topic files only exist for managed-policy scoped configurations, not for individual project work"
+    ],
+    "answer": 0,
+    "explanation": "正解は、auto memoryはmachine-local（マシンローカル）であるため、別マシンの~/.claude/projects/<project>/memory/には反映されないという点です。同一マシン内のworktree間では共有されますが、マシンをまたいだ共有はされません。選択肢2はgitでバージョン管理されるという誤った前提です。選択肢3はマシンをまたいで同期されるべきという誤った期待です。選択肢4はmanaged policyスコープ限定という無関係な誤った制約です。",
+    "tags": [
+      "auto-memory",
+      "machine-local",
+      "worktrees"
+    ],
+    "ref": "D2 auto memory machine-local, worktrees share it"
+  },
+  {
+    "id": "claude-code-013",
+    "domain": "claude-code",
+    "difficulty": 1,
+    "question": "A team lead wants to completely disable Claude Code's automatic memory feature across a project for compliance reasons. Which setting should they use?",
+    "choices": [
+      "Delete the .claude/rules/ directory entirely",
+      "Remove CLAUDE.local.md from the project",
+      "Set claudeMdExcludes to match all file patterns",
+      "Set autoMemoryEnabled: false in the appropriate settings scope"
+    ],
+    "answer": 3,
+    "explanation": "正解は、autoMemoryEnabled: falseを設定することでauto memory機能自体を無効化できるという点です。選択肢1の.claude/rules/削除はauto memoryとは無関係な別の仕組みです。選択肢2のCLAUDE.local.mdは個人メモ用ファイルでauto memory機能とは異なります。選択肢3のclaudeMdExcludesはmonorepoでCLAUDE.mdの読み込み対象から特定パスを除外する設定であり、auto memoryの無効化とは無関係です。",
+    "tags": [
+      "autoMemoryEnabled",
+      "settings",
+      "disable-memory"
+    ],
+    "ref": "D2 autoMemoryEnabled: false"
+  },
+  {
+    "id": "claude-code-014",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "An organization wants all auto memory files to be written to a custom shared network location instead of the default ~/.claude/projects/<project>/memory/ path. Which setting supports this?",
+    "choices": [
+      "claudeMdExcludes pointed at the new location",
+      "CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD environment variable",
+      "--add-dir flag passed at every session start",
+      "autoMemoryDirectory to relocate where memory files are written"
+    ],
+    "answer": 3,
+    "explanation": "正解は、autoMemoryDirectory設定によってauto memoryファイルの保存先を変更できるという点です。選択肢1のclaudeMdExcludesはCLAUDE.md読み込み対象からの除外設定であり、メモリの保存場所とは無関係です。選択肢2の環境変数はmonorepoでの追加ディレクトリのCLAUDE.md読み込みに関するものです。選択肢3の--add-dirはセッションに追加ディレクトリを含める機能であり、メモリの保存先変更には使えません。",
+    "tags": [
+      "autoMemoryDirectory",
+      "settings",
+      "monorepo"
+    ],
+    "ref": "D2 autoMemoryDirectory to relocate"
+  },
+  {
+    "id": "claude-code-015",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A large monorepo has dozens of package-level CLAUDE.md files, but a developer working only on the payments/ package finds that unrelated packages' CLAUDE.md content is being loaded and bloating context. What setting lets the team scope out those irrelevant CLAUDE.md files from loading?",
+    "choices": [
+      "autoMemoryEnabled: false to stop memory files from contributing to context",
+      "A single @import at the root pointing only to payments/CLAUDE.md",
+      "--permission-mode plan to restrict file exploration scope",
+      "claudeMdExcludes with glob patterns to exclude specific CLAUDE.md files from loading"
+    ],
+    "answer": 3,
+    "explanation": "正解は、claudeMdExcludes設定にglobパターンを指定することで、不要なCLAUDE.mdファイルを読み込み対象から除外できるという点です。選択肢1のautoMemoryEnabledはauto memory機能に関する設定であり、CLAUDE.md読み込みとは別物です。選択肢2は@importで代替しようとしていますが、これはmonorepo全体のCLAUDE.md読み込み制御の正式な仕組みではありません。選択肢3の--permission-modeは権限モードの切り替えであり、CLAUDE.md読み込みの除外とは無関係です。",
+    "tags": [
+      "claudeMdExcludes",
+      "monorepo",
+      "context-bloat"
+    ],
+    "ref": "D2 claudeMdExcludes glob setting"
+  },
+  {
+    "id": "claude-code-016",
+    "domain": "claude-code",
+    "difficulty": 3,
+    "question": "A CI/CD pipeline runs Claude Code against a monorepo, but the working directory is a subpackage while shared utility code lives in a sibling directory outside the default project root scan. The team needs Claude to also read CLAUDE.md files from that sibling directory during the session. Which combination of options addresses this?",
+    "choices": [
+      "Only set claudeMdExcludes to a broader glob so more files are included",
+      "Rename the sibling directory's CLAUDE.md to CLAUDE.local.md so it is picked up automatically",
+      "Set autoMemoryDirectory to the sibling directory's path",
+      "Use --add-dir <path> to include the sibling directory, combined with CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 so its CLAUDE.md is also read"
+    ],
+    "answer": 3,
+    "explanation": "正解は、--add-dirで追加ディレクトリをセッションに含め、CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1を組み合わせることで、そのディレクトリのCLAUDE.mdも読み込まれるようになる点です。選択肢1のclaudeMdExcludesは除外設定であり、対象を広げるための機能ではなく、そもそも用途が逆です。選択肢2はCLAUDE.local.mdへのリネームが自動的に別ディレクトリを読み込む仕組みにはならず誤りです。選択肢3のautoMemoryDirectoryはauto memoryの保存先設定であり、CLAUDE.md読み込み対象の追加とは無関係です。",
+    "tags": [
+      "--add-dir",
+      "monorepo",
+      "CI/CD"
+    ],
+    "ref": "D2 monorepo --add-dir CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD"
+  },
+  {
+    "id": "claude-code-017",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A team adds Claude Code to a GitHub Actions workflow to auto-triage new issues by invoking the CLI non-interactively. The job hangs indefinitely and eventually times out. What is the most likely cause and fix?",
+    "choices": [
+      "The CLI was invoked without -p/--print, which is required to avoid launching the interactive REPL and blocking in CI",
+      "The workflow forgot to set --permission-mode bypassPermissions, which is required for any non-interactive run",
+      "The workflow forgot --resume, which CI must always pass on the first run of a job",
+      "GitHub Actions runners cannot execute Claude Code at all, so a self-hosted runner is required"
+    ],
+    "answer": 0,
+    "explanation": "正解は、-p/--print(プリントモード)を指定しないとインタラクティブなREPLが起動してしまい、CI環境では入力待ちでハングしてしまうという、CI/CDにおける典型的な罠です。選択肢2のbypassPermissionsは危険な権限モードであり非対話実行に必須ではありません。選択肢3の--resumeは既存セッションを再開する機能で初回実行には無関係かつ不要です。選択肢4はGitHub Actions上でClaude Codeが実行できないという誤った制約で、実際にはホスト型ランナーでも動作します。",
+    "tags": [
+      "CI/CD",
+      "-p/--print",
+      "non-interactive"
+    ],
+    "ref": "D2 CI/CD flags: -p/--print MANDATORY in CI or process hangs"
+  },
+  {
+    "id": "claude-code-018",
+    "domain": "claude-code",
+    "difficulty": 3,
+    "question": "A support-tooling team has both a project ./CLAUDE.md and an on-demand ./src/billing/CLAUDE.md. After a /compact event mid-session, a developer wants to know which of these files will still be reflected accurately afterward. What should they expect?",
+    "choices": [
+      "Both files are lost after /compact and must be manually re-supplied",
+      "CLAUDE.md files are re-read from disk after /compact, so their content remains accurate regardless of directory scope",
+      "Only the project-root CLAUDE.md survives /compact; directory-level ones are permanently dropped for the rest of the session",
+      "CLAUDE.md content is summarized like other context during /compact, so exact wording may be lost"
+    ],
+    "answer": 1,
+    "explanation": "正解は、CLAUDE.mdはディスクから再読込されるため、/compact後もその内容は正確に保たれるという点です（プロジェクトルートでもディレクトリレベルでも同様）。選択肢1は両方失われるとしており誤りです。選択肢3はプロジェクトルートのみ生き残るという誤った区別です。選択肢4はCLAUDE.mdが要約対象になるとしていますが、実際にはディスクから再読込されるため要約による劣化は起きません。",
+    "tags": [
+      "compact",
+      "CLAUDE.md",
+      "context-survival"
+    ],
+    "ref": "D5/D2 what survives /compact: CLAUDE.md re-read from disk"
+  },
+  {
+    "id": "claude-code-019",
+    "domain": "claude-code",
+    "difficulty": 1,
+    "question": "A developer wants to reference a shared team style guide document, docs/style-guide.md, from within their project's CLAUDE.md file using the @import mechanism. Assuming both files live in the project root, how should the import be written?",
+    "choices": [
+      "@import(docs/style-guide.md) using function-call syntax",
+      "@docs/style-guide.md, resolved relative to the importing CLAUDE.md file's location",
+      "@~/docs/style-guide.md, since imports always resolve from the home directory",
+      "#include \"docs/style-guide.md\" using C-style include syntax"
+    ],
+    "answer": 1,
+    "explanation": "正解は、@docs/style-guide.mdという記法で、これはインポート元ファイルからの相対パスとして解決されるという点です。選択肢1のfunction-call構文は実際のimport記法ではありません。選択肢3の@~/はホームディレクトリ基準の特殊な記法であり、プロジェクトルートにあるファイルの参照には不適切です。選択肢4のC言語風の#include構文はClaude Codeのimport構文ではありません。",
+    "tags": [
+      "import",
+      "relative-path",
+      "syntax"
+    ],
+    "ref": "D2 @import relative to importing file"
+  },
+  {
+    "id": "claude-code-020",
+    "domain": "claude-code",
+    "difficulty": 3,
+    "question": "A project has both a project-level skill at .claude/skills/deploy/SKILL.md and, from an older setup, a command file at .claude/commands/deploy.md, both intended to back the same /deploy slash command. Under the 2026 skills/commands merger, what happens when a developer runs /deploy?",
+    "choices": [
+      "Both definitions run in sequence, first the command file, then the skill",
+      "The skill wins on the name collision, since commands and skills were merged into a single namespace and the skill takes precedence",
+      "Claude Code throws a fatal configuration error and refuses to start the session",
+      "The command file wins because /project:deploy legacy namespacing always takes priority over skills"
+    ],
+    "answer": 1,
+    "explanation": "正解は、2026年のskills/commandsマージにより、.claude/commands/deploy.mdと.claude/skills/deploy/SKILL.mdは同一の/deployとして扱われ、名前が衝突した場合はskillが優先されるという仕様です。選択肢1は両方が順に実行されるとしていますが、実際には衝突時にどちらか一方（skill）のみが有効になります。選択肢3は致命的エラーになるという誤った想定です。選択肢4は/project:name形式の旧来の名前空間で、これは廃止されており優先されることはありません。",
+    "tags": [
+      "skills-commands-merger",
+      "name-collision",
+      "slash-command"
+    ],
+    "ref": "D2 2026 skills/commands merger: skill wins on name collision"
+  },
+  {
+    "id": "claude-code-021",
+    "domain": "claude-code",
+    "difficulty": 1,
+    "question": "A developer wants to add a new slash command `/deploy` to their Claude Code project in 2026. Both `.claude/commands/deploy.md` and `.claude/skills/deploy/SKILL.md` exist with the same name. What happens when the user types `/deploy`?",
+    "choices": [
+      "Claude Code throws a fatal config error and refuses to start",
+      "The command version in .claude/commands/deploy.md always takes precedence",
+      "The skill version in .claude/skills/deploy/SKILL.md wins on collision",
+      "Both are merged into a single combined prompt before execution"
+    ],
+    "answer": 2,
+    "explanation": "2026年のskills/commands統合仕様では、`.claude/commands/x.md` は `.claude/skills/x/SKILL.md` と等価に扱われますが、同名で衝突した場合はskill側が優先されます。選択肢0のような致命的エラーにはなりません。選択肢1は優先順位が逆です。選択肢3のようなマージも行われません。",
+    "tags": [
+      "skills",
+      "commands-merger",
+      "collision"
+    ],
+    "ref": "D2 skills/commands merger"
+  },
+  {
+    "id": "claude-code-022",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A platform team ships a shared skill via an internal plugin, but developers report that their own personal `~/.claude/skills/lint/SKILL.md` version is the one actually running instead of the plugin's `lint` skill. Assuming no name collision handling issue, what does this indicate about skill location priority?",
+    "choices": [
+      "Plugin skills always override personal skills regardless of order",
+      "Project-level skills always override both personal and plugin skills",
+      "Enterprise-managed skills are the only ones that can override personal skills",
+      "Personal skills rank above plugin skills in the location priority order"
+    ],
+    "answer": 3,
+    "explanation": "スキルの場所の優先順位は Enterprise → Personal → Project → Plugin の順であり、Personal（`~/.claude/skills/`）はPluginより優先されます。したがって個人のスキルが実行されるのは仕様通りの挙動です。選択肢0と1は優先順位の方向が誤りで、選択肢2はEnterpriseだけが上書きできるという誤った限定です。",
+    "tags": [
+      "skills",
+      "location-priority"
+    ],
+    "ref": "D2 Skill location priority"
+  },
+  {
+    "id": "claude-code-023",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A team wants a skill to be available for Claude to invoke automatically when relevant, but they do not want it to clutter the `/` slash-command menu for humans. Which SKILL.md frontmatter field achieves this?",
+    "choices": [
+      "disable-model-invocation: true",
+      "allowed-tools: []",
+      "context: fork",
+      "user-invocable: false"
+    ],
+    "answer": 3,
+    "explanation": "`user-invocable: false` はそのスキルを / メニューから隠しつつ、Claudeによるモデル駆動の自動呼び出しは許可します。逆に `disable-model-invocation: true` はユーザーのみが呼べるようにし、モデルからの自動呼び出しを禁止するため要件と逆です。`allowed-tools` はツールアクセス制限、`context: fork` は実行コンテキストの分離に関するもので、可視性とは無関係です。",
+    "tags": [
+      "skill-frontmatter",
+      "user-invocable"
+    ],
+    "ref": "D2 SKILL.md frontmatter"
+  },
+  {
+    "id": "claude-code-024",
+    "domain": "claude-code",
+    "difficulty": 1,
+    "question": "Which SKILL.md frontmatter field is the primary signal Claude Code uses to decide whether to auto-load a skill for a given user request?",
+    "choices": [
+      "description",
+      "argument-hint",
+      "effort",
+      "model"
+    ],
+    "answer": 0,
+    "explanation": "`description`（および `when_to_use` と合わせて最大1,536文字）がスキルの自動読み込みを駆動する主要フィールドです。`argument-hint` は引数のヒント表示、`effort` は思考努力レベル、`model` は使用モデルの指定であり、いずれも自動発火の判断基準ではありません。",
+    "tags": [
+      "skill-frontmatter",
+      "description",
+      "auto-load"
+    ],
+    "ref": "D2 SKILL.md frontmatter"
+  },
+  {
+    "id": "claude-code-025",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A CI/CD skill runs a deployment that produces thousands of lines of noisy log output. The team wants this output isolated so it doesn't pollute the main conversation's context window, while still allowing the skill to read CLAUDE.md. What SKILL.md frontmatter setting should they add?",
+    "choices": [
+      "context: fork",
+      "hooks: PostToolUse",
+      "effort: low",
+      "disable-model-invocation: true"
+    ],
+    "answer": 0,
+    "explanation": "`context: fork` はスキルを隔離されたサブエージェントとして実行し、CLAUDE.mdは読み込まれますが会話履歴は継承しないため、デプロイのようなノイズの多い操作に適しています。`hooks` はイベントフックの設定、`effort` は思考量の調整、`disable-model-invocation` は呼び出し主体の制限であり、コンテキスト隔離の目的には合致しません。",
+    "tags": [
+      "context-fork",
+      "noisy-ops"
+    ],
+    "ref": "D2 context: fork"
+  },
+  {
+    "id": "claude-code-026",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A skill template contains the line `Fix the bug described in: $ARGUMENTS`. A developer invokes it as `/fixbug memory leak in worker pool`. What does $ARGUMENTS resolve to inside the rendered skill body?",
+    "choices": [
+      "Only the first word: \"memory\"",
+      "An empty string, because $ARGUMENTS requires named arguments",
+      "The full argument string: \"memory leak in worker pool\"",
+      "The session ID, since $ARGUMENTS is an alias for ${CLAUDE_SESSION_ID}"
+    ],
+    "answer": 2,
+    "explanation": "`$ARGUMENTS` はスラッシュコマンド呼び出し時に渡された引数全体の文字列に置換されます。個々の単語だけを取り出すには `$1` などの位置引数を使う必要があり、`$ARGUMENTS` 自体が空文字になることはありません。またセッションIDとは無関係の別の変数です。",
+    "tags": [
+      "substitution-variables",
+      "ARGUMENTS"
+    ],
+    "ref": "D2 Substitution variables"
+  },
+  {
+    "id": "claude-code-027",
+    "domain": "claude-code",
+    "difficulty": 3,
+    "question": "A skill needs to reference the value of the second positional argument passed to it, and also needs to tag a generated log file with the current session's unique identifier for later correlation. Which pair of substitution variables should the skill body use?",
+    "choices": [
+      "$ARGUMENTS and ${CLAUDE_SKILL_DIR}",
+      "$1 and ${CLAUDE_SESSION_ID}",
+      "$2 and ${CLAUDE_SESSION_ID}",
+      "${CLAUDE_SKILL_DIR} and $0"
+    ],
+    "answer": 1,
+    "explanation": "位置引数は0始まりのインデックスで、`$0`（`$ARGUMENTS[0]`）が1番目、`$1`（`$ARGUMENTS[1]`）が2番目の引数を指します。現在のセッションの一意な識別子には `${CLAUDE_SESSION_ID}` を使います。`$2` は3番目の引数を指すため2番目には誤り、`${CLAUDE_SKILL_DIR}` はスキル自身のディレクトリパスで引数ともセッションIDとも異なり、`$ARGUMENTS` は引数全体の文字列であり2番目だけを取り出せません。",
+    "tags": [
+      "substitution-variables",
+      "session-id"
+    ],
+    "ref": "D2 Substitution variables"
+  },
+  {
+    "id": "claude-code-028",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A skill file includes a preprocessing block using backtick-bang syntax to run `` !`git diff --stat` `` and inject its output into the rendered prompt. A security-conscious team wants to prevent any skill from executing shell commands during preprocessing, without deleting the skills themselves. What should they configure?",
+    "choices": [
+      "Set allowed-tools: [] in every SKILL.md",
+      "Set disableSkillShellExecution: true in settings",
+      "Remove the hooks field from all SKILL.md files",
+      "Switch all skills to user-invocable: false"
+    ],
+    "answer": 1,
+    "explanation": "`disableSkillShellExecution: true` を設定すると、スキルのプリプロセッシング段階でのシェルコマンド実行（`` !`cmd` `` や ` ```! ` フェンス）を無効化でき、スキル自体を削除する必要はありません。`allowed-tools: []` はスキル実行後のツール利用を制限するもので前処理のシェル実行とは別物、`hooks` の削除やuser-invocableの変更もこの目的には直接対応しません。",
+    "tags": [
+      "dynamic-context-injection",
+      "disableSkillShellExecution"
+    ],
+    "ref": "D2 Dynamic context injection"
+  },
+  {
+    "id": "claude-code-029",
+    "domain": "claude-code",
+    "difficulty": 1,
+    "question": "Which mechanism allows a SKILL.md file to inject the contents of a file, such as `@src/config.ts`, directly into the rendered skill body at invocation time?",
+    "choices": [
+      "The context: fork frontmatter field",
+      "The @path file inclusion syntax",
+      "The allowed-tools frontmatter field",
+      "The paths: glob frontmatter field"
+    ],
+    "answer": 1,
+    "explanation": "`@path` 構文はファイル内容をスキル本文に直接挿入する動的コンテキスト注入の一種です。`context: fork` は実行コンテキストの隔離、`allowed-tools` はツール利用制限、`paths:` frontmatterはルールファイルなどの条件付き読み込みグロブであり、いずれもファイル内容の直接挿入機能ではありません。",
+    "tags": [
+      "dynamic-context-injection",
+      "file-inclusion"
+    ],
+    "ref": "D2 Dynamic context injection"
+  },
+  {
+    "id": "claude-code-030",
+    "domain": "claude-code",
+    "difficulty": 3,
+    "question": "A long Claude Code session invokes a research skill early on. Fifty turns later, after several rounds of automatic compaction, the developer asks Claude to re-check something the skill originally instructed. Claude appears to have forgotten a standing instruction from that skill's body. What best explains this and the correct mitigation?",
+    "choices": [
+      "Skills are never re-attached after compaction, so the skill must be manually re-invoked with the exact same arguments",
+      "The skill body entered the conversation as one message and is not re-read on later turns; compaction only re-attaches the 5 most recently used skills within a 25,000-token combined budget, so standing instructions should be written directly into persistent files instead",
+      "Skill bodies persist verbatim forever once loaded, so this is a bug unrelated to skill lifecycle",
+      "Compaction always drops all skills permanently, so skills should never contain standing instructions"
+    ],
+    "answer": 1,
+    "explanation": "スキル本文は1つのメッセージとして会話に入り、以降のターンで自動的に再読込されるわけではありません。compaction時には直近使用の最大5スキル（各先頭5,000トークン、合計25,000トークン上限）のみが再アタッチされるため、恒久的な指示はCLAUDE.mdやメモリファイルのような永続化された場所に書くべきです。選択肢0は再アタッチの仕組みを無視しており、選択肢2は再読込されないという事実に反し、選択肢3は「常に完全に失われる」という誤りです。",
+    "tags": [
+      "skill-lifecycle",
+      "compaction",
+      "re-attach-budget"
+    ],
+    "ref": "D2 Skill lifecycle"
+  },
+  {
+    "id": "claude-code-031",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A developer is running Claude Code interactively and wants every file edit to be applied immediately without a per-edit confirmation prompt, but still wants to be asked before Claude runs any Bash commands or uses other tools. Which permission mode should they select?",
+    "choices": [
+      "bypassPermissions",
+      "plan",
+      "dontAsk",
+      "acceptEdits"
+    ],
+    "answer": 3,
+    "explanation": "`acceptEdits` モードはファイル編集を自動承認しつつ、それ以外のツール（Bashなど）については通常通り確認を求めます。`bypassPermissions` は全ての確認をスキップする危険なモード、`plan` は実装前に計画提示のみを行うモード、`dontAsk` は編集以外も含め確認を省略する挙動であり、要件に合致しません。",
+    "tags": [
+      "permission-modes",
+      "acceptEdits"
+    ],
+    "ref": "D2 Permission modes"
+  },
+  {
+    "id": "claude-code-032",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A developer asks Claude Code to rename a single unused variable in one file. Claude enters plan mode, produces an exploration summary, and asks for approval before making the one-line change. What is the best assessment of this workflow?",
+    "choices": [
+      "This is correct; plan mode is mandatory for every code change regardless of scope",
+      "This is unnecessary overhead; plan mode is warranted for multi-file, architectural, or ambiguous-scope changes, not a single-file, low-risk, unambiguous fix",
+      "This is a bug; plan mode should never trigger unless bypassPermissions is disabled",
+      "This is correct; plan mode is only for changes touching 45+ files, so it should never have triggered here regardless of clarity"
+    ],
+    "answer": 1,
+    "explanation": "プランモードはマルチファイル変更、アーキテクチャ上の意思決定、複数の妥当なアプローチ、大規模スコープ、要件の曖昧さがある場合に有効ですが、単一ファイルの明確で低リスクな修正には不要なオーバーヘッドです。選択肢0は「常に必須」という誤った一般化、選択肢2は無関係な条件付け、選択肢3は「45ファイル以上のみ」という閾値の誤解です。",
+    "tags": [
+      "plan-mode",
+      "direct-execution"
+    ],
+    "ref": "D2 Plan mode indicators"
+  },
+  {
+    "id": "claude-code-033",
+    "domain": "claude-code",
+    "difficulty": 3,
+    "question": "A team is planning a migration touching 45+ files across multiple services, with several architecturally valid approaches to choose from. A junior engineer suggests skipping plan mode and just letting Claude Code start editing files directly to save time. What is the strongest argument against this suggestion?",
+    "choices": [
+      "Direct execution is always slower than plan mode regardless of scope",
+      "Plan mode is required by default and cannot be disabled in Claude Code",
+      "Large-scope, multi-file changes with multiple valid architectural approaches are exactly the case where plan mode's explore-design-approve workflow prevents costly rework from an unreviewed wrong direction",
+      "Plan mode only matters for CI/CD pipelines, not interactive sessions"
+    ],
+    "answer": 2,
+    "explanation": "大規模スコープ・複数ファイル・複数の妥当なアーキテクチャ選択肢がある状況はプランモードが推奨される典型例であり、探索→設計→計画提示→承認後実装というワークフローによって、誤った方向性のまま実装が進み手戻りが発生するリスクを防げます。選択肢0は一般化しすぎ、選択肢1はプランモードがデフォルト必須かつ無効化不可という誤り、選択肢3はCI/CD限定という誤った限定です。",
+    "tags": [
+      "plan-mode",
+      "large-migration"
+    ],
+    "ref": "D2 Plan mode workflow"
+  },
+  {
+    "id": "claude-code-034",
+    "domain": "claude-code",
+    "difficulty": 1,
+    "question": "A developer wants Claude Code to explore an unfamiliar 200-file codebase to locate where authentication logic lives, without flooding the main conversation's context with the contents of every file it reads along the way. What should be used?",
+    "choices": [
+      "The Explore subagent, which isolates verbose exploration and returns a concise summary",
+      "The bypassPermissions mode, which skips confirmation for faster reading",
+      "The acceptEdits mode, which auto-applies edits during exploration",
+      "Raising --max-turns so more files can be read in one turn"
+    ],
+    "answer": 0,
+    "explanation": "Explore サブエージェントは冗長なコードベース探索をメインコンテキストから隔離し、簡潔な要約のみを返す仕組みです。`bypassPermissions` や `acceptEdits` は権限モードであり探索のコンテキスト隔離とは無関係、`--max-turns` はCLIのターン数上限でありコンテキスト消費を減らす仕組みではありません。",
+    "tags": [
+      "explore-subagent",
+      "context-isolation"
+    ],
+    "ref": "D2 Explore subagent"
+  },
+  {
+    "id": "claude-code-035",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A developer notices that after asking Claude Code to investigate why a service is slow, the coordinator delegates the investigation to an Explore subagent that reads 60 files across the repo. The main session then continues with only a short write-up of findings. Why is this considered good practice rather than a loss of information?",
+    "choices": [
+      "Because the Explore subagent deletes the files after reading them",
+      "Because Explore subagents are not allowed to use the Read tool more than 10 times",
+      "Because the main session automatically re-reads all 60 files during the next /compact",
+      "Because the 60 raw file reads would consume most of the main context window, while the subagent's concise summary preserves what's actually needed for the main session to keep working"
+    ],
+    "answer": 3,
+    "explanation": "Explore サブエージェントによる隔離は、大量のファイル読み込みがメインコンテキストを圧迫するのを防ぎつつ、必要な要点だけを簡潔な要約として返すことで実務上有用な情報密度を保ちます。ファイルを削除するわけではなく（選択肢0は誤り）、Read回数に10回のような制限もなく（選択肢1は誤り）、compact時に全ファイルを再読込することもありません（選択肢2は誤り）。",
+    "tags": [
+      "explore-subagent",
+      "context-management"
+    ],
+    "ref": "D5/D2 Explore-subagent delegation"
+  },
+  {
+    "id": "claude-code-036",
+    "domain": "claude-code",
+    "difficulty": 3,
+    "question": "A team stores a shared skill at `.claude/skills/release/SKILL.md` in their repo. A separate command file also exists at `.claude/commands/release.md` on the same project, and an internal plugin ships yet another `release` skill. Given the 2026 skills/commands merger and location priority rules, which of these wins when a developer runs `/release` in this project?",
+    "choices": [
+      "The plugin's release skill, because plugins always take precedence over project files",
+      "The .claude/commands/release.md file, because commands take precedence over skills at the same location",
+      "The project-level .claude/skills/release/SKILL.md, because on a same-name collision the skill wins, and Project outranks Plugin in location priority",
+      "Whichever file was created most recently on disk"
+    ],
+    "answer": 2,
+    "explanation": "同名衝突時はスキルがコマンドより優先され、さらに場所の優先順位は Enterprise → Personal → Project → Plugin なので、プロジェクトのスキルがプラグインのスキルより優先されます。したがって `.claude/skills/release/SKILL.md` が採用されます。選択肢0はPluginが常に最優先という誤り、選択肢1はコマンドがスキルに勝つという逆の誤り、選択肢3はファイル作成日時という無関係な基準です。",
+    "tags": [
+      "skills-commands-merger",
+      "location-priority",
+      "collision"
+    ],
+    "ref": "D2 skills/commands merger + location priority"
+  },
+  {
+    "id": "claude-code-037",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A structured data extraction pipeline runs as an unattended Claude Code CI job. Because there is no human present, the team wants Claude to make its own tool-permission decisions dynamically per request rather than being fully locked down or fully open. Which permission mode fits this description?",
+    "choices": [
+      "plan",
+      "acceptEdits",
+      "dontAsk",
+      "auto"
+    ],
+    "answer": 3,
+    "explanation": "`auto` モードは分類器（classifier）がリクエストごとに許可・拒否を動的に判断する権限モードで、無人環境での柔軟な自動判断に適しています。`plan` は実装前の計画提示に特化、`acceptEdits` は編集のみ自動承認、`dontAsk` はすべての確認を省略するため、動的判断という要件には合致しません。",
+    "tags": [
+      "permission-modes",
+      "auto-mode",
+      "CI-CD"
+    ],
+    "ref": "D2 Permission modes"
+  },
+  {
+    "id": "claude-code-038",
+    "domain": "claude-code",
+    "difficulty": 3,
+    "question": "A financial-services team wants a rule enforced with 100% reliability: `process_refund` must never run until a `get_customer` verification call has already succeeded earlier in the session. They are debating between writing this as a strongly worded instruction in CLAUDE.md versus wiring a PreToolUse hook that blocks the `process_refund` tool call unless verification already ran. Which approach should they choose and why?",
+    "choices": [
+      "The CLAUDE.md instruction, because prompt-based instructions are re-read on every turn and are therefore just as reliable as hooks",
+      "The PreToolUse hook, because programmatic enforcement is deterministic (100%) while prompt instructions are only probabilistic best-effort, which matters for safety-critical rules",
+      "Neither is needed; disable-model-invocation: true on the refund skill achieves the same guarantee",
+      "The CLAUDE.md instruction, because PreToolUse hooks can only run after a tool has already executed, not before"
+    ],
+    "answer": 1,
+    "explanation": "安全性・金融クリティカルなルールはプロンプト指示（確率的・ベストエフォート）ではなく、フックのようなプログラム的強制（決定論的・100%保証）で実現すべきというのが本試験で強調される原則の典型例（`process_refund`を`get_customer`検証完了までブロックするPreToolUseフック）です。選択肢0は「同等の信頼性」という誤り、選択肢2はdisable-model-invocationが呼び出し主体（人間のみ）の制限であり検証順序の保証にはならない誤り、選択肢3はPreToolUseがツール実行「前」に介入するフックであるという定義に反する誤りです。",
+    "tags": [
+      "hooks",
+      "programmatic-enforcement",
+      "PreToolUse"
+    ],
+    "ref": "D1 Programmatic vs prompt-based enforcement"
+  },
+  {
+    "id": "claude-code-039",
+    "domain": "claude-code",
+    "difficulty": 1,
+    "question": "Which permission mode is described as dangerous because it skips all confirmation prompts for every tool and edit, and should typically be reserved for fully sandboxed or disposable environments?",
+    "choices": [
+      "bypassPermissions",
+      "plan",
+      "default",
+      "acceptEdits"
+    ],
+    "answer": 0,
+    "explanation": "`bypassPermissions` は全てのツール利用と編集の確認プロンプトを完全にスキップする危険なモードで、サンドボックス化された使い捨て環境などでのみ使うべきとされています。`plan` は実装前の計画提示、`default` は通常の逐次確認、`acceptEdits` は編集のみ自動承認であり、いずれも「全確認をスキップする危険なモード」には該当しません。",
+    "tags": [
+      "permission-modes",
+      "bypassPermissions"
+    ],
+    "ref": "D2 Permission modes"
+  },
+  {
+    "id": "claude-code-040",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A developer building a customer-support automation skill wants Claude to only be able to call it explicitly via `/escalate`, never have Claude decide on its own to invoke it mid-conversation, since escalation should always be a deliberate human action. Which SKILL.md frontmatter setting enforces this?",
+    "choices": [
+      "disable-model-invocation: true",
+      "user-invocable: false",
+      "context: fork",
+      "effort: high"
+    ],
+    "answer": 0,
+    "explanation": "`disable-model-invocation: true` はスキルをユーザーのみが明示的に呼び出せるようにし、モデルが自律的に呼び出すことを禁止します。これは「常に人間の意図的な操作であるべき」という要件に一致します。`user-invocable: false` は逆にユーザーから隠しモデルのみが呼べる設定であり要件と真逆、`context: fork` は実行コンテキストの隔離、`effort: high` は思考努力レベルの調整であり、呼び出し主体の制御とは無関係です。",
+    "tags": [
+      "skill-frontmatter",
+      "disable-model-invocation"
+    ],
+    "ref": "D2 SKILL.md frontmatter"
+  },
+  {
+    "id": "claude-code-041",
+    "domain": "claude-code",
+    "difficulty": 1,
+    "question": "A developer adds a GitHub Actions job that invokes `claude` to auto-triage new issues. The job runs successfully in local testing (interactive terminal) but hangs indefinitely in the CI runner until the job times out. What is the most likely cause?",
+    "choices": [
+      "The job is missing `--output-format stream-json` so Claude Code cannot emit any output",
+      "The job is missing `-p`/`--print`, so Claude Code is waiting for interactive input that CI can never provide",
+      "The job needs `--max-turns` set or Claude Code will loop forever",
+      "The job needs `--no-session-persistence` or the session file lock blocks the process"
+    ],
+    "answer": 1,
+    "explanation": "CIでハングする典型的な原因は `-p`/`--print` の付け忘れです。これがないとClaude Codeは対話モードで待機し、非対話環境のCIでは永久にハングします。output-formatは出力形式の指定であり無指定でもハングの原因にはなりません。max-turnsはターン数上限で無限ループ防止には有効ですが今回の典型トラップではありません。no-session-persistenceはセッション保存の制御でハングの原因ではありません。",
+    "tags": [
+      "ci-cd",
+      "flags",
+      "headless"
+    ],
+    "ref": "D2 CI/CD flags"
+  },
+  {
+    "id": "claude-code-042",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A structured data extraction pipeline calls Claude Code headlessly and needs the output to be parsed reliably by a downstream Python script, including intermediate tool-call events for debugging. Which combination of flags best fits this need?",
+    "choices": [
+      "`-p --output-format text`",
+      "`--output-format json --max-budget-usd 5`",
+      "`-p --max-turns 1`",
+      "`-p --output-format stream-json --json-schema '{...}'`"
+    ],
+    "answer": 3,
+    "explanation": "stream-json形式は逐次イベント(ツール呼び出し等)をJSONとして流すためデバッグに適し、json-schemaで最終出力の形式を保証できるため今回の要件に合致します。text形式は構造化パースに不向きです。output-format jsonだけでは中間のツール呼び出しイベントが見えず、さらに`-p`も欠けており非対話環境でハングします。max-turns 1は複雑な抽出作業を1ターンに制限してしまい実用的ではありません。",
+    "tags": [
+      "output-format",
+      "json-schema",
+      "headless"
+    ],
+    "ref": "D2 CI/CD flags"
+  },
+  {
+    "id": "claude-code-043",
+    "domain": "claude-code",
+    "difficulty": 1,
+    "question": "A team wants each CI-triggered Claude Code run to be a completely isolated, stateless invocation with no session file written to disk afterward, to avoid leaking data between shared CI runners. Which flag accomplishes this?",
+    "choices": [
+      "`--fork-session`",
+      "`--continue`",
+      "`--no-session-persistence`",
+      "`--setting-sources user,project,local`"
+    ],
+    "answer": 2,
+    "explanation": "`--no-session-persistence` はセッション状態をディスクに保存しないため、共有CIランナー間でのデータ漏洩を防ぐという要件に合致します。fork-sessionは既存セッションから分岐する機能で無関係です。continueは直前セッションの継続用で今回の「毎回独立」という要件と逆です。setting-sourcesは設定ファイルの読み込み元を制御するもので永続化とは別の話です。",
+    "tags": [
+      "session-persistence",
+      "ci-cd",
+      "flags"
+    ],
+    "ref": "D2 CI/CD flags"
+  },
+  {
+    "id": "claude-code-044",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A CI pipeline runs Claude Code non-interactively but must still enforce custom organization permission rules (e.g., blocking destructive bash commands) without any human present to click 'allow'. Which flag lets the pipeline supply an automated permission decision-maker?",
+    "choices": [
+      "`--permission-prompt-tool <mcp>`",
+      "`--permission-mode bypassPermissions`",
+      "`--max-budget-usd`",
+      "`--session-id`"
+    ],
+    "answer": 0,
+    "explanation": "`--permission-prompt-tool` はMCPツールなどをパーミッション判定に接続し、人間不在でも自動的に許可/拒否の判断を行わせる仕組みで、要件に合致します。bypassPermissionsは全て無条件許可してしまう危険なモードでカスタムルールの強制にはなりません。max-budget-usdはコスト上限でパーミッションとは無関係です。session-idはセッション識別子の指定であり許可判定機構ではありません。",
+    "tags": [
+      "permission-prompt-tool",
+      "ci-cd",
+      "automation"
+    ],
+    "ref": "D2 CI/CD flags"
+  },
+  {
+    "id": "claude-code-045",
+    "domain": "claude-code",
+    "difficulty": 3,
+    "question": "A cost-conscious platform team wants a headless Claude Code run in CI to hard-stop if it accidentally spirals into an expensive tool-calling loop, protecting against a runaway bill from a single pull-request check. Which flag directly caps the run by spend rather than by turn count?",
+    "choices": [
+      "`--max-turns 10`",
+      "`--max-budget-usd 2.00`",
+      "`--fallback-model claude-haiku`",
+      "`--output-format json`"
+    ],
+    "answer": 1,
+    "explanation": "`--max-budget-usd` はドル建てで支出上限を設定するため、暴走した場合の請求額を直接的に制限できます。max-turnsはターン回数の上限であり、1ターンあたりのコストが高ければ予算超過を防げません。fallback-modelはモデル障害時の代替指定でコスト上限とは無関係です。output-formatは出力形式の指定でコスト制御には関与しません。",
+    "tags": [
+      "max-budget-usd",
+      "cost-control",
+      "ci-cd"
+    ],
+    "ref": "D2 CI/CD flags"
+  },
+  {
+    "id": "claude-code-046",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "During an incident, an engineer wants to pick up an interrupted headless Claude Code CI run from exactly where it left off, reusing the same session identifier that was logged at kickoff. Which flag is designed for this?",
+    "choices": [
+      "`--continue`",
+      "`--fork-session`",
+      "`--setting-sources project`",
+      "`--resume <session-id>`"
+    ],
+    "answer": 3,
+    "explanation": "`--resume <session-id>` は指定したセッションIDのセッションを明示的に再開するための機能で、ログに残ったIDから正確に復元する今回の要件に合致します。continueは直近セッションを暗黙的に継続するもので特定IDの指定はできません。fork-sessionは既存セッションから分岐した新しい独立ブランチを作る機能で「続きから再開」ではありません。setting-sourcesは設定ファイルの読み込み元制御で再開機能とは無関係です。",
+    "tags": [
+      "resume",
+      "session-id",
+      "ci-cd"
+    ],
+    "ref": "D2 CI/CD flags"
+  },
+  {
+    "id": "claude-code-047",
+    "domain": "claude-code",
+    "difficulty": 1,
+    "question": "A security-conscious team runs Claude Code in an ephemeral CI container and wants to guarantee that no machine-local or user-level settings (which don't exist in the container anyway) are silently expected, restricting configuration to only the versioned project settings. Which flag should they use?",
+    "choices": [
+      "`--setting-sources project`",
+      "`--no-session-persistence`",
+      "`--permission-prompt-tool`",
+      "`--json-schema`"
+    ],
+    "answer": 0,
+    "explanation": "`--setting-sources` はどの設定ソース（user/project/local）を読み込むか制御でき、projectのみを指定すればバージョン管理された設定だけに限定できます。no-session-persistenceはセッション永続化の制御で設定ソースとは無関係です。permission-prompt-toolは許可判定の委譲先指定であり設定ソース制御ではありません。json-schemaは出力スキーマの指定であり設定ファイルの読み込みには関与しません。",
+    "tags": [
+      "setting-sources",
+      "ci-cd",
+      "configuration"
+    ],
+    "ref": "D2 CI/CD flags"
+  },
+  {
+    "id": "claude-code-048",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A data team needs to run nightly bulk classification of 50,000 support tickets using Claude, is not latency-sensitive, and wants to minimize API cost. Which approach best fits, and why?",
+    "choices": [
+      "Synchronous API calls in a tight loop, because Batches API does not support classification tasks",
+      "Message Batches API, because it guarantees results within 1 hour with an SLA",
+      "Message Batches API, because it offers a 50% cost discount for asynchronous, non-blocking workloads like this",
+      "Message Batches API, because it supports multi-turn conversations needed for ticket classification"
+    ],
+    "answer": 2,
+    "explanation": "Message Batches APIは非同期・非ブロッキングのバルク処理に適し、通常のAPI料金の50%割引という明確なコストメリットがあるため、夜間の大量分類タスクに最適です。分類タスク自体はBatches APIで問題なく実行できるため同期呼び出しに固執する理由はありません。BatchesAPIには24時間以内の処理という目安はありますがSLA保証はありません。Batches APIはマルチターン会話をサポートしていません（各リクエストは独立）。",
+    "tags": [
+      "batches-api",
+      "cost-optimization",
+      "ci-cd"
+    ],
+    "ref": "D2/D3 Message Batches API"
+  },
+  {
+    "id": "claude-code-049",
+    "domain": "claude-code",
+    "difficulty": 3,
+    "question": "A pre-merge CI check uses Claude to review each pull request and must block the merge within 2 minutes if issues are found. An engineer proposes switching this check to the Message Batches API to save 50% on cost. What is the correct assessment?",
+    "choices": [
+      "Good idea: Batches API always returns within 2 minutes for small payloads",
+      "Good idea: Batches API is required whenever `custom_id` correlation is needed for PR tracking",
+      "Bad idea: Batches API has no SLA and can take up to 24 hours, which is incompatible with a blocking pre-merge check",
+      "Bad idea: Batches API cannot process code review prompts at all"
+    ],
+    "answer": 2,
+    "explanation": "Batches APIは最大24時間かかる可能性がありSLA保証がないため、2分以内にブロックする必要があるマージ前チェックには不適切です。同期APIの利用が正しい選択です。小さいペイロードでも2分以内保証はありません。custom_idの相関自体はBatches APIの機能ですが、それが同期APIを使う理由にはなりません。コードレビュープロンプト自体はBatches APIで処理可能ですが、リアルタイム性が要件と矛盾します。",
+    "tags": [
+      "batches-api",
+      "ci-cd",
+      "sla"
+    ],
+    "ref": "D2 Batch vs sync"
+  },
+  {
+    "id": "claude-code-050",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "An overnight Message Batches API job processing 10,000 document extractions completes, but 120 of the 10,000 requests failed due to transient upstream errors. What is the correct remediation approach?",
+    "choices": [
+      "Resubmit the entire batch of 10,000 requests to guarantee consistency",
+      "Resubmit only the 120 failed requests using their original `custom_id` values",
+      "Switch to synchronous calls for all 10,000 requests going forward",
+      "Discard the 120 failed results since Batches API does not support retries"
+    ],
+    "answer": 1,
+    "explanation": "バッチ失敗時の正しい対応は、失敗した`custom_id`のみを再送信することです。全件を再送信するのは無駄なコストと処理時間を生みます。同期呼び出しへの全面切り替えはバッチの効率性メリットを放棄することになり過剰な対応です。失敗結果を破棄するのは業務要件を満たさず、再送信という選択肢を無視しています。",
+    "tags": [
+      "batches-api",
+      "custom_id",
+      "error-handling"
+    ],
+    "ref": "D2 Batch failure handling"
+  },
+  {
+    "id": "claude-code-051",
+    "domain": "claude-code",
+    "difficulty": 1,
+    "question": "A batch job needs to correlate each of 5,000 asynchronous extraction requests with its corresponding source document when results come back out of order. What mechanism does the Message Batches API provide for this?",
+    "choices": [
+      "`session_id` shared across all requests",
+      "`custom_id` assigned per request by the caller",
+      "Automatic ordering guarantee matching submission order",
+      "`parent_tool_use_id` inherited from the coordinator"
+    ],
+    "answer": 1,
+    "explanation": "Message Batches APIでは呼び出し側が各リクエストに`custom_id`を割り当てて結果との紐付けに使います。これにより順不同で返ってきても正しい文書と対応付けられます。session_idはマルチターンセッションの識別子でバッチのリクエスト単位の相関には使われません。バッチAPIは順序保証をしないため紐付けにはcustom_idが必須です。parent_tool_use_idはサブエージェントのツール呼び出し追跡に使われるもので、バッチAPIの機構ではありません。",
+    "tags": [
+      "custom_id",
+      "batches-api",
+      "correlation"
+    ],
+    "ref": "D2/D3 Message Batches API"
+  },
+  {
+    "id": "claude-code-052",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A developer tries to use the Message Batches API to run a multi-turn customer support conversation simulation, where each turn depends on the model's prior response within the same conversation. What is the key limitation they will hit?",
+    "choices": [
+      "Batches API caps conversations at exactly 3 turns per `custom_id`",
+      "Batches API requires `--output-format stream-json` for multi-turn support",
+      "Batches API does not support multi-turn conversations; each request in a batch is independent",
+      "Batches API only works with the Message Batches admin API, not the standard SDK"
+    ],
+    "answer": 2,
+    "explanation": "Message Batches APIはマルチターン会話をサポートしておらず、バッチ内の各リクエストは独立して処理されます。そのため前のターンの応答に依存する会話シミュレーションには不向きです。ターン数の上限が3という制限は存在しません。output-formatのフラグはCLIの話でBatches APIの制約とは無関係です。管理APIとSDKの違いという説明も誤りで、根本原因はマルチターン非対応という点にあります。",
+    "tags": [
+      "batches-api",
+      "multi-turn",
+      "limitation"
+    ],
+    "ref": "D2/D3 Message Batches API"
+  },
+  {
+    "id": "claude-code-053",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A developer just finished implementing a complex refund-processing feature in a long Claude Code session and, still in the same session, asks Claude to review its own diff for bugs before opening a PR. The review comes back clean, but a teammate later finds an off-by-one billing bug. What architectural mistake explains the missed bug?",
+    "choices": [
+      "The review should have used `--output-format json` to force structured findings",
+      "Reviewing in the same session that wrote the code suffers from reasoning context bias; a fresh, independent session should perform the review",
+      "The developer needed to enable `--max-turns` to force deeper analysis",
+      "The bug was missed because Message Batches API was not used for the review"
+    ],
+    "answer": 1,
+    "explanation": "同一セッションでコードを書いた直後にレビューさせると、そのセッションはすでに自分の設計判断を正当化する推論コンテキストを持っており、自分の決定を疑いにくくなります（reasoning context bias）。独立した新しいセッションでレビューすることが正しい対処法です。output-formatは出力形式の話でバイアス問題とは無関係です。max-turnsはターン数上限でありレビューの質を保証するものではありません。Batches APIはコスト最適化の話でバグ発見とは無関係です。",
+    "tags": [
+      "code-review",
+      "session-isolation",
+      "reasoning-bias"
+    ],
+    "ref": "D2/D3 Session isolation for code review"
+  },
+  {
+    "id": "claude-code-054",
+    "domain": "claude-code",
+    "difficulty": 3,
+    "question": "A fresh, independent Claude Code session (with no implementation history) is given a 35-file PR diff and asked to review it in a single pass. Six months later, the team notices that findings for files near the middle of the diff are consistently shallower than for files at the start or end, and some findings contradict each other across files. Given that session isolation already eliminated reasoning bias here, what additional architecture change addresses this remaining failure mode?",
+    "choices": [
+      "Re-add implementation history to the session so it has more context to draw on",
+      "Split the review into Pass 1 (per-file local analysis at consistent depth) followed by Pass 2 (a cross-file integration pass that receives Pass 1's findings as input)",
+      "Switch the session to `--permission-mode bypassPermissions` so it can review faster without confirmation prompts",
+      "Increase `--max-budget-usd` so the single pass can spend more on each file"
+    ],
+    "answer": 1,
+    "explanation": "セッションを分離しても、35ファイルもの大規模PRを単一パスでレビューすると注意力が分散し、深さが不均一になったり矛盾する指摘が出たりする問題（attention dilution）が残ります。これを解決するのは、まずファイル単位で一貫した深さのローカル分析を行うPass 1、続いてその結果を入力としてクロスファイルの整合性を確認するPass 2という多段階レビュー構成です。実装履歴を再度加えるのはreasoning context biasを再発させてしまいます。bypassPermissionsは許可確認スキップの話でレビュー深度の均一化とは無関係です。予算を増やすだけでは単一パスの構造的な注意力分散という根本原因は解決しません。",
+    "tags": [
+      "multi-pass-review",
+      "attention-dilution",
+      "code-review"
+    ],
+    "ref": "D2/D3 Multi-pass review for large PRs"
+  },
+  {
+    "id": "claude-code-055",
+    "domain": "claude-code",
+    "difficulty": 1,
+    "question": "A prompt engineer is refining an instruction that tells Claude how to format extracted dates. The current instruction is just the sentence: \"Format dates consistently.\" Results are inconsistent across documents. What change is most likely to improve reliability, per iterative refinement best practice?",
+    "choices": [
+      "Add more adjectives emphasizing importance, e.g. \"Format dates very carefully and consistently\"",
+      "Replace the prose instruction with a concrete rule plus 2-4 input/output examples, e.g. \"Format as YYYY-MM-DD\" with sample conversions",
+      "Increase `--max-turns` so Claude has more opportunities to self-correct",
+      "Switch to the Message Batches API so more documents can be sampled at once"
+    ],
+    "answer": 1,
+    "explanation": "反復的なプロンプト改善のベストプラクティスでは、曖昧な散文的指示よりも具体的なルールと2〜4個の入出力例を示す方が効果的です（examples beat prose）。強調の形容詞を増やしても曖昧さは解消されません。max-turnsはCLIのターン数上限でありプロンプトの明確さとは無関係です。Batches APIはコスト・スループットの話であり、フォーマットの一貫性向上には寄与しません。",
+    "tags": [
+      "iterative-refinement",
+      "few-shot",
+      "prompt-design"
+    ],
+    "ref": "D2/D3 Iterative refinement"
+  },
+  {
+    "id": "claude-code-056",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A developer is building a new API endpoint with Claude Code and wants to apply a test-driven iterative refinement loop rather than writing a long specification up front. Which workflow correctly reflects that pattern?",
+    "choices": [
+      "Write an exhaustive 2000-word spec first, then let Claude implement everything in one shot with no further interaction",
+      "Ask Claude to guess likely edge cases and generate synthetic test data without running anything",
+      "Have Claude write a failing test, run it, share the failure output with Claude, let it fix the code, and repeat until the test passes",
+      "Skip tests entirely and rely on `--max-turns` to bound the number of implementation attempts"
+    ],
+    "answer": 2,
+    "explanation": "TDDの反復ループは、失敗するテストを書く→実行する→失敗内容を共有する→修正する、というサイクルを繰り返すパターンです。これはClaude Codeでの反復的改善のベストプラクティスとして推奨されています。長大な仕様書を先に書いて一発実装させる方法は反復性がなく、フィードバックループの利点を活かせません。テストを実行せず推測だけで進めるのはTDDの本質を欠いています。max-turnsはターン数の上限管理でありテスト駆動のフィードバックループそのものではありません。",
+    "tags": [
+      "tdd",
+      "iterative-refinement",
+      "developer-productivity"
+    ],
+    "ref": "D2 TDD iteration loop"
+  },
+  {
+    "id": "claude-code-057",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "Before asking Claude Code to implement a moderately ambiguous feature request from a product manager, a developer wants to reduce back-and-forth rework. Which interaction pattern best matches the recommended iterative-refinement approach for ambiguous requirements?",
+    "choices": [
+      "Have Claude ask clarifying questions about the ambiguous parts before writing any code (interview pattern)",
+      "Have Claude immediately implement its best guess and iterate only after the PR is opened",
+      "Set `--permission-mode bypassPermissions` so Claude can make all decisions unilaterally without review",
+      "Force `tool_choice: any` so Claude is guaranteed to start editing files right away"
+    ],
+    "answer": 0,
+    "explanation": "曖昧な要求に対しては、実装前にClaudeが確認質問を行う「インタビューパターン」が推奨されるアプローチで、手戻りを減らします。いきなり実装してPR後に修正するのは手戻りコストが大きく非効率です。bypassPermissionsは許可モードの話で要求の曖昧さ解消とは無関係です。tool_choice: anyはツール呼び出しを強制するAPI機能であり、要求の明確化とは関係ありません。",
+    "tags": [
+      "interview-pattern",
+      "iterative-refinement",
+      "developer-productivity"
+    ],
+    "ref": "D2 Interview pattern"
+  },
+  {
+    "id": "claude-code-058",
+    "domain": "claude-code",
+    "difficulty": 3,
+    "question": "A developer is instructing Claude Code to fix five bugs found in a large PR. Two of the bugs are in the same function and one fix could easily break the other (interacting issues), while the other three are in unrelated files with no shared logic (independent issues). What is the recommended way to structure the requests, per iterative-refinement guidance?",
+    "choices": [
+      "Send all five bugs together in one message regardless of their relationship, since Claude Code handles any batch size equally well",
+      "Send the two interacting issues together in one message so Claude can reason about their interplay, and handle the three independent issues sequentially in separate messages",
+      "Send every bug in its own message and its own fresh session to avoid any possible cross-contamination",
+      "Send the three independent issues together in one message and handle the two interacting issues in separate sequential messages"
+    ],
+    "answer": 1,
+    "explanation": "相互に影響し合う課題（interacting issues）は同じメッセージ内で一緒に伝えることで、Claudeがそれらの相互作用を考慮しながら修正できます。一方、互いに独立した課題（independent issues）は個別に順番に処理する方が、各修正の検証がしやすく安全です。全てを無条件に一括送信するのは相互作用のない課題まで一緒くたにしてしまい非効率です。全て個別セッションに分けるのは相互作用する課題の文脈共有を失わせてしまいます。独立課題をまとめて相互作用課題を分離するのは推奨パターンと逆です。",
+    "tags": [
+      "iterative-refinement",
+      "interacting-issues",
+      "independent-issues"
+    ],
+    "ref": "D2 Interacting vs independent issues"
+  },
+  {
+    "id": "claude-code-059",
+    "domain": "claude-code",
+    "difficulty": 3,
+    "question": "A platform team has just finished writing a new extraction prompt and plans to run it overnight via the Message Batches API against 200,000 archived documents to save cost. Before submitting the full job, what step does the exam guidance recommend, and why?",
+    "choices": [
+      "Submit the full 200,000-document batch immediately, since the 50% discount only applies if the entire corpus is sent in one job",
+      "Skip any pre-check and rely on the validation-retry loop to fix any issues after the batch completes",
+      "Run the new prompt against a small representative sample first to catch prompt or schema issues cheaply, before committing to the full overnight batch run",
+      "Convert the prompt to use `tool_choice: any` first, since Batches API silently rejects prompts using forced tool choice"
+    ],
+    "answer": 2,
+    "explanation": "大規模バッチ実行の前に、小規模な代表サンプルに対してまずプロンプトを検証し、プロンプトやスキーマの問題を安価な段階で発見してから本番の大規模バッチを投入するのが推奨される手順（pre-batch QA）です。全件を即座に投入するのは、プロンプトに欠陥があった場合に高コストなやり直しを招きます。validation-retryループは個々のレスポンスの検証エラーに対処するものであり、プロンプト設計そのものの欠陥を防ぐ事前検証の代わりにはなりません。tool_choice: anyに関する制約は実在しない誤った前提です。",
+    "tags": [
+      "pre-batch-qa",
+      "batches-api",
+      "structured-data-extraction"
+    ],
+    "ref": "D2/D3 Pre-batch QA on a small sample"
+  },
+  {
+    "id": "claude-code-060",
+    "domain": "claude-code",
+    "difficulty": 1,
+    "question": "A CI script for a multi-agent research system spawns Claude Code headlessly and needs the final answer as plain human-readable text piped directly into a Slack notification, with no JSON parsing required downstream. Which output format flag is most appropriate?",
+    "choices": [
+      "`--output-format stream-json`",
+      "`--output-format json` and then manually extract the text field",
+      "`--json-schema '{\"type\":\"string\"}'`",
+      "`--output-format text`"
+    ],
+    "answer": 3,
+    "explanation": "後段でJSON解析が不要な、人間可読なプレーンテキストが欲しいだけの場合は`--output-format text`が最も適切でシンプルです。stream-jsonは逐次イベントのJSON形式で、そのままSlack通知には向きません。output-format jsonを使ってから手動でtextフィールドを抜き出すのは不必要な追加処理です。json-schemaは構造化出力のスキーマ指定用でありプレーンテキスト出力の要件には合致しません。",
+    "tags": [
+      "output-format",
+      "headless",
+      "ci-cd"
+    ],
+    "ref": "D2 CI/CD flags"
+  }
+]

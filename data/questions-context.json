@@ -1,0 +1,871 @@
+[
+  {
+    "id": "context-001",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "A developer productivity team is designing a long-running Claude Code session that will process dozens of files and tool calls. Which statement about the finite context window correctly describes the underlying cost/reliability constraint?",
+    "choices": [
+      "Only user-authored messages count against the context window; tool results are stored separately and free",
+      "Every message, tool result, and system prompt consumes tokens, and long conversations degrade as the window fills",
+      "The context window only matters for billing, not for output quality or reliability",
+      "Context window limits apply solely to the final response, not to the accumulated conversation history"
+    ],
+    "answer": 1,
+    "explanation": "正解は、システムプロンプト・メッセージ・ツール結果すべてがトークンを消費し、会話が長くなるほど劣化するという有限コンテキストウィンドウの基本原則を述べている。選択肢0はツール結果が無料という誤り、選択肢2は品質劣化を無視した誤り、選択肢3は累積履歴も同様に消費されるため誤り。",
+    "tags": [
+      "context-window",
+      "economics"
+    ],
+    "ref": "D5 context economics"
+  },
+  {
+    "id": "context-002",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "In a multi-agent research system, a coordinator compiles a long transcript of subagent findings before answering the user's question. To reduce the risk of the model underweighting information buried in the middle of that transcript, what should the coordinator do?",
+    "choices": [
+      "Place a key-findings summary at the start of the transcript and bookend critical facts at both the beginning and end",
+      "Append a key-findings summary only at the very end, right before the final answer",
+      "Randomize the order of subagent findings so no single section is consistently deprioritized",
+      "Increase the max_tokens parameter so the model has more room to consider the middle content"
+    ],
+    "answer": 0,
+    "explanation": "正解は「lost in the middle」現象への対策として、冒頭に要点サマリーを置き、重要情報を先頭と末尾でブックエンドする方法である。選択肢1は末尾のみで冒頭の弱点を補えない。選択肢2はランダム化しても中間部分の処理信頼性低下は解消しない。選択肢3のmax_tokensは出力長の制御でありlost-in-the-middle問題とは無関係。",
+    "tags": [
+      "lost-in-the-middle",
+      "summary-placement"
+    ],
+    "ref": "D5 lost in the middle"
+  },
+  {
+    "id": "context-003",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A customer support resolution agent is handling a long conversation about a disputed charge. Midway through, progressive summarization compresses an earlier tool result so that \"$149.99\" becomes \"approximately $150\" and the order date becomes \"mid-January.\" What is the best design fix to prevent this from affecting the final refund action?",
+    "choices": [
+      "Disable summarization entirely for the whole session so nothing is ever compressed",
+      "Increase the model's temperature so it reconstructs the exact figures from context",
+      "Maintain a persistent case-facts block with exact order ID, amount, and dates, marked with a do-not-summarize instruction",
+      "Ask the customer to repeat the exact amount and date each time the agent needs them"
+    ],
+    "answer": 2,
+    "explanation": "正解は、注文ID・金額・日付などを保持する永続的なcase facts blockを設け、要約対象から除外する指示を付けることで数値の劣化を防ぐパターンである。選択肢0は非現実的でパフォーマンスやコストに悪影響。選択肢1のtemperatureは数値の正確な再現とは無関係。選択肢3は顧客体験を損ない、根本的な設計問題を解決しない。",
+    "tags": [
+      "progressive-summarization",
+      "case-facts-block"
+    ],
+    "ref": "D5 case facts block"
+  },
+  {
+    "id": "context-004",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "In a structured data extraction pipeline, a tool call retrieves a full order record containing 40 fields, but only 5 fields (order ID, status, total, customer email, ship date) are relevant to the current task. What is the recommended approach for the tool result returned to the model?",
+    "choices": [
+      "Return all 40 fields so the model has maximum flexibility for follow-up questions",
+      "Return the 40 fields but compress them into a single summarized string",
+      "Return only field names without values, and let the model request values individually",
+      "Trim the tool output to return only the 5 essential fields relevant to the task"
+    ],
+    "answer": 3,
+    "explanation": "正解は、関連する5フィールドのみを返すトリミングによりコンテキスト消費を抑える手法である。選択肢0は不要なトークンを浪費し、lost-in-the-middleのリスクも高める。選択肢1の要約は数値の劣化リスクを持ち込む。選択肢2は値なしでは実質的に使えず、往復呼び出しが増えて非効率。",
+    "tags": [
+      "tool-output-trimming"
+    ],
+    "ref": "D5 tool output trimming"
+  },
+  {
+    "id": "context-005",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A Claude Code user runs `/compact` in the middle of a long refactoring session. Which pair of items correctly describes what typically survives compaction versus what is typically lost?",
+    "choices": [
+      "Survives: exact tool result contents from early turns; Lost: CLAUDE.md and MEMORY.md",
+      "Survives: CLAUDE.md (re-read from disk), MEMORY.md, and recent messages; Lost: earlier tool results and exact figures from early context",
+      "Survives: nothing except the system prompt; Lost: all prior configuration and memory files",
+      "Survives: only the most recent tool_use block; Lost: all text messages regardless of recency"
+    ],
+    "answer": 1,
+    "explanation": "正解は、CLAUDE.mdはディスクから再読み込みされ、MEMORY.mdや直近のメッセージも残るが、初期のツール結果や正確な数値は失われるという/compactの挙動を正しく説明している。選択肢0は生存/消失が逆。選択肢2はCLAUDE.mdやMEMORY.mdが残る事実を無視している。選択肢3はテキストメッセージも直近分は残るため誤り。",
+    "tags": [
+      "compact",
+      "survives-vs-lost"
+    ],
+    "ref": "D5 /compact survives vs lost"
+  },
+  {
+    "id": "context-006",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "During a multi-hour Claude Code session doing a large codebase migration, the assistant starts giving answers that sound like generic best practices rather than facts specific to this repository, and it re-asks about things it had already verified earlier. What is the most likely explanation and the recommended proactive fix?",
+    "choices": [
+      "This is normal model variance; switching to a higher-effort model setting will resolve it",
+      "This means the tool descriptions are ambiguous; the fix is to consolidate tools into fewer, better-described ones",
+      "This indicates context degradation from an overloaded window; proactively run /compact before natural degradation occurs, rather than waiting for automatic compaction",
+      "This means CLAUDE.md was not loaded at session start; the fix is to restart the session from scratch"
+    ],
+    "answer": 2,
+    "explanation": "正解は、長時間セッションでの典型的なコンテキスト劣化の兆候（一般論への逃避、既知事項の再確認）であり、自然な劣化を待つ自動compactionより先回りしてproactiveに/compactを実行する方が優れているという原則に基づく。選択肢0は根本原因を無視した対症療法。選択肢1はツール設計の問題であり本症状の原因ではない。選択肢3はCLAUDE.mdの問題ではなく、セッション再起動は過剰な対応。",
+    "tags": [
+      "degradation-signs",
+      "proactive-compact"
+    ],
+    "ref": "D5 degradation signs; proactive compact"
+  },
+  {
+    "id": "context-007",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A CI/CD automation pipeline runs Claude Code non-interactively for hours across multiple scheduled jobs, relying on scratchpad markdown files to persist intermediate findings between compaction events. Why does this strategy work well for preserving state across /compact?",
+    "choices": [
+      "Because /compact automatically deletes all files in the working directory except scratchpad files",
+      "Because scratchpad files are automatically injected into MEMORY.md during compaction",
+      "Because /compact only affects the system prompt, never the working directory or file contents",
+      "Because scratchpad files written to disk survive compaction and can be re-read on demand, unlike in-context tool results"
+    ],
+    "answer": 3,
+    "explanation": "正解は、スクラッチパッドファイルはディスク上に永続化されるため/compactの影響を受けず、必要なときに再読み込みできるという設計原則である。選択肢0はcompactがファイルを削除するという誤った前提。選択肢1はMEMORY.mdへの自動統合という事実に基づかない主張。選択肢2はcompactの影響範囲の説明として不正確かつ論点がずれている。",
+    "tags": [
+      "scratchpad",
+      "compact-survival"
+    ],
+    "ref": "D5 scratchpad files strategy"
+  },
+  {
+    "id": "context-008",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A developer wants their main Claude Code session to explore a large unfamiliar codebase (50+ files) without polluting the main context with all the intermediate file reads. What is the recommended pattern?",
+    "choices": [
+      "Read all 50+ files directly in the main session so nothing is missed later",
+      "Delegate the exploration to an Explore subagent, which reads the files and returns only a concise summary to the main context",
+      "Use /compact immediately after each file read to keep the window small",
+      "Ask the user to manually summarize the codebase structure before starting"
+    ],
+    "answer": 1,
+    "explanation": "正解は、Explore subagentに探索を委任し、詳細な読み込みはサブエージェントのコンテキストに隔離した上で、メインコンテキストには簡潔な要約のみを返すパターンである。選択肢0はメインコンテキストを浪費し、lost-in-the-middleのリスクも高める。選択肢2は読み込みのたびにcompactするのは非効率かつ非現実的な運用。選択肢3は自動化の目的に反し、ユーザーへの負担を増やす。",
+    "tags": [
+      "explore-subagent",
+      "context-isolation"
+    ],
+    "ref": "D5 Explore-subagent delegation"
+  },
+  {
+    "id": "context-009",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "Which of the following is explicitly named as a sign of context degradation in a long Claude Code session, as opposed to a sign of a healthy, well-functioning session?",
+    "choices": [
+      "The assistant continues to cite the exact line numbers and file paths it verified earlier in the session",
+      "The assistant asks a clarifying question before implementing a large multi-file change",
+      "The assistant's answers shift toward generic 'typical patterns' instead of the specific code it actually found, and assumptions start replacing verification",
+      "The assistant proposes a plan and waits for approval before editing files"
+    ],
+    "answer": 2,
+    "explanation": "正解は、コンテキスト劣化の兆候として挙げられる「一般的パターンへの逃避」「検証済み事項の忘却」「仮定が検証に置き換わる」という現象である。選択肢0は健全なセッションの特徴。選択肢1と3はplan modeやinterview patternとして推奨される良い振る舞いであり劣化の兆候ではない。",
+    "tags": [
+      "degradation-signs"
+    ],
+    "ref": "D5 degradation signs"
+  },
+  {
+    "id": "context-010",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A team debates two compaction strategies for a long Claude Code CI/CD job: (A) let automatic compaction trigger whenever the context window fills up unpredictably, or (B) explicitly invoke /compact at planned checkpoints before the window is full. Which statement correctly justifies the recommended choice?",
+    "choices": [
+      "Strategy B is preferred because proactively compacting before natural degradation occurs beats relying on unpredictable auto-compaction",
+      "Strategy A is preferred because automatic compaction always preserves more exact figures than a manually triggered one",
+      "Both strategies are equivalent since /compact behavior is identical regardless of when it is triggered",
+      "Strategy A is preferred because it guarantees CLAUDE.md and MEMORY.md are never reloaded, saving tokens"
+    ],
+    "answer": 0,
+    "explanation": "正解は、予測可能なタイミングで先回りして/compactを実行する方が、ウィンドウが埋まってから発動する不規則な自動compactionより優れているという原則である。選択肢1は自動と手動でcompactの精度が異なるという誤った前提。選択肢2はタイミングによる劣化度合いの違いを無視している。選択肢3はCLAUDE.md再読み込みを避けることが目的だという誤った理解で、実際には再読み込みされること自体は望ましい。",
+    "tags": [
+      "proactive-compact",
+      "auto-compaction"
+    ],
+    "ref": "D5 proactive compact beats auto"
+  },
+  {
+    "id": "context-011",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A customer support agent's conversation log shows an early tool result listing 40 order fields, but by the time the agent needs to reference the exact original purchase amount 30 turns later (after a /compact occurred), the number is gone. What combination of techniques from context management best prevents this specific failure?",
+    "choices": [
+      "Rely on the model's ability to recall numbers from training data when the exact figure is missing",
+      "Increase max_turns so the agent has more opportunities to ask the customer again",
+      "Switch the tool_choice parameter to 'any' so the model is forced to call a tool for every question",
+      "Trim tool output to only the fields needed, and store must-keep figures like exact amounts in a persistent case-facts block excluded from summarization"
+    ],
+    "answer": 3,
+    "explanation": "正解は、ツール出力を必要なフィールドのみにトリミングしつつ、正確な金額のような必須情報はdo-not-summarize指定のcase facts blockに保持するという二つの手法の組み合わせである。選択肢0はモデルが学習データから顧客固有の金額を推測することはできず誤り。選択肢1のmax_turnsは関係のないCLI設定。選択肢2のtool_choiceはツール呼び出し強制の話でコンテキスト保持とは無関係。",
+    "tags": [
+      "tool-output-trimming",
+      "case-facts-block"
+    ],
+    "ref": "D5 tool trimming + case facts"
+  },
+  {
+    "id": "context-012",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "In a Claude Code configuration for a long research task, a skill's rendered body was injected into the conversation as a single message early on. After several /compact cycles, the developer notices the skill's original instructions are no longer influencing behavior as strongly. What does the context management model say about this situation?",
+    "choices": [
+      "Skills are automatically re-read from disk on every turn, so this should never happen and indicates a bug",
+      "Compaction re-attaches only the 5 most recently used skills (first 5,000 tokens each, 25,000-token combined budget), so an older skill's influence can fade after compaction",
+      "Skills persist in full forever once injected, regardless of compaction, so degradation must be caused by something else entirely",
+      "Skills are stored in MEMORY.md automatically, so they always survive compaction identically to auto memory"
+    ],
+    "answer": 1,
+    "explanation": "正解は、compactionが直近使用された最大5個のスキルのみを再アタッチし（各5,000トークン、合計25,000トークン上限）、それ以外は再アタッチされないため古いスキルの影響が薄れるという仕様である。選択肢0は毎ターン再読み込みされるという誤った前提。選択肢2はスキルが永続するという誤り。選択肢3はMEMORY.mdへの自動格納という事実に基づかない主張。",
+    "tags": [
+      "compact",
+      "skill-lifecycle"
+    ],
+    "ref": "D2/D5 skill lifecycle + compaction"
+  },
+  {
+    "id": "context-013",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A multi-agent research system's coordinator delegates a deep literature review to a subagent, which reads dozens of documents. The coordinator wants to avoid both (a) losing the subagent's key numeric findings to progressive summarization and (b) flooding its own context with every document detail. Which combined design best satisfies both goals?",
+    "choices": [
+      "Have the subagent return a concise summary via Explore-style delegation, with a structured facts block for exact figures/citations marked do-not-summarize, and place a key-findings summary at the start of what the coordinator receives",
+      "Have the subagent return its full raw transcript so the coordinator can decide what to keep",
+      "Have the coordinator periodically run /compact on the subagent's session to keep it lean",
+      "Disable summarization for the subagent entirely so nothing is ever lost"
+    ],
+    "answer": 0,
+    "explanation": "正解は、Explore的な委任により簡潔な要約のみを返しつつ、正確な数値や出典は要約対象外のfacts blockで保持し、さらに受け取る内容の冒頭にkey-findingsサマリーを置くことで、lost-in-the-middleと数値劣化の両方に対処する複合設計である。選択肢1はコンテキスト肥大化を招き本来の目的に反する。選択肢2はコーディネーターがサブエージェントのセッションを直接compactするという想定自体が誤り（サブエージェントは独立したコンテキストを持つ）。選択肢3は非現実的でコスト・性能上の問題を無視している。",
+    "tags": [
+      "explore-subagent",
+      "case-facts-block",
+      "lost-in-the-middle"
+    ],
+    "ref": "D5 combined context strategies"
+  },
+  {
+    "id": "context-014",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "Which of these is an accurate example of the numeric/detail loss caused by progressive summarization, as commonly cited for context management design?",
+    "choices": [
+      "\"$149.99\" being preserved exactly as \"$149.99\" through every summarization pass",
+      "A customer's exact order ID being duplicated across every summarized turn for redundancy",
+      "\"$149.99\" being compressed to \"approximately $150\", losing the exact figure needed for a refund calculation",
+      "A stack trace being expanded with additional debug detail after each summarization pass"
+    ],
+    "answer": 2,
+    "explanation": "正解は、進行的要約によって正確な金額「$149.99」が「約$150」のような曖昧な表現に劣化する典型例である。選択肢0は要約による劣化がないという誤り。選択肢1は要約が詳細を保持・複製するという誤った説明。選択肢3は要約が詳細を追加するという逆の主張であり誤り。",
+    "tags": [
+      "progressive-summarization"
+    ],
+    "ref": "D5 progressive summarization numeric loss"
+  },
+  {
+    "id": "context-015",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A structured data extraction pipeline attaches a confidence score to every extracted field, e.g. {\"value\": \"2024-03-15\", \"confidence\": 0.9}. The team wants these scores to be trustworthy enough to drive an automated escalation threshold. What must be true about the score of 0.9 for this design to be reliable, and how should escalation decisions be made?",
+    "choices": [
+      "0.9 must be calibrated to mean the field is correct about 90% of the time against a labeled validation set, and escalation should use a deterministic threshold on that calibrated score, never the model's self-reported confidence alone",
+      "0.9 is inherently trustworthy because the model generated it from the same extraction call, so no separate calibration step is needed",
+      "Escalation should rely on the model restating in text how confident it feels, since numeric confidence fields are redundant once the model can explain itself",
+      "Any confidence score above 0.5 can be treated as equally reliable, since the exact numeric value only matters for scores below 0.5"
+    ],
+    "answer": 0,
+    "explanation": "正解は、信頼度スコア0.9はラベル付き検証データセットに対して実際に約90%の精度と一致するようキャリブレーションされていなければ「意味をなさない」という原則、かつエスカレーションはモデルの自己申告ではなく決定的な閾値ロジックで行うべきという原則を正しく述べている。選択肢1はキャリブレーション不要という誤り(自己生成スコアは検証なしに信頼できない)。選択肢2はLLMの自己申告確信度に頼る誤ったパターン(自己申告は較正が不十分)。選択肢3はスコアの数値精度を軽視しており、較正の必要性そのものを否定する誤り。",
+    "tags": [
+      "confidence-calibration",
+      "deterministic-escalation"
+    ],
+    "ref": "D5 field-level confidence calibration; escalation via deterministic threshold"
+  },
+  {
+    "id": "context-016",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "A customer support agent built on Claude is handling a billing dispute. Which of the following should trigger immediate escalation to a human agent?",
+    "choices": [
+      "The customer's messages show strongly negative sentiment throughout the conversation",
+      "The customer explicitly asks to speak with a human representative",
+      "The conversation has grown to more than 20 turns",
+      "The agent's self-reported confidence score for its last answer is 0.4"
+    ],
+    "answer": 1,
+    "explanation": "正解は「顧客が明示的に人間対応を要求した」ことで、これは即時エスカレーションの正当なトリガーの一つです。感情の強さだけでは複雑さを意味しないため誤りです。会話の長さ自体はエスカレーション基準にはなりません。エージェントの自己申告の確信度は較正されていないことが多く、信頼できる根拠にはなりません。",
+    "tags": [
+      "escalation-triggers",
+      "customer-support",
+      "human-handoff"
+    ],
+    "ref": "D5 escalation triggers"
+  },
+  {
+    "id": "context-017",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "In a customer support resolution agent, a customer is extremely angry (all caps, multiple exclamation points) about a simple $12 duplicate charge that is clearly documented in the order history. What is the correct next action for the agent?",
+    "choices": [
+      "Escalate immediately because the customer's sentiment indicates a high-severity issue",
+      "Ask the customer to lower their tone before proceeding",
+      "Escalate because any all-caps message is treated as a policy exception",
+      "Resolve the issue directly since it is a simple, well-documented billing error despite the tone"
+    ],
+    "answer": 3,
+    "explanation": "正解は、感情が強くても問題自体は単純な請求エラーであり、そのままエージェントが解決すべきという点です。感情の強さだけでエスカレーションするのはsentiment≠complexityの原則に反する誤りです。顧客に口調を改めるよう求めるのは適切な業務対応ではありません。全て大文字だからといって自動的にポリシー例外として扱う根拠はありません。",
+    "tags": [
+      "sentiment-vs-complexity",
+      "customer-support",
+      "resolve-vs-escalate"
+    ],
+    "ref": "D5 sentiment vs complexity"
+  },
+  {
+    "id": "context-018",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A calm, polite customer asks whether their data can be stored only in the EU due to a data residency requirement tied to a multi-region SLA clause. The agent is uncertain whether current infrastructure supports this guarantee. What should the agent do?",
+    "choices": [
+      "Escalate to a human, since this involves policy complexity beyond straightforward resolution even though the customer is calm",
+      "Resolve it directly since the customer's calm tone indicates low complexity",
+      "Tell the customer their data is already EU-only to keep the conversation short",
+      "Escalate only if the customer becomes upset about the delay"
+    ],
+    "answer": 0,
+    "explanation": "正解は、顧客の口調が穏やかでも、データレジデンシーやSLAのようなポリシー上の複雑な例外はエスカレーション対象であるという点です。穏やかな口調＝単純な問題という判断は誤りで、sentimentとcomplexityは独立した軸です。確認できない事実を断定的に伝えるのは不適切な対応です。エスカレーションの要否は顧客の感情次第ではなく問題の性質次第です。",
+    "tags": [
+      "sentiment-vs-complexity",
+      "escalation-triggers",
+      "policy-gap"
+    ],
+    "ref": "D5 calm+policy-complex escalation"
+  },
+  {
+    "id": "context-019",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "Which of the following is explicitly NOT a valid reason, by itself, to escalate a customer support conversation to a human agent?",
+    "choices": [
+      "The customer explicitly requests to speak with a human",
+      "There has been no progress after multiple reasonable resolution attempts",
+      "A genuine gap exists in the documented policy for this situation",
+      "The conversation has run long, regardless of whether progress is being made"
+    ],
+    "answer": 3,
+    "explanation": "正解は会話の長さそのものであり、これは進捗の有無に関係なくエスカレーションの根拠にはならないとされています。明示的な人間対応の要求、合理的な試行後も進展がない場合、ポリシーの欠落はいずれも正当なエスカレーショントリガーです。したがってこれら3つは誤答となります。",
+    "tags": [
+      "escalation-triggers",
+      "non-triggers",
+      "conversation-length"
+    ],
+    "ref": "D5 non-triggers"
+  },
+  {
+    "id": "context-020",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "During a support session, the agent looks up a customer record and finds two accounts with the same first and last name and similar order history, but different email addresses. The agent is fairly confident account A is the correct one. What should the agent do?",
+    "choices": [
+      "Proceed with account A since it is the statistically most likely match",
+      "Ask the customer for disambiguating information such as their email or the last 4 digits of their phone number",
+      "Merge both accounts to avoid asking the customer extra questions",
+      "Escalate the case immediately without attempting to resolve the ambiguity"
+    ],
+    "answer": 1,
+    "explanation": "正解は、曖昧な顧客照合が発生した場合はメールアドレスや電話番号下4桁などの判別情報を顧客に確認することです。最も可能性が高いという理由だけでアカウントを選ぶのは、誤った顧客データにアクセスするリスクがあるため禁止されている典型的なアンチパターンです。無断でアカウントを統合するのは危険な操作です。曖昧さは解消可能な問題であり、必ずしも即時エスカレーションを要するわけではありません。",
+    "tags": [
+      "ambiguous-match",
+      "disambiguation",
+      "customer-support"
+    ],
+    "ref": "D5 ambiguous customer matches"
+  },
+  {
+    "id": "context-021",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A support agent finds three customer profiles matching the name on a request; one has an order matching the amount mentioned by the customer, but none of the profiles have been confirmed by any unique identifier the customer has provided. The agent's internal similarity score for the best match is 0.92. What is the correct action?",
+    "choices": [
+      "Proceed with the 0.92-scored match since it clears a high internal confidence bar",
+      "Pick the profile with the matching order amount, since it is strong corroborating evidence",
+      "Ask the customer to provide a unique identifier (e.g., email or phone last-4) before proceeding",
+      "Escalate to a human immediately since multiple profiles exist"
+    ],
+    "answer": 2,
+    "explanation": "正解は、一意の識別子で確認できていない以上、たとえ内部スコアや注文金額の一致があっても顧客に判別情報を求めるべきという点です。内部の類似度スコアが高くても「最も可能性が高い」候補を選ぶことは禁止されているアンチパターンです。注文金額の一致は補強材料程度で確証にはなりません。曖昧さは追加情報の要求で解消できるため、即座にエスカレーションする必要はありません。",
+    "tags": [
+      "ambiguous-match",
+      "disambiguation",
+      "confidence-score"
+    ],
+    "ref": "D5 ambiguous customer matches"
+  },
+  {
+    "id": "context-022",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "An agent decides to hand off a billing dispute to a human agent. The human agents on this team work from a queue and do NOT have access to the full chat transcript when a case lands in their queue. What must the structured handoff payload include to be usable?",
+    "choices": [
+      "Just the customer ID and a link to re-run the conversation if needed",
+      "A raw dump of the entire conversation transcript so the human can read through it",
+      "A structured summary: customer ID, issue type, actions already taken, relevant amounts, and a recommended next action",
+      "Only the last message the customer sent, since that reflects their current concern"
+    ],
+    "answer": 2,
+    "explanation": "正解は、顧客ID・問題の種類・これまでの対応内容・関連する金額・推奨アクションを含む構造化サマリーを渡すことです。人間のエージェントは通常トランスクリプトを閲覧できないため、リンクだけでは不十分です。生のトランスクリプト全文は人間側では見られない前提であり要件を満たしません。最後のメッセージだけでは経緯や実施済みの対応が分からず不十分です。",
+    "tags": [
+      "escalation-handoff",
+      "structured-summary",
+      "human-handoff"
+    ],
+    "ref": "D5 structured escalation handoff"
+  },
+  {
+    "id": "context-023",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "In a well-designed escalation handoff for a customer support agent, which piece of information is typically included so the receiving human agent understands financial exposure of the case?",
+    "choices": [
+      "The customer's IP address and browser user-agent string",
+      "A list of every tool call the agent made internally, including failed attempts",
+      "Refund amounts and any approval limits relevant to the case",
+      "The customer's full previous purchase history going back multiple years"
+    ],
+    "answer": 2,
+    "explanation": "正解は、返金額や承認限度額といった金銭的な露出を明示する情報です。これにより人間のエージェントが迅速に判断できます。IPアドレスやユーザーエージェントは通常このハンドオフに不要です。内部の全ツール呼び出しログ（失敗も含む）は詳細すぎて人間向けの要約には適しません。数年分の購入履歴全体は過剰で、要点を絞ったサマリーの目的に反します。",
+    "tags": [
+      "escalation-handoff",
+      "structured-summary",
+      "refund-amounts"
+    ],
+    "ref": "D5 structured escalation handoff"
+  },
+  {
+    "id": "context-024",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A structured data extraction pipeline needs to decide when a low-confidence extracted field should trigger a human review. The team is debating between two designs: (A) have the LLM state in free text whether it is confident, or (B) compare a numeric confidence score against a fixed threshold set in code. Which is the correct approach and why?",
+    "choices": [
+      "Design A, because the model has direct insight into its own reasoning process",
+      "Either design is equally acceptable as long as the threshold is documented somewhere",
+      "Design A, but only if the model is explicitly instructed to 'be honest about uncertainty'",
+      "Design B, because deterministic threshold logic in code is reproducible and auditable, unlike LLM self-assessment"
+    ],
+    "answer": 3,
+    "explanation": "正解は、コード側で固定された閾値と数値スコアを比較する決定論的なロジック（Design B）です。これは再現性と監査可能性を持ちます。モデル自身の内省に基づく自己申告（Design A）は較正されておらず信頼性に欠けるため誤りです。閾値を文書化するだけでは自己申告の信頼性の低さという根本課題を解決しません。「正直に」と指示しても自己申告確信度の不確実性は解消されません。",
+    "tags": [
+      "deterministic-threshold",
+      "llm-self-assessment",
+      "escalation-logic"
+    ],
+    "ref": "D5 deterministic threshold logic"
+  },
+  {
+    "id": "context-025",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A multi-agent research system's search subagent reports a tool failure to the coordinator using only `{\"failure_type\": \"timeout\"}` with no other detail. The coordinator cannot tell which service failed, what query was attempted, whether a retry is worthwhile, or whether any partial data was already gathered. Which set of fields would a properly structured error context have included to make this actionable?",
+    "choices": [
+      "`failure_type`, `service`, `attempted_query`, `timeout_duration_ms`, `partial_results`, `alternative_approaches`, `is_retryable`, `retry_after_ms`",
+      "Only a longer, more emotionally emphatic natural-language description of how serious the failure was",
+      "`confidence`, `data_as_of`, `source_published`, `retrieved_on`, since temporal fields resolve all failure ambiguity",
+      "Just `stop_reason` and `stop_details.category`, since those already fully describe any tool failure"
+    ],
+    "answer": 0,
+    "explanation": "構造化されたエラーコンテキストには、`failure_type`・`service`・`attempted_query`・`timeout_duration_ms`・`partial_results`・`alternative_approaches`・`is_retryable`・`retry_after_ms`といったフィールドを含めることで、コーディネーターがどのサービスで何を試みて、再試行すべきか、部分的なデータが既にあるかを判断できるようになる。感情的に強調するだけの自然言語説明は機械的に扱えず判断材料にならない。`data_as_of`等の時系列フィールドは情報の鮮度管理のためのものでツール失敗の文脈情報とは目的が異なる。`stop_reason`/`stop_details`はエージェントループの停止理由を示すAPIレベルの概念であり、個々のツール呼び出し失敗の詳細を記述するものではない。",
+    "tags": [
+      "structured-error-context",
+      "failure-fields",
+      "multi-agent"
+    ],
+    "ref": "D5 structured error context fields"
+  },
+  {
+    "id": "context-026",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A structured data extraction system outputs each field as {\"value\": ..., \"confidence\": 0.9}. During a QA audit, the team samples all fields with confidence 0.9 across the validation set and finds only 55% of them are actually correct. What does this indicate?",
+    "choices": [
+      "The confidence scores are fine because 0.9 only needs to be an ordinal ranking, not a literal probability",
+      "The extraction model needs a higher temperature setting to improve calibration",
+      "The confidence scores are poorly calibrated, since a 0.9 score should correspond to roughly 90% accuracy on labeled data",
+      "This is expected behavior since confidence scores are inherently approximate and cannot be validated"
+    ],
+    "answer": 2,
+    "explanation": "正解は、確信度スコアが較正されていないという指摘です。0.9というスコアはラベル付きデータで約90%の正解率に対応するべきであり、55%しかない場合はスコアが「意味をなさない」状態です。単なる順位付けとして扱うのは較正要件の趣旨に反します。temperature設定は較正の問題を直接解決するものではありません。較正が検証不可能だとする主張も誤りで、まさにこの検証によって較正不良が発見されています。",
+    "tags": [
+      "confidence-calibration",
+      "field-level-confidence",
+      "structured-extraction"
+    ],
+    "ref": "D5 field-level confidence + calibration"
+  },
+  {
+    "id": "context-027",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "During a multi-hour Claude Code session doing a large codebase migration, the main context is filling up with dozens of file-exploration results. To make sure important findings (e.g., 'auth logic lives in src/core/auth.ts, not src/auth/') survive an eventual `/compact` and can be re-read later even after the conversation history is gone, what strategy is recommended?",
+    "choices": [
+      "Rely on auto-memory alone, since MEMORY.md always captures every discovery automatically with no further action needed",
+      "Persist key findings to scratchpad markdown files on disk that can be explicitly re-read later, since they survive compaction independently of the conversation history",
+      "Increase `--max-turns` so the session never needs to compact in the first place",
+      "Repeat the finding verbatim in every subsequent message so it stays near the 'end' of context at all times"
+    ],
+    "answer": 1,
+    "explanation": "重要な発見をスクラッチパッド用のMarkdownファイルとしてディスクに永続化しておく戦略が推奨される。これにより、`/compact`によって会話履歴が失われた後でも、ファイルを明示的に再読み込みすることで発見内容を復元できる。auto-memoryは便利だが全ての発見を自動的かつ確実に捕捉する保証はなく、それだけに頼るのは危険である。`--max-turns`を増やしてもコンテキストウィンドウの限界そのものは変わらず、圧縮を避けられるわけではない。発見内容を毎回のメッセージで繰り返すのは非現実的で非効率な運用である。",
+    "tags": [
+      "scratchpad",
+      "compact-survival",
+      "degradation-signs"
+    ],
+    "ref": "D5 scratchpad files strategy"
+  },
+  {
+    "id": "context-028",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A support agent finds a candidate customer match with an internal similarity score of 0.93, which the team knows (from prior calibration audits) is reliable — 0.93 really does correspond to roughly 93% correctness on labeled data. An engineer argues that since the score is well-calibrated, the agent should now just proceed automatically above 0.90 without asking the customer anything. What is the flaw in this reasoning?",
+    "choices": [
+      "A well-calibrated similarity score still means roughly 7% of matches at that score are wrong; for identity-sensitive actions the correct practice is to request a disambiguating identifier from the customer rather than act on probabilistic confidence alone, regardless of calibration quality",
+      "There is no flaw; a well-calibrated 0.93 score is mathematically equivalent to human-confirmed identity and can always be trusted for any action",
+      "The flaw is that similarity scores can only be calibrated for numeric fields, never for identity-matching use cases",
+      "The flaw is that 0.90 is too low a cutoff; calibration would only justify skipping confirmation above 0.99"
+    ],
+    "answer": 0,
+    "explanation": "確信度スコアが較正されていること自体は、そのスコアが約93%の正答率に対応するという統計的性質を保証するに過ぎず、残り約7%のケースでは誤りである可能性を意味する。本人確認のような取り返しのつかないアクションに関わる場面では、較正の良し悪しにかかわらず、顧客にメールアドレスや電話番号下4桁などの判別情報を確認するのが正しい実務である。較正されたスコアが人間による確認と数学的に同等という主張は誤り。類似度スコアが数値フィールドにしか較正できないという主張も誤り。カットオフの数値そのものが問題の本質ではなく、確率的な確信度だけで本人確認を省略すべきでないという点が論点である。",
+    "tags": [
+      "confidence-calibration",
+      "ambiguous-match",
+      "disambiguation"
+    ],
+    "ref": "D5 calibration does not eliminate need for disambiguation"
+  },
+  {
+    "id": "context-029",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A customer support agent has been handling an unusually long, multi-issue conversation for over two hours. A supervisor reviewing the transcript notices the agent has started answering based on 'typically, refund policies work like X' instead of citing the specific policy document it looked up earlier, and it has started re-asking for the order number it was already given. What is this most likely a sign of, and what should the supervisor do?",
+    "choices": [
+      "This is normal end-of-conversation behavior with no cause for concern; no action is needed",
+      "This indicates context degradation in a long session (assumptions replacing verification, forgotten discoveries); a proactive summary or fresh session with a case-facts block should be introduced rather than waiting for further drift",
+      "This means the customer is being deliberately difficult; the agent should end the conversation immediately",
+      "This means the model's temperature setting is too high and must be lowered mid-conversation"
+    ],
+    "answer": 1,
+    "explanation": "根拠となる具体的な検索結果ではなく『通常はこうなっている』という一般論に頼り出したり、既に伝えられた注文番号を再度尋ねたりするのは、長時間セッションにおけるコンテキスト劣化の兆候（検証済みの発見が忘れられ、検証の代わりに一般的パターンによる推測が使われる）である。これを放置せず、プロアクティブな要約の導入やケース事実ブロックを備えた新規セッションへの切り替えを検討すべきである。これを問題なしと片付けるのは劣化の兆候を見逃すことになる。顧客の態度の問題とすり替えるのは的外れ。temperature設定の調整は会話履歴の劣化とは無関係である。",
+    "tags": [
+      "degradation-signs",
+      "case-facts-block",
+      "customer-support"
+    ],
+    "ref": "D5 context degradation signs in long sessions"
+  },
+  {
+    "id": "context-030",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A support agent is mid-conversation with a customer who is calm and asks a routine question about return policy, but then adds: 'Also, can you just get me a real person, I don't want to deal with a bot.' The agent has made good progress and could technically answer the return policy question itself. What is the correct next action?",
+    "choices": [
+      "Continue resolving the return policy question since the agent has already made progress and the request is simple",
+      "Escalate to a human because the customer explicitly requested one, regardless of the simplicity of the underlying question",
+      "Ignore the request for a human since the customer's tone is calm, indicating low complexity",
+      "Ask the customer to rate their confidence in the bot's abilities before deciding whether to escalate"
+    ],
+    "answer": 1,
+    "explanation": "正解は、顧客が明示的に人間対応を要求した以上、問題の単純さに関係なくエスカレーションすべきという点です。進捗があることや質問が単純であることは、明示的な人間対応要求という優先されるトリガーを覆す理由にはなりません。穏やかな口調だからといって明示的な要求を無視するのは誤りです。顧客に確信度を尋ねるという行為自体がこの状況の要件とは無関係です。",
+    "tags": [
+      "escalation-triggers",
+      "explicit-human-request",
+      "customer-support"
+    ],
+    "ref": "D5 escalation triggers"
+  },
+  {
+    "id": "context-031",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "In a multi-agent research system, a search subagent's tool call times out. Which structured error context field should carry the number of milliseconds the tool waited before giving up?",
+    "choices": [
+      "attempted_query",
+      "failure_type",
+      "timeout_duration_ms",
+      "retry_after_ms"
+    ],
+    "answer": 2,
+    "explanation": "timeout_duration_ms はタイムアウトまでに実際に待機した時間(ms)を表すフィールドです。retry_after_ms は次に再試行すべき待機時間で意味が異なり、attempted_query は実行しようとしたクエリ内容、failure_type は失敗の種別を表すため、いずれもタイムアウト時間そのものを記録する用途ではありません。",
+    "tags": [
+      "structured-error-context",
+      "timeout"
+    ],
+    "ref": "D5 structured error context fields"
+  },
+  {
+    "id": "context-032",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A developer productivity tool's data-fetch subagent fails against a downstream service. The coordinator wants to know whether it should attempt automatic recovery or must involve a human. Which field is designed specifically to answer that question?",
+    "choices": [
+      "service",
+      "partial_results",
+      "attempted_query",
+      "is_retryable"
+    ],
+    "answer": 3,
+    "explanation": "is_retryable は、この失敗が自動リトライで解決可能かどうかをコーディネーターに伝えるための専用フラグです。service は失敗したサービス名、partial_results は途中まで得られた結果、attempted_query は試行したクエリ内容であり、再試行可否の判断材料にはなりません。",
+    "tags": [
+      "structured-error-context",
+      "is_retryable"
+    ],
+    "ref": "D5 structured error context fields"
+  },
+  {
+    "id": "context-033",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "In a structured data extraction pipeline, a document-fetch subagent hits a transient 503 from an internal API. Following the recommended subagent error recovery pattern, what should the subagent do first, before escalating anything to the coordinator?",
+    "choices": [
+      "Immediately propagate the raw 503 to the coordinator with no further action",
+      "Abort the entire multi-step workflow to avoid wasting further calls",
+      "Perform local retries with exponential backoff before considering escalation",
+      "Silently return an empty result so the pipeline can continue uninterrupted"
+    ],
+    "answer": 2,
+    "explanation": "一時的な障害(503など)に対しては、まずサブエージェントがローカルでバックオフ付きリトライを行うのが推奨パターンです。即座にコーディネーターへ伝播したり、ワークフロー全体を中断したり、空の結果を黙って返すのは、リトライの機会を捨てるか問題を隠蔽するアンチパターンです。",
+    "tags": [
+      "subagent-error-recovery",
+      "backoff-retry"
+    ],
+    "ref": "D5 subagent error recovery"
+  },
+  {
+    "id": "context-034",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A CI/CD automation subagent retried a flaky deployment-status API three times with backoff and it still fails. Per the recommended recovery pattern, what should the subagent send up to the coordinator?",
+    "choices": [
+      "Nothing, since retries were exhausted the step should just be dropped from the report",
+      "Only a boolean indicating the step failed, so the coordinator can decide independently",
+      "A generic \"Operation failed\" message to keep the payload small",
+      "Details of the attempts made, any partial results obtained, and whether it is retryable"
+    ],
+    "answer": 3,
+    "explanation": "ローカルリトライで解決できない場合、サブエージェントは試行の詳細・部分的な結果・再試行可能性を含めてコーディネーターに伝播すべきです。ステップを黙って落とす、真偽値だけ返す、汎用的な失敗メッセージだけを返す、はいずれも情報不足でコーディネーターが適切な判断をできなくなるアンチパターンです。",
+    "tags": [
+      "subagent-error-recovery",
+      "propagate-unresolvable"
+    ],
+    "ref": "D5 subagent error recovery"
+  },
+  {
+    "id": "context-035",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "You are designing crash recovery for a long-running multi-agent research pipeline so that a mid-run process crash doesn't force a full restart. Which design correctly implements this?",
+    "choices": [
+      "The coordinator keeps all agent state only in its in-memory conversation history for fastest access",
+      "Each agent re-derives all prior results from scratch on restart to guarantee consistency",
+      "Each agent exports its state to a known path, and the coordinator maintains a manifest so the run can resume from the last completed step",
+      "Only the coordinator's final output is persisted, since intermediate subagent state is not needed"
+    ],
+    "answer": 2,
+    "explanation": "各エージェントが既知のパスへ状態をエクスポートし、コーディネーターがマニフェストで進捗を管理することで、クラッシュ後も最後に完了したステップから再開できます。メモリ内履歴のみに頼る、毎回ゼロから再計算する、最終出力のみ保存するという案は、いずれもクラッシュ時に途中状態を失い再実行コストが大きくなります。",
+    "tags": [
+      "crash-recovery",
+      "state-export"
+    ],
+    "ref": "D5 crash recovery pattern"
+  },
+  {
+    "id": "context-036",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "In the crash recovery pattern for multi-agent workflows, where does each agent typically write its exportable state?",
+    "choices": [
+      "A known filesystem path such as /tmp/workflow/agent-X-state.json, tracked via a coordinator manifest",
+      "An environment variable scoped to the agent's own process",
+      "The coordinator's system prompt for the next turn",
+      "A random temp file whose location is discovered by grepping logs after a crash"
+    ],
+    "answer": 0,
+    "explanation": "推奨パターンでは、各エージェントが /tmp/workflow/agent-X-state.json のような既知のパスに状態を書き出し、コーディネーターがマニフェストでそれらを追跡します。環境変数やシステムプロンプトへの格納、あるいはクラッシュ後にログを検索して見つけるという方法は、再現性・信頼性に欠けるため推奨されません。",
+    "tags": [
+      "crash-recovery",
+      "known-paths"
+    ],
+    "ref": "D5 crash recovery pattern"
+  },
+  {
+    "id": "context-037",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A structured data extraction system routes extracted fields to human review before finalizing. Records are classified as high-risk, medium-risk, or low-risk. Following stratified random sampling guidance, what sampling rates should be applied to each tier respectively?",
+    "choices": [
+      "10% high-risk, 20% medium-risk, 5% low-risk",
+      "50% high-risk, 25% medium-risk, 10% low-risk",
+      "20% high-risk, 10% medium-risk, 5% low-risk",
+      "5% high-risk, 10% medium-risk, 20% low-risk"
+    ],
+    "answer": 2,
+    "explanation": "推奨される層別サンプリングでは、高リスク20%、中リスク10%、低リスク5%とリスクが高いほどレビュー比率を高くします。他の選択肢は比率の割り当てが逆転していたり、値そのものが指定と異なっているため誤りです。",
+    "tags": [
+      "stratified-sampling",
+      "human-review"
+    ],
+    "ref": "D5 stratified human review sampling"
+  },
+  {
+    "id": "context-038",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A structured data extraction system processes 100,000 mixed documents (printed forms, handwritten notes, and foreign-language scans). To decide review sampling depth and QA priorities, the team currently only tracks overall accuracy. Why is this insufficient, and what's the fix?",
+    "choices": [
+      "It's fine because 97% overall accuracy already exceeds any reasonable production threshold",
+      "It's insufficient because a high overall figure can mask much lower accuracy on specific document types like handwritten notes; break accuracy down by document type and field",
+      "It's insufficient only because overall accuracy doesn't include confidence scores, which should be added instead",
+      "It's insufficient because aggregate accuracy should be replaced entirely by field-level confidence scores rather than any breakdown by document type"
+    ],
+    "answer": 1,
+    "explanation": "97%のような全体精度は、手書き文書で45%しか正解していないといった弱点を隠してしまうため、文書タイプとフィールド単位での内訳を確認する必要があります。全体精度が高いから問題ないという判断や、信頼度スコアだけを追加する、内訳ではなくフィールド信頼度だけに置き換えるという案は、集約指標が個別カテゴリの深刻な弱点を隠す問題を解決しません。",
+    "tags": [
+      "aggregate-accuracy-masking",
+      "document-type-breakdown"
+    ],
+    "ref": "D5 aggregate accuracy masking"
+  },
+  {
+    "id": "context-039",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "After breaking down accuracy by document type, a team finds handwritten notes score only 45% while typed forms score 98%. They now want to set the stratified human-review sampling rate for the 'handwritten notes' subgroup specifically, rather than using one blanket rate across all document types. What is the most defensible way to set this subgroup's review rate, consistent with both the stratified-sampling and aggregate-accuracy-masking guidance?",
+    "choices": [
+      "Apply the same flat 5% low-risk sampling rate used for typed forms, since stratified sampling only varies by customer-facing risk category, not by measured accuracy",
+      "Treat handwritten notes as a distinct high-risk stratum given its measured 45% accuracy, and sample it at a materially higher rate (e.g., the ~20% high-risk tier) than the well-performing typed-form stratum",
+      "Stop measuring accuracy by document type once the sampling rate is set, since the breakdown's only purpose was to pick an initial rate",
+      "Apply a 100% review rate to all document types uniformly going forward, since any known weak subgroup invalidates sampling entirely"
+    ],
+    "answer": 1,
+    "explanation": "文書タイプ別の精度内訳（アグリゲート精度マスキングの是正策）で手書きメモが45%という低い精度が判明した以上、それを高リスク層として扱い、層別サンプリングの原則に従ってより高い割合（例えば高リスク層の目安である約20%）でレビューするのが筋が通っている。顧客対応上のリスク区分だけで機械的に判断し実測精度を無視するのは、まさに集約精度マスキングを再導入することになる。サンプリング率を決めた後に内訳の追跡をやめるのは、精度が変動した場合に気づけなくなる。全ての文書タイプを一律100%レビューするのは層別サンプリングの目的（リスクに応じた資源配分）を放棄しており非効率である。",
+    "tags": [
+      "aggregate-accuracy-masking",
+      "stratified-sampling",
+      "document-type-breakdown"
+    ],
+    "ref": "D5 combining aggregate-accuracy-masking with stratified sampling"
+  },
+  {
+    "id": "context-040",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "In a research synthesis system's provenance tracking design, which set of fields correctly maps a claim back to its supporting evidence?",
+    "choices": [
+      "claim, confidence, retry_after_ms, is_retryable",
+      "claim, evidence, source_url, document_name, publication_date, source_type",
+      "claim, timeout_duration_ms, partial_results, failure_type",
+      "claim, alternative_approaches, service, attempted_query"
+    ],
+    "answer": 1,
+    "explanation": "provenance(出所)追跡では、claim・evidence・source_url・document_name・publication_date・source_type のセットが、主張とその根拠を対応付ける正しい構成です。他の選択肢はエラーコンテキストやリトライ関連のフィールドを混在させており、provenance の目的とは無関係です。",
+    "tags": [
+      "provenance",
+      "claim-source-mapping"
+    ],
+    "ref": "D5 information provenance"
+  },
+  {
+    "id": "context-041",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "While synthesizing a multi-agent research report, two credible sources give conflicting figures for the same statistic. What is the correct way to handle this in the final synthesis?",
+    "choices": [
+      "Annotate the conflict, showing both figures with their respective source attribution, and let the reader or downstream process decide",
+      "Silently pick the figure from the source with the more recent publication_date",
+      "Silently pick the figure from the source judged more authoritative and omit the other",
+      "Average the two figures to produce a single reconciled number"
+    ],
+    "answer": 0,
+    "explanation": "情報源が矛盾する場合は、両方の値をそれぞれの出典とともに明示し、判断は読者や下流の処理に委ねるのが正しい方法です。公開日が新しい方を黙って選ぶ、より権威があると判断した方を黙って選ぶ、平均を取るといった対応は、いずれか一方(または両方)の情報を隠したり歪めたりする「無断で片方を選ぶ」アンチパターンです。",
+    "tags": [
+      "conflicting-sources",
+      "annotate-both"
+    ],
+    "ref": "D5 conflicting data annotation"
+  },
+  {
+    "id": "context-042",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A multi-agent research system pulls a market-size figure from Source A (published last year) and a conflicting figure from Source B (published last week, retrieved today). The coordinator wants to synthesize this without misleading the reader. Which combination of fields and handling is correct?",
+    "choices": [
+      "Attach data_as_of, source_published, and retrieved_on to each figure, and present both figures with per-source attribution rather than silently choosing one",
+      "Attach only retrieved_on to both figures since that is the most recent and reliable timestamp",
+      "Discard the older figure automatically since source_published age alone determines which is authoritative",
+      "Merge both figures into a single averaged estimate labeled with today's retrieved_on date"
+    ],
+    "answer": 0,
+    "explanation": "各値に data_as_of・source_published・retrieved_on を付与して時期の混同を防ぎつつ、矛盾する数値は片方を無断で選ばず両方を出典付きで提示するのが正しい対応です。retrieved_on のみを付ける、公開日の新しさだけで自動的に古い方を破棄する、平均化して一つの数値にまとめる、はいずれも時系列情報の欠落や矛盾の隠蔽につながります。",
+    "tags": [
+      "temporal-fields",
+      "conflicting-sources"
+    ],
+    "ref": "D5 temporal fields + conflicting data"
+  },
+  {
+    "id": "context-043",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "Which set of fields is specifically designed to prevent \"period confusion\" when a research synthesis combines data pulled at different times?",
+    "choices": [
+      "failure_type, service, attempted_query",
+      "isError, errorCategory, isRetryable",
+      "claim, evidence, document_name",
+      "data_as_of, source_published, retrieved_on"
+    ],
+    "answer": 3,
+    "explanation": "data_as_of・source_published・retrieved_on の三つの時間軸フィールドは、データの対象時点・公開時点・取得時点を区別し、期間の取り違えを防ぐために設計されています。他の選択肢はエラーコンテキストやツールのエラー応答、provenanceのclaim-source構造など、時系列管理とは別の目的のフィールドです。",
+    "tags": [
+      "temporal-fields",
+      "period-confusion"
+    ],
+    "ref": "D5 temporal fields"
+  },
+  {
+    "id": "context-044",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A research coordinator is finalizing a synthesized report that mixes a well-established fact, a contested claim with two disagreeing sources, and a single-source data point. How should the coordinator render this to preserve synthesis quality?",
+    "choices": [
+      "Distinguish certainty levels explicitly (well-established / contested / single-source) and render each according to its content type, such as side-by-side for the dispute",
+      "Present all claims with uniform confident phrasing so the report reads smoothly and consistently",
+      "Omit the single-source data point entirely since it cannot be corroborated",
+      "Merge the contested claim into a single averaged statement to avoid confusing the reader with a dispute"
+    ],
+    "answer": 0,
+    "explanation": "合成品質を保つには、確度レベル(確立済み/議論あり/単一情報源)を明示し、内容の性質に応じた表現(対立点は並列表示など)でレンダリングする必要があります。すべてを同じ自信満々の表現で統一する、単一情報源のデータを省く、対立する主張を平均化して一つにまとめる、はいずれも重要な不確実性やニュアンスを読者から隠してしまいます。",
+    "tags": [
+      "synthesis-certainty",
+      "content-type-rendering"
+    ],
+    "ref": "D5 synthesis quality"
+  },
+  {
+    "id": "context-045",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A research synthesis subagent must present three kinds of content in one report: quarterly revenue figures, a chronological sequence of company events, and a technical spec comparison across two products. Per content-type rendering guidance, what is the correct approach?",
+    "choices": [
+      "Render all three sections as the same free-form narrative prose to keep a consistent voice throughout the report",
+      "Render revenue as a table, events in chronological prose, and specs as lists, matching structure to content type",
+      "Convert all three into a single large table since tables are the most information-dense format",
+      "Render everything as bullet lists since lists are the safest default for structured synthesis output"
+    ],
+    "answer": 1,
+    "explanation": "合成品質のガイドラインでは、財務データは表、出来事は時系列の文章、仕様は箇条書きというように、内容の種類に応じた表現形式を使うべきとされています。すべてを同じ文章体にする、すべてを一つの表にまとめる、すべてを箇条書きにするという画一的な対応は、それぞれの内容の性質に合わず可読性や正確な伝達を損ないます。",
+    "tags": [
+      "content-type-rendering",
+      "synthesis-quality"
+    ],
+    "ref": "D5 synthesis quality content-type rendering"
+  }
+]

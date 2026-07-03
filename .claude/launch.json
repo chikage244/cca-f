@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "preview",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8123"],
+      "port": 8123
+    },
+    {
+      "name": "soccer-ai-coach",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8641", "--directory", "/Users/chikage/10_Projects/soccer-ai-coach"],
+      "port": 8641
+    }
+  ]
+}

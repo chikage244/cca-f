@@ -1,0 +1,1190 @@
+[
+  {
+    "id": "prompting-001",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A team builds a customer support agent that flags refund requests as 'suspicious' for manual review. The initial prompt says: 'Flag any refund request that seems suspicious, using your best judgment about fraud risk.' In production, the agent flags 40% of legitimate requests. What is the most likely root cause?",
+    "choices": [
+      "The model's context window is too small to hold the full refund policy",
+      "The agent needs a PostToolUse hook to intercept refund tool calls",
+      "The tool_choice parameter should be set to force the flag_refund tool on every turn",
+      "The instruction relies on subjective judgment instead of explicit qualifying and disqualifying criteria with boundary examples"
+    ],
+    "answer": 3,
+    "explanation": "正解は3です。「best judgment」のような主観的な指示は基準が曖昧になり、過剰検知（false positive）を招きます。明示的な適格/非適格条件と境界事例を定義することが解決策です。選択肢0はコンテキストウィンドウの問題ではなく指示設計の問題なので誤り。選択肢1はフック自体は正しい実行を保証する手段であり、判定基準の曖昧さという根本原因を解決しません。選択肢2はツール選択の強制であり、判定基準の曖昧さとは無関係です。",
+    "tags": [
+      "explicit-criteria",
+      "false-positive",
+      "prompt-design"
+    ],
+    "ref": "D3 explicit criteria framework"
+  },
+  {
+    "id": "prompting-002",
+    "domain": "prompting",
+    "difficulty": 1,
+    "question": "According to best practices for writing classification instructions for an automated code-review agent, which phrase should be AVOIDED in a prompt that tells the agent when to flag a comment as outdated?",
+    "choices": [
+      "Flag a comment as outdated only when the claimed behavior directly contradicts the current code",
+      "Do not flag comments that describe intent or rationale rather than behavior",
+      "Use your best judgment to decide whether a comment still applies",
+      "A comment referencing a function that no longer exists in the file qualifies as outdated"
+    ],
+    "answer": 2,
+    "explanation": "正解は2です。「use your best judgment」は明確な基準を示さない曖昧な指示であり、一貫性のない判定と過剰検知を招くため避けるべき表現です。選択肢0は「ONLY when」という否定境界を明示した良い例です。選択肢1は非該当条件を明示しているため良い例です。選択肢3は具体的な該当条件（境界事例）を示しているため良い例です。",
+    "tags": [
+      "explicit-criteria",
+      "negation-boundary"
+    ],
+    "ref": "D3 explicit criteria framework"
+  },
+  {
+    "id": "prompting-003",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A multi-agent research system has a subagent that flags 'low confidence' claims for human review. After launch, engineers notice reviewers now distrust ALL flags from every subagent, including a separate well-calibrated 'source conflict' flag, and have started ignoring the review queue entirely. What principle explains this outcome?",
+    "choices": [
+      "Subagents do not inherit the coordinator's conversation history, so flags lack context",
+      "A single noisy flag category erodes trust in all flag categories, even accurate ones",
+      "The coordinator failed to use parallel Task tool_use calls in a single response",
+      "The hooks system was not configured to enforce flagging deterministically"
+    ],
+    "answer": 1,
+    "explanation": "正解は1です。あるカテゴリのフラグが精度不足でノイズが多いと、人間のレビュアーは他の正確なカテゴリも含めて全体を信用しなくなる、というfalse-positive economicsの典型例です。選択肢0はサブエージェントのコンテキスト分離に関する話で、この症状とは無関係です。選択肢2は並列実行の話で信頼低下の原因ではありません。選択肢3はhookの強制力の話であり、この経済学的な信頼喪失の説明にはなりません。",
+    "tags": [
+      "false-positive-economics",
+      "trust-erosion"
+    ],
+    "ref": "D3 false-positive economics"
+  },
+  {
+    "id": "prompting-004",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A structured data extraction pipeline flags 'anomalous invoice line items' for manual audit. The false-positive rate on one vendor category is 65%, causing auditors to skip the entire audit queue. What is the recommended remediation sequence?",
+    "choices": [
+      "Immediately add more few-shot examples covering every vendor category to the same prompt",
+      "Lower the model's temperature to reduce output variance across runs",
+      "Switch the tool_choice parameter from auto to any so a flag is always emitted",
+      "Disable the noisy flag category, refine its criteria against real failure cases, then re-enable it"
+    ],
+    "answer": 3,
+    "explanation": "正解は3です。ノイズの多いフラグカテゴリは一旦無効化し、実際の失敗事例をもとに基準を洗練させてから再度有効化する、というdisable→refine→re-enableの手順が推奨されます。選択肢0は場当たり的にexample数を増やすだけで根本原因（基準の曖昧さ)に対処していません。選択肢1はtemperatureの調整は本ドメインで扱う手法ではなく、判定基準の問題を解決しません。選択肢2はtool_choiceの変更はどのツールを呼ぶかを強制するだけで、判定精度の改善にはつながりません。",
+    "tags": [
+      "false-positive-economics",
+      "disable-refine-reenable"
+    ],
+    "ref": "D3 false-positive economics"
+  },
+  {
+    "id": "prompting-005",
+    "domain": "prompting",
+    "difficulty": 3,
+    "question": "A CI/CD pipeline runs an automated PR-comment agent that flags stale code comments. Leadership wants to expand it to also flag stale documentation links, poor variable names, and missing tests, all in the same pass, using one broad instruction: 'Flag anything that seems outdated or low quality, being conservative about false positives.' Engineers report growing complaints that reviewers now dismiss the bot's output entirely. What is the best fix?",
+    "choices": [
+      "Split into narrowly scoped criteria per category, each with explicit qualify/disqualify boundaries, and roll out one category at a time",
+      "Add the phrase 'only flag high-confidence findings' to reduce the volume of flags",
+      "Increase max_retries on the validation loop so the agent double-checks each flag before emitting it",
+      "Merge all four categories into a single combined confidence score so reviewers see one number"
+    ],
+    "answer": 0,
+    "explanation": "正解は0です。複数の曖昧なカテゴリを一つの広い指示にまとめると基準が薄まり誤検知が増えるため、カテゴリごとに明示的な適格/非適格の境界を定義し、1カテゴリずつ段階的に展開するのが正しいアプローチです。選択肢1は「conservative」や「high-confidence」も同様に曖昧で誤った表現の代表例であり解決になりません。選択肢2はvalidation-retryループはスキーマ検証の話であり、判定基準の曖昧さには対処できません。選択肢3は複数カテゴリを一つのスコアに統合しても、根本原因である基準の曖昧さは解決されず、むしろ個別カテゴリの原因追跡を困難にします。",
+    "tags": [
+      "explicit-criteria",
+      "false-positive-economics"
+    ],
+    "ref": "D3 explicit criteria framework + false-positive economics"
+  },
+  {
+    "id": "prompting-006",
+    "domain": "prompting",
+    "difficulty": 1,
+    "question": "A developer productivity tool extracts ticket priority from free-text bug reports. The prompt currently reads: 'Classify priority conservatively.' Which rewrite best follows the explicit criteria framework?",
+    "choices": [
+      "Classify priority using your best judgment based on urgency signals you detect in the free-text report",
+      "Classify priority conservatively, erring toward a lower priority label whenever the report is unsure",
+      "Classify as 'critical' only when production is down or data loss is occurring; classify as 'low' when the issue is cosmetic and has a workaround; treat ambiguous reports lacking impact details as 'needs-triage', not 'critical'",
+      "Classify priority the way an experienced senior engineer would after quickly skimming the bug report"
+    ],
+    "answer": 2,
+    "explanation": "正解は2です。「critical」「low」の該当条件と、情報不足時の非該当な扱い（needs-triageへの退避）まで明示しており、境界事例を含む明確な基準を提示しています。選択肢0は「best judgment」という曖昧な表現で基準がありません。選択肢1は「conservatively」という曖昧な形容詞に依存しており具体的な境界を示していません。選択肢3は「シニアエンジニアならどうするか」という比喩も具体性を欠き、モデルが一貫して適用できる基準になりません。",
+    "tags": [
+      "explicit-criteria",
+      "boundary-cases"
+    ],
+    "ref": "D3 explicit criteria framework"
+  },
+  {
+    "id": "prompting-007",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "In a structured data extraction system for invoices, engineers want the agent to flag 'currency mismatch' errors. Which instruction correctly applies precise negation boundaries?",
+    "choices": [
+      "Flag a currency mismatch whenever anything about the invoice looks financially unusual",
+      "Flag a currency mismatch conservatively, using best judgment on ambiguous cases",
+      "Flag a currency mismatch if the invoice total seems unusually high for the vendor",
+      "Flag a currency mismatch only when the invoice header currency code differs from the currency symbol used in the line-item amounts"
+    ],
+    "answer": 3,
+    "explanation": "正解は3です。「ONLY when」という形で対象を明確な条件（ヘッダーの通貨コードと明細の通貨記号の不一致）に限定しており、精密な否定境界の典型例です。選択肢0は「anything...unusual」という無限定な表現で境界がありません。選択肢1は「best judgment」という禁句を含み基準が曖昧です。選択肢2は金額の大きさという無関係な代理指標を使っており、通貨不一致という本来の目的とずれています。",
+    "tags": [
+      "negation-boundary",
+      "flag-only-when"
+    ],
+    "ref": "D3 precise negation boundaries"
+  },
+  {
+    "id": "prompting-008",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A Claude Code configuration defines a skill that reviews commit messages for policy violations. The current instruction is: 'Flag commit messages that violate our style guide.' Reviewers complain the agent flags messages for trivial capitalization differences that were never actually a real problem. What change best applies precise negation boundaries?",
+    "choices": [
+      "Add the phrase 'be conservative when flagging style violations' to the existing instruction",
+      "Add 'flag only when the commit message omits a ticket reference required by policy, or exceeds the 72-character subject line limit; do not flag stylistic phrasing choices'",
+      "Remove the flagging feature entirely and replace it with a PreToolUse hook that blocks all commits from merging",
+      "Add several more few-shot examples of correctly formatted commit messages without listing any disqualifying cases"
+    ],
+    "answer": 1,
+    "explanation": "正解は1です。「flag only when」で該当条件を具体的に列挙し、さらに「do not flag」で非該当条件（文体的な言い回し）も明示しており、精密な否定境界の模範例です。選択肢0は「conservative」という曖昧語で解決になりません。選択肢2はコミットを全てブロックするのはビジネスルールとして過剰であり、そもそも柔軟なフラグ機能の要件を満たしません。選択肢3は非該当条件を含まないfew-shotは境界を教えられず、曖昧さが残ります。",
+    "tags": [
+      "negation-boundary",
+      "style-guide"
+    ],
+    "ref": "D3 precise negation boundaries"
+  },
+  {
+    "id": "prompting-009",
+    "domain": "prompting",
+    "difficulty": 3,
+    "question": "A multi-agent research system's fact-checking subagent is instructed: 'Flag any claim that might be inaccurate.' After deployment it flags 80% of claims, including well-sourced ones, because almost anything 'might' be inaccurate in a strict sense. Which rewritten instruction fixes the core issue using precise negation boundaries?",
+    "choices": [
+      "Flag a claim as inaccurate only when it directly contradicts a cited source's stated facts or has no source at all; do not flag claims that are merely stated with less certainty than the source",
+      "Flag a claim as inaccurate whenever it might plausibly be inaccurate, but cap the total number of flags allowed per report at five",
+      "Flag a claim as inaccurate using your best judgment, weighted toward flagging whenever the fact-checker is in doubt",
+      "Flag a claim as inaccurate if it is phrased in a way that sounds uncertain, hedged, or tentative to the reader"
+    ],
+    "answer": 0,
+    "explanation": "正解は0です。「only when」で該当条件（引用元との直接矛盾、または出典なし）を絞り込み、さらに非該当条件（確信度の違いだけでは対象外）も明示しており、精密な否定境界の要件を満たしています。選択肢1は件数上限を設けるだけで判定基準自体は曖昧なままであり根本原因を解決しません。選択肢2は「best judgment」を含む禁句そのものです。選択肢3は表現のトーン（hedgingの有無）という無関係な代理指標に依存しており、事実の正確性とは無関係です。",
+    "tags": [
+      "negation-boundary",
+      "false-positive-economics"
+    ],
+    "ref": "D3 precise negation boundaries"
+  },
+  {
+    "id": "prompting-010",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A team building a structured data extraction agent for medical intake forms needs to classify allergy severity from free-text notes. The category is high hallucination-risk because notes are inconsistently phrased. Which approach is most appropriate?",
+    "choices": [
+      "Rely solely on a detailed zero-shot instruction describing severity levels in prose, since few-shot examples add unnecessary tokens",
+      "Provide 15-20 few-shot examples covering every possible phrasing variant seen in historical data",
+      "Provide 2-4 targeted few-shot examples, each containing the input note, the correct output, and the reasoning that connects them",
+      "Provide one single canonical few-shot example and instruct the model to generalize the pattern on its own"
+    ],
+    "answer": 2,
+    "explanation": "正解は2です。曖昧さやハルシネーションリスクが高い抽出タスクでは、2〜4個の的を絞ったfew-shot例を用い、各例にinput・output・reasoning（なぜその出力が正しいかの因果的な説明）を含めることで汎化可能なパターンを教えるのが最適です。選択肢0はzero-shotのみでは高リスクなケースに対応しづらく、few-shotの効果を放棄しています。選択肢1は例が多すぎるとコンテキストを浪費し過学習を招くため最適ではありません。選択肢3は1例だけでは推論の型を十分に示せず、パターンの汎化が不十分になりがちです。",
+    "tags": [
+      "few-shot",
+      "example-count",
+      "reasoning"
+    ],
+    "ref": "D3 few-shot prompting"
+  },
+  {
+    "id": "prompting-011",
+    "domain": "prompting",
+    "difficulty": 1,
+    "question": "According to the recommended few-shot prompting approach, what should each example in a few-shot prompt include?",
+    "choices": [
+      "Only the input and the correct output, since the model can infer the reasoning itself",
+      "The input, the correct output, and the reasoning explaining why that output is correct",
+      "A list of ten to fifteen similar inputs with a single shared output label",
+      "Only the output format, since showing inputs biases the model toward memorization"
+    ],
+    "answer": 1,
+    "explanation": "正解は1です。各few-shot例はinput・output・reasoning（因果的な理由付け）の3要素を含めることで、単なる入出力の暗記ではなく一般化可能なパターンをモデルに教えることができます。選択肢0はreasoningを省くと表面的なパターンマッチングに留まり、新規事例への汎化が弱くなります。選択肢2は複数入力を一つの出力に束ねる形式はfew-shotの基本構造ではなく、境界の学習に向きません。選択肢3は出力形式だけでは入力とのマッピングを学習できず、few-shotの目的を果たしません。",
+    "tags": [
+      "few-shot",
+      "example-structure"
+    ],
+    "ref": "D3 few-shot prompting"
+  },
+  {
+    "id": "prompting-012",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A customer support agent must classify escalation tickets into 'billing dispute', 'technical failure', or 'account fraud'. Engineers add 18 few-shot examples, three per subtle wording variant seen in the last month, hoping to maximize coverage. After this change, accuracy on genuinely novel ticket phrasings drops. What is the most likely explanation?",
+    "choices": [
+      "Too many examples overfit to historical phrasing and waste context that should teach the generalizable pattern instead",
+      "The tool_choice parameter was set to auto instead of any, causing free-text answers",
+      "The examples lack a required is_error field on each tool_result block",
+      "The CLAUDE.md file was not reloaded after the prompt change"
+    ],
+    "answer": 0,
+    "explanation": "正解は0です。few-shot例が多すぎると、モデルが個々の表現パターンを丸暗記するように過学習し、汎化可能なロジックを学習しにくくなります。最適な例数は2〜4個の的を絞ったものです。選択肢1はtool_choiceの設定はこの分類精度低下の原因ではありません。選択肢2はis_errorはtool_resultの話であり、few-shot例の構成とは無関係です。選択肢3はCLAUDE.mdの再読み込みは本シナリオの症状（過学習）を説明しません。",
+    "tags": [
+      "few-shot",
+      "overfitting",
+      "example-count"
+    ],
+    "ref": "D3 few-shot prompting - optimal example count"
+  },
+  {
+    "id": "prompting-013",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A developer productivity assistant needs to decide whether a code snippet violates an internal naming convention. The rule is simple and unambiguous ('all constants must be SCREAMING_SNAKE_CASE'). Should the team add few-shot examples to this instruction?",
+    "choices": [
+      "Yes, always add at least 8 few-shot examples regardless of task simplicity, since more examples reliably maximize accuracy",
+      "Yes, but only as a single example with no reasoning field, since the rule is already completely unambiguous",
+      "No, few-shot examples should never be used for any coding-related classification or linting task",
+      "No, few-shot examples are best reserved for ambiguous scenarios, format/reasoning demonstration needs, high hallucination-risk extraction, or edge cases — a simple unambiguous rule usually does not need them"
+    ],
+    "answer": 3,
+    "explanation": "正解は3です。few-shotは曖昧なシナリオ、フォーマットや推論の実演が必要な場合、ハルシネーションリスクが高い抽出、エッジケースへの対応に適しており、今回のような単純で曖昧さのないルールには通常不要です。選択肢0は常に例を追加するという方針はコンテキストを浪費し不要な複雑さを生みます。選択肢1は例を1つ入れるだけでも不要な文脈消費であり、単純なルールには過剰です。選択肢2はコーディング関連タスクにfew-shotを一切使わないという断定は誤りで、エッジケースがあれば有効です。",
+    "tags": [
+      "few-shot",
+      "when-to-use"
+    ],
+    "ref": "D3 few-shot prompting - when to use"
+  },
+  {
+    "id": "prompting-014",
+    "domain": "prompting",
+    "difficulty": 3,
+    "question": "A multi-agent research system's synthesis subagent must classify each claim's certainty as 'well-established', 'contested', or 'single-source'. This is ambiguous because sources vary in how explicitly they state consensus. The team drafts three few-shot examples. Example 2 shows an input claim and the correct output label 'contested', but no explanation of why. What is the risk of leaving out the reasoning field?",
+    "choices": [
+      "None — schema compliance only requires input and output, so reasoning is optional decoration",
+      "The example will be silently dropped by strict mode validation since reasoning is a required property",
+      "Without reasoning, the tool_use block will fail because input_schema requires a reasoning field for all extraction tools",
+      "The model may learn a surface correlation from that specific example rather than the generalizable logic distinguishing 'contested' from 'single-source', hurting performance on novel claims"
+    ],
+    "answer": 3,
+    "explanation": "正解は3です。reasoningを省くと、モデルはその例の表面的な特徴を暗記するだけになりがちで、'contested'と'single-source'を区別する一般化可能なロジックを学習できず、未知の主張への適用で精度が落ちます。選択肢0はスキーマ準拠の話とfew-shotの教育効果は別の話であり、reasoningは精度向上に重要です。選択肢1はstrict modeのJSON Schema検証とfew-shot例の構成は別の仕組みであり、この文脈でreasoningが必須プロパティとして扱われるわけではありません。選択肢2はtool_use blockの話とfew-shot例のreasoning欄は無関係です。",
+    "tags": [
+      "few-shot",
+      "reasoning",
+      "generalization"
+    ],
+    "ref": "D3 few-shot prompting - teach the pattern"
+  },
+  {
+    "id": "prompting-015",
+    "domain": "prompting",
+    "difficulty": 1,
+    "question": "A team is deciding on the optimal number of few-shot examples to include when teaching an agent to classify ambiguous support tickets. Per best practice, what range should they target?",
+    "choices": [
+      "0-1 examples, since zero-shot with a detailed instruction always outperforms few-shot",
+      "2-4 targeted examples that each demonstrate input, output, and reasoning",
+      "10-15 examples to cover the majority of historical ticket variants",
+      "As many examples as fit within the context window, to maximize pattern coverage"
+    ],
+    "answer": 1,
+    "explanation": "正解は1です。最適なfew-shot例の数は2〜4個の的を絞った例であり、それぞれinput・output・reasoningを含めることが推奨されています。選択肢0はzero-shotが常に優れているという主張は誤りで、曖昧なタスクではfew-shotが有効です。選択肢2は例が多すぎるとコンテキストを浪費し過学習のリスクが高まります。選択肢3はコンテキストいっぱいに詰め込むアプローチも同様に過学習とコスト増を招きます。",
+    "tags": [
+      "few-shot",
+      "example-count"
+    ],
+    "ref": "D3 few-shot prompting - optimal example count"
+  },
+  {
+    "id": "prompting-016",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A CI/CD pipeline uses an agent to auto-label pull requests as 'needs security review' when appropriate. The initial instruction says 'Label PRs that touch sensitive areas, using discretion.' After a month, security reviewers say roughly half the labeled PRs are irrelevant (e.g., typo fixes in comments near auth code) and they've started ignoring the label. What two things should the team do, in order?",
+    "choices": [
+      "Immediately double the number of reviewers assigned to the queue, then leave the prompt unchanged",
+      "Replace the label with a required PreToolUse hook that blocks merging on any PR touching an auth-related file path",
+      "Disable the 'needs security review' auto-label, refine the criteria to explicit qualifying/disqualifying conditions based on real false positives, then re-enable it",
+      "Increase the max_retries on the validation-retry loop so the label is applied more consistently"
+    ],
+    "answer": 2,
+    "explanation": "正解は2です。誤検知の多いラベル機能は一旦無効化し、実際のfalse positive事例を分析して明確な適格/非適格基準に基準を洗練させた上で再度有効化する、というdisable→refine→re-enableの順序が正解です。選択肢0はレビュアーを増やすだけでは根本原因（基準の曖昧さ）は解決されず、コストが増えるだけです。選択肢1はPreToolUseフックでマージ自体をブロックするのは、レビューが必要かどうかの分類問題を解決する話ではなく過剰に強い施策です。選択肢3はvalidation-retryループはスキーマ検証の話であり、ラベル基準の曖昧さの解決にはなりません。",
+    "tags": [
+      "false-positive-economics",
+      "disable-refine-reenable"
+    ],
+    "ref": "D3 false-positive economics"
+  },
+  {
+    "id": "prompting-017",
+    "domain": "prompting",
+    "difficulty": 3,
+    "question": "A structured data extraction system flags contract clauses as 'non-standard' for legal review. Two engineers propose different fixes after a spike in false positives eroded reviewer trust in the entire flagging system, not just the non-standard-clause category. Engineer A wants to re-enable the flag immediately with a note asking reviewers to 'just double check.' Engineer B wants to disable the flag, analyze the false-positive cases to derive explicit qualify/disqualify criteria with boundary examples, then re-enable only that category. Which approach correctly reflects the false-positive economics principle, and why?",
+    "choices": [
+      "Engineer A's approach, because keeping the flag active preserves recall while reviewers adapt over time",
+      "Engineer B's approach, because a single noisy category erodes trust across all categories, and re-enabling without fixing the underlying criteria perpetuates the trust erosion",
+      "Neither — the correct fix is to add more few-shot examples immediately without disabling anything, since disabling loses coverage during the fix window",
+      "Engineer A's approach, because 'best judgment' framing for reviewers compensates for imprecise agent criteria"
+    ],
+    "answer": 1,
+    "explanation": "正解は1です。一つのノイズの多いカテゴリが全体への信頼を損なうため、まず無効化し、実際の誤検知事例から明確な基準を導き出してから再有効化するEngineer Bのアプローチが正しいfalse-positive economicsの適用です。選択肢0はレビュアーに「もう一度確認して」と頼むだけでは信頼低下の根本原因（基準の曖昧さ）を解決せず、信頼はさらに損なわれます。選択肢2は無効化せずにfew-shotを追加するだけでは、修正が検証される前に誤検知が続き信頼をさらに損ないます。選択肢3は「best judgment」でレビュアー側に判断を委ねる発想自体が、明示的基準の欠如という問題を放置するものです。",
+    "tags": [
+      "false-positive-economics",
+      "disable-refine-reenable",
+      "trust-erosion"
+    ],
+    "ref": "D3 false-positive economics"
+  },
+  {
+    "id": "prompting-018",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A Claude Code configuration includes a custom skill that reviews diffs and comments 'possible bug' on suspicious lines. The SKILL.md instructs: 'Comment on any line that could plausibly contain a bug, erring on the side of flagging when uncertain.' Developers report the comments are so frequent they now skip reading them. Which rewrite best follows the explicit criteria framework to fix this?",
+    "choices": [
+      "Comment only when a line's logic directly contradicts an explicit invariant stated elsewhere in the same file (e.g., a null check removed where the variable is dereferenced two lines later); do not comment on stylistic or performance concerns",
+      "Comment on any line that could plausibly contain a bug, but cap the total number of comments allowed per file at three",
+      "Comment on any line that could plausibly contain a bug, using best judgment about how severe the bug might be",
+      "Comment only on lines already flagged by static analysis tools, removing the agent's own judgment from the process entirely"
+    ],
+    "answer": 0,
+    "explanation": "正解は0です。「comment only when」で該当条件（明示的な不変条件との直接的な矛盾）を具体例とともに定義し、さらに非該当条件（スタイルやパフォーマンスの懸念は対象外）も明示しており、explicit criteria frameworkの模範例です。選択肢1は件数上限を設けるだけで判定基準自体の曖昧さは残ったままです。選択肢2は「best judgment」という禁句をそのまま残しており根本原因を解決していません。選択肢3は静的解析ツールのみに頼る案はエージェントの価値を放棄するものであり、explicit criteria frameworkの適用とは異なるアプローチです。",
+    "tags": [
+      "explicit-criteria",
+      "boundary-cases",
+      "code-review"
+    ],
+    "ref": "D3 explicit criteria framework"
+  },
+  {
+    "id": "prompting-019",
+    "domain": "prompting",
+    "difficulty": 1,
+    "question": "A prompt engineer is reviewing an instruction for a structured extraction agent that must decide whether a scanned receipt image counts as 'illegible'. The current instruction says: 'Mark illegible when appropriate, being conservative.' Why is this instruction considered a design flaw under the explicit criteria framework?",
+    "choices": [
+      "It uses 'appropriate' and 'conservative' instead of stating explicit qualifying and disqualifying conditions with boundary examples",
+      "It does not mention the tool_choice parameter needed to force the mark_illegible tool",
+      "It fails to specify a JSON Schema with additionalProperties set to false",
+      "It does not reference the input_schema required field for the extraction tool"
+    ],
+    "answer": 0,
+    "explanation": "正解は0です。「appropriate」「conservative」はどちらも主観的で曖昧な表現であり、明示的な適格・非適格条件と境界事例が欠けている点が設計上の欠陥です。選択肢1はtool_choiceの設定はこの指示文の曖昧さの問題とは別の話です。選択肢2はJSON Schemaのstrict mode設定はスキーマ準拠の話であり、判定基準の曖昧さとは別の問題です。選択肢3もinput_schemaのrequiredフィールドの話であり、この指示文の欠陥の説明にはなりません。",
+    "tags": [
+      "explicit-criteria",
+      "anti-pattern"
+    ],
+    "ref": "D3 explicit criteria framework"
+  },
+  {
+    "id": "prompting-020",
+    "domain": "prompting",
+    "difficulty": 3,
+    "question": "A team building a multi-agent research system wants a subagent to classify extracted facts as 'directly supported by source' vs 'inferred/extrapolated'. This distinction is subtle and error-prone. They plan the few-shot section: Example 1 (directly supported, with reasoning), Example 2 (inferred, with reasoning), and are debating whether to add 6 more examples covering rare edge cases, or stop at 3-4 and rely on the reasoning in each to generalize. Which choice best follows guidance on few-shot example count and purpose?",
+    "choices": [
+      "Add all 6 additional edge-case examples immediately, since covering every rare case always improves reliability on novel unseen inputs",
+      "Remove the reasoning field from all examples to save context budget, keeping only bare input/output pairs, then add the 6 extra examples",
+      "Stop at 3-4 well-chosen examples whose reasoning teaches the generalizable distinction, since too many examples wastes context and risks overfitting to specific phrasings rather than the underlying pattern",
+      "Replace all few-shot examples with a single detailed paragraph describing the distinction in the abstract, since prose alone is always preferable to worked examples"
+    ],
+    "answer": 2,
+    "explanation": "正解は2です。曖昧で誤りやすい区別を教える際は、2〜4個程度の的を絞った例に留め、各例のreasoningが汎化可能なパターンを教えることを重視すべきです。例を増やしすぎるとコンテキストを浪費し特定の言い回しへの過学習を招きます。選択肢0は例を増やすことが常に信頼性向上につながるという前提が誤りで、過学習のリスクを無視しています。選択肢1はreasoningを削除すると表面的なパターンマッチングに陥りやすく、few-shotの教育効果が失われます。選択肢3は抽象的な説明文だけでは曖昧な区別を十分に教えられず、具体例による実演が有効な場面でこれを放棄するのは適切ではありません。",
+    "tags": [
+      "few-shot",
+      "example-count",
+      "reasoning",
+      "generalization"
+    ],
+    "ref": "D3 few-shot prompting - optimal example count and reasoning"
+  },
+  {
+    "id": "prompting-021",
+    "domain": "prompting",
+    "difficulty": 1,
+    "question": "A developer is building a structured data extraction pipeline and wants Claude to reliably call a specific `extract_invoice_data` tool rather than possibly answering in plain text. Which configuration guarantees this behavior?",
+    "choices": [
+      "Set `tool_choice: {\"type\":\"any\"}` so Claude must call some tool",
+      "Set `tool_choice: {\"type\":\"tool\",\"name\":\"extract_invoice_data\"}` to force that exact tool",
+      "Leave `tool_choice` as `\"auto\"` and rely on a strong tool description",
+      "Add `\"strict\": true` to the tool's `input_schema` only"
+    ],
+    "answer": 1,
+    "explanation": "正解はtool_choiceを{\"type\":\"tool\",\"name\":\"extract_invoice_data\"}のように指定し、特定のツールを強制する方法です。\"any\"は何らかのツール呼び出しを保証しますが、どのツールが呼ばれるかは保証しません。\"auto\"はClaudeがテキスト応答するか判断を任せるためツール呼び出しを保証しません。strict:trueはスキーマ準拠を保証するものであり、ツール選択の強制とは無関係です。",
+    "tags": [
+      "tool_choice",
+      "structured-output",
+      "tool_use"
+    ],
+    "ref": "D3: structured output via tool_use + tool_choice"
+  },
+  {
+    "id": "prompting-022",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A CI/CD pipeline uses Claude's structured output feature to extract ticket metadata as JSON. The engineer wants strict schema compliance so downstream code never crashes on unexpected fields. Which combination of settings achieves this?",
+    "choices": [
+      "`\"strict\": true` plus a `pattern` regex on each string field",
+      "`tool_choice: \"auto\"` plus `\"additionalProperties\": true` for flexibility",
+      "`\"strict\": true` plus `\"additionalProperties\": false` plus every property listed in `required`",
+      "`\"strict\": true` plus `minLength`/`maxLength` constraints on each field"
+    ],
+    "answer": 2,
+    "explanation": "strict modeで保証されるスキーマ準拠は、strict:trueに加えてadditionalProperties:falseとすべてのプロパティをrequiredに含めることで実現します。patternやminLength/maxLengthはstrict mode未サポートの機能であり、これらを指定してもエラーになるか無視されます。additionalProperties:trueは余分なフィールドを許容してしまい厳格な保証にならず、tool_choice:\"auto\"はツール呼び出し自体を保証しません。",
+    "tags": [
+      "strict-mode",
+      "input_schema",
+      "additionalProperties"
+    ],
+    "ref": "D3: strict mode = strict:true + additionalProperties:false + required"
+  },
+  {
+    "id": "prompting-023",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A team migrating an older integration wants to adopt Claude's current direct-JSON-output pattern rather than routing everything through a synthetic tool call. Which configuration reflects the current recommended approach?",
+    "choices": [
+      "Set `output_config: {\"format\": {\"type\": \"json_schema\", \"schema\": {...}}}` on the request",
+      "Add the `structured-outputs-2025-11-13` beta header to every request",
+      "Use only `tool_choice: {\"type\":\"any\"}` with no schema attached",
+      "Rely on the deprecated top-level `output_format` field as the primary mechanism"
+    ],
+    "answer": 0,
+    "explanation": "現行の直接JSON出力パターンはoutput_config: {\"format\": {\"type\": \"json_schema\", \"schema\": {...}}}です。古いoutput_formatは移行期のため残されているだけで主機構ではありません。structured-outputs-2025-11-13ベータヘッダーはもはや不要です。tool_choice:\"any\"はスキーマなしでは何らかのツール呼び出しを強制するだけで、直接JSON出力の指定にはなりません。",
+    "tags": [
+      "output_config",
+      "json_schema",
+      "structured-output"
+    ],
+    "ref": "D3: output_config current direct-JSON-output pattern"
+  },
+  {
+    "id": "prompting-024",
+    "domain": "prompting",
+    "difficulty": 3,
+    "question": "A customer support agent extracts refund requests into a strict-mode JSON schema with fields `line_items`, `line_item_total`, and `stated_total`. In production, the extraction always validates successfully, yet finance reports that `stated_total` sometimes does not equal the sum of `line_item_total`. What is the most accurate explanation?",
+    "choices": [
+      "The `strict` flag was probably not actually applied on this request",
+      "Schema validation guarantees types and required fields but never guarantees semantic correctness like totals summing correctly",
+      "The model is hallucinating field values despite valid JSON structure, so `additionalProperties` should be set to true",
+      "The `enum` constraints on the amount fields are missing, which is why totals do not reconcile"
+    ],
+    "answer": 1,
+    "explanation": "これは最頻出のポイントで、スキーマ準拠(型・必須項目・enum・formatの保証)と意味的正しさ(合計値の整合性などのビジネスロジック)は別物であり、後者は保証されないためカスタム検証が必要です。additionalProperties:trueにしても整合性チェックにはならず、むしろ余分なフィールドを許容するだけです。enumは金額のような数値フィールドには通常使わず、合計不一致の原因ではありません。strictフラグが外れていたとしても型自体は保証されており、今回の問題の本質的な原因ではありません。",
+    "tags": [
+      "schema-compliance",
+      "semantic-correctness",
+      "validation"
+    ],
+    "ref": "D3 KEY DISTINCTION: schema compliance vs semantic correctness"
+  },
+  {
+    "id": "prompting-025",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "In a multi-agent research system, a subagent extracts a `publication_date` field from source documents, but many documents don't state a date at all. The engineer wants to avoid the model inventing a plausible-looking date when none exists. What schema design addresses this?",
+    "choices": [
+      "Add a `pattern` regex requiring ISO-8601 date format on `publication_date`",
+      "Set `\"strict\": true` alone, which automatically prevents fabricated values",
+      "Declare `\"type\": [\"string\", \"null\"]` for `publication_date` so absent data can be represented as null",
+      "Increase `max_retries` in the validation loop so the model eventually finds the real date"
+    ],
+    "answer": 2,
+    "explanation": "\"type\": [\"string\", \"null\"]のようなnullable指定によって、情報源に日付が存在しない場合にnullを許容でき、モデルが捏造する動機を減らせます。patternはstrict modeで未サポートの機能であり、フォーマット強制にはなってもデータの有無の問題は解決しません。strict:trueだけでは捏造防止は保証されません。リトライを増やしても存在しないデータを作り出すことはできず、根本的な解決になりません。",
+    "tags": [
+      "nullable",
+      "hallucination-prevention",
+      "json-schema"
+    ],
+    "ref": "D3: nullable [\"string\",\"null\"] prevents fabrication"
+  },
+  {
+    "id": "prompting-026",
+    "domain": "prompting",
+    "difficulty": 3,
+    "question": "A structured extraction pipeline processes scanned contracts where the `signing_date` field is sometimes fully illegible. After three validation retries, the field is still empty and the pipeline keeps failing validation because `signing_date` is a required non-null string. What is the correct fix?",
+    "choices": [
+      "Increase `max_retries` from 3 to 10 so the model has more chances to read the date",
+      "Make `signing_date` nullable and accept that retries cannot manufacture data that was never present in the source",
+      "Switch `tool_choice` to `\"any\"` so the model can skip the field entirely",
+      "Remove `\"strict\": true` so the model can return any shape of JSON for this field"
+    ],
+    "answer": 1,
+    "explanation": "リトライは存在しないデータを作り出すことはできないため、フィールドをnullable([\"string\",\"null\"]など)にして情報が読み取れない場合を正しく表現するのが正解です。retriesを増やしても元画像に情報がなければ結果は変わりません。tool_choice:\"any\"はツール呼び出しの強制であり、個々のフィールドの必須制約とは無関係です。strictを外すとスキーマ準拠全体の保証を失ってしまい、過剰な代償です。",
+    "tags": [
+      "nullable",
+      "retry-loop",
+      "validation-retry"
+    ],
+    "ref": "D3: retries cannot create absent data"
+  },
+  {
+    "id": "prompting-027",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A developer productivity tool classifies incoming support tickets into one of five categories using a strict-mode `enum` field. Occasionally tickets don't cleanly match any category. What enum design prevents the model from guessing an incorrect category?",
+    "choices": [
+      "Add `\"other\"` and `\"unclear\"` values to the enum as explicit fallback options",
+      "Remove the enum constraint entirely and accept free-text category strings",
+      "Add a `pattern` to restrict the category string to five known words",
+      "Set `\"additionalProperties\": true` so extra category values can be appended"
+    ],
+    "answer": 0,
+    "explanation": "enumに\"other\"や\"unclear\"のようなフォールバック値を含めることで、どのカテゴリにも当てはまらない場合にモデルが無理に既存カテゴリへ当てはめて推測することを防げます。enumを外すと分類の一貫性が失われます。patternはstrict modeで未サポートであり、そもそもenumの代替にはなりません。additionalPropertiesはオブジェクトの余剰プロパティに関する設定であり、単一フィールドの値の選択肢とは無関係です。",
+    "tags": [
+      "enum",
+      "fallback-design",
+      "classification"
+    ],
+    "ref": "D3: enum with other/unclear fallbacks"
+  },
+  {
+    "id": "prompting-028",
+    "domain": "prompting",
+    "difficulty": 1,
+    "question": "A team wants to enforce that a numeric `discount_percent` field in a strict-mode extraction schema always falls between 0 and 100. Which statement about this is accurate?",
+    "choices": [
+      "Adding `\"minimum\": 0, \"maximum\": 100` to the schema is fully supported in strict mode and enforces the range",
+      "Strict mode does not support `minimum`/`maximum`, so the range must be enforced with custom validation code after extraction",
+      "Strict mode automatically clamps out-of-range numbers to the nearest valid boundary",
+      "Using `enum` with every integer from 0 to 100 is the officially recommended way to express a numeric range"
+    ],
+    "answer": 1,
+    "explanation": "strict modeではminimum/maximumはサポートされていない機能であり、数値範囲の検証は抽出後のカスタム検証コードで行う必要があります。したがってminimum/maximumを追加しても保証にはなりません。strict modeが自動的に値をクランプすることもありません。0から100までの全整数をenumで列挙するのは非現実的で公式に推奨される方法でもありません。",
+    "tags": [
+      "strict-mode-limitations",
+      "minimum-maximum",
+      "custom-validation"
+    ],
+    "ref": "D3: strict-mode unsupported minimum/maximum"
+  },
+  {
+    "id": "prompting-029",
+    "domain": "prompting",
+    "difficulty": 3,
+    "question": "An engineer designing a strict-mode schema for extracting phone numbers writes `\"pattern\": \"^\\\\+?[0-9]{10,15}$\"` on the `phone_number` field, expecting the API to reject malformed numbers at generation time. What will actually happen?",
+    "choices": [
+      "The API enforces the pattern during generation and any non-matching output is automatically retried internally",
+      "The request will be rejected outright because `pattern` cannot appear anywhere in a JSON Schema sent to the API",
+      "`pattern` works normally in strict mode but only for fields also marked `nullable`",
+      "`pattern` is unsupported in strict mode, so this constraint has no enforcement effect and malformed numbers must be caught by custom validation after the response"
+    ],
+    "answer": 3,
+    "explanation": "strict modeではpatternのような正規表現制約はサポートされていないため、それを書いても生成時の強制力を持たず、フォーマットの妥当性はレスポンス後のカスタム検証コードでチェックする必要があります。APIが内部で自動リトライして修正することはありません。patternフィールド自体を含めることでリクエストが拒否されるわけでもありません(単に無視されるだけ)。nullableかどうかとpatternのサポート有無は無関係です。",
+    "tags": [
+      "pattern",
+      "strict-mode-limitations",
+      "custom-validation"
+    ],
+    "ref": "D3: strict-mode unsupported pattern"
+  },
+  {
+    "id": "prompting-030",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A structured data extraction system needs a field that can be either a `string` order note or a structured `object` with sub-fields, modeled originally with `oneOf`. The team wants this to work under strict mode. What should they do?",
+    "choices": [
+      "Keep `oneOf` as written since strict mode fully supports schema composition keywords",
+      "Wrap the `oneOf` block inside `additionalProperties: false` to make it strict-mode compatible",
+      "Convert `oneOf` into an `enum` of the two possible type names",
+      "Redesign the schema to avoid `oneOf`/`anyOf`/`allOf`, since these composition keywords are unsupported in strict mode"
+    ],
+    "answer": 3,
+    "explanation": "strict modeではallOf/anyOf/oneOf/if-then-elseのような合成キーワードは未サポートのため、これらを使わない形にスキーマを再設計する必要があります。additionalProperties:falseで包んでも合成キーワード自体のサポート状況は変わりません。oneOfをenumの型名一覧に変換しても実際のデータ構造の分岐を表現できず、根本的な解決になりません。",
+    "tags": [
+      "oneOf",
+      "anyOf",
+      "strict-mode-limitations"
+    ],
+    "ref": "D3: strict-mode unsupported allOf/anyOf/oneOf/if-then-else"
+  },
+  {
+    "id": "prompting-031",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A CI/CD automation extracts release notes into JSON using `output_config` with a `json_schema`. QA notices the schema validates perfectly every time, but occasionally the `version` field lists an earlier version than the one referenced in `changelog_entries`. What should the team conclude?",
+    "choices": [
+      "The `json_schema` must be malformed since strict validation should have caught this",
+      "This indicates `additionalProperties` was left as `true`, allowing inconsistent versions through",
+      "This is expected: schema validation only guarantees structural correctness, not cross-field consistency, so custom logic must check version ordering",
+      "The fix is to add a `pattern` constraint on `version` to force higher numbers"
+    ],
+    "answer": 2,
+    "explanation": "スキーマ検証は型や必須項目などの構造面のみを保証し、フィールド間の整合性(バージョン番号の前後関係など)は保証しないため、カスタムロジックでのチェックが必要です。スキーマが壊れているわけではなく、これはstrict modeの想定通りの限界です。additionalPropertiesは余剰プロパティの許可可否に関する設定であり、クロスフィールドの整合性とは無関係です。patternはstrict mode未サポートであり、そもそも大小関係の比較には使えません。",
+    "tags": [
+      "cross-field-consistency",
+      "schema-compliance",
+      "custom-validation"
+    ],
+    "ref": "D3 KEY DISTINCTION: cross-field consistency needs custom validation"
+  },
+  {
+    "id": "prompting-032",
+    "domain": "prompting",
+    "difficulty": 1,
+    "question": "A developer configuring a tool for invoice extraction wants Claude's response to always be valid, parseable JSON matching a predefined shape, using the tool-based approach rather than the newer direct-JSON pattern. Which two mechanisms together achieve this?",
+    "choices": [
+      "A tool defined with `input_schema` plus `tool_choice: {\"type\":\"tool\",\"name\":...}` to force that tool's call",
+      "A `system` prompt asking Claude to \"always respond in JSON\" plus a high `max_tokens` value",
+      "`tool_choice: \"auto\"` plus a detailed few-shot example embedded in the user message",
+      "An `output_config` block plus `tool_choice: \"any\"` combined in the same request"
+    ],
+    "answer": 0,
+    "explanation": "tool_use方式での構造化出力は、input_schemaを持つツール定義とtool_choiceで特定のツール名を強制する組み合わせで実現します。システムプロンプトで「JSONで答えて」と頼むだけでは構造の保証にはなりません。tool_choice:\"auto\"は呼び出し自体を保証しないため信頼できません。output_configは直接JSON出力パターンのものであり、tool_choice:\"any\"と組み合わせる設計は問題設定(tool方式)に合いません。",
+    "tags": [
+      "tool_use",
+      "input_schema",
+      "tool_choice"
+    ],
+    "ref": "D3: structured output via tool_use + input_schema + tool_choice"
+  },
+  {
+    "id": "prompting-033",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A structured extraction system for legal documents defines a strict-mode schema with an object containing `party_name`, `role`, and `signature_date`. During code review, someone notices `signature_date` was left out of the `required` array. What is the consequence under strict mode?",
+    "choices": [
+      "There is no consequence; strict mode requires only `additionalProperties: false`, not a complete `required` list",
+      "The model will silently substitute a placeholder date whenever it is missing",
+      "The request will fail validation immediately since strict mode mandates every property be listed in `required`",
+      "Strict mode will automatically infer that `signature_date` should be required based on field naming conventions"
+    ],
+    "answer": 2,
+    "explanation": "strict modeでは、additionalProperties:falseだけでなく、すべてのプロパティがrequiredに列挙されている必要があるため、signature_dateが漏れているとその時点で仕様を満たさずリクエストが失敗します。モデルがプレースホルダーの日付を自動生成することはありません。フィールド名の慣習からrequiredを自動推論する機能もありません。",
+    "tags": [
+      "strict-mode",
+      "required",
+      "additionalProperties"
+    ],
+    "ref": "D3: strict mode = ALL properties required"
+  },
+  {
+    "id": "prompting-034",
+    "domain": "prompting",
+    "difficulty": 3,
+    "question": "A multi-agent research system extracts financial statements with a strict-mode schema. Every response validates cleanly against the schema, yet a downstream audit finds that `net_income` sometimes doesn't equal `revenue` minus `expenses` as extracted by the same call. The engineer proposes adding `\"strict\": true` twice, once in the top-level tool config and once nested inside the schema object, believing that will catch the arithmetic error. Why is this proposal wrong?",
+    "choices": [
+      "Duplicating `strict: true` doubles the validation strength and would in fact catch the arithmetic error",
+      "`strict: true` cannot legally be set at more than one level, so the request would simply be rejected by the API",
+      "The real fix is to add a `pattern` on `net_income` matching the expected numeric format",
+      "`strict` only governs schema-level compliance (types, required fields, enums); arithmetic consistency between fields is semantic correctness, which schema validation never checks regardless of how `strict` is applied"
+    ],
+    "answer": 3,
+    "explanation": "strictはあくまでスキーマレベルの準拠(型・必須・enumなど)を保証するものであり、net_income = revenue - expensesのような算術的な整合性は意味的正しさの領域で、strictの重ね掛けでは検出できません。したがってdual-extractionやcalculated_totalとの比較のようなカスタム検証が必要です。strictを二重指定してもAPIエラーになるわけではありませんが、意味がなく効果もありません。patternは数値フォーマットの制約であり、strict mode未サポートな上、そもそも計算の整合性チェックにはなりません。",
+    "tags": [
+      "strict-mode",
+      "semantic-correctness",
+      "dual-extraction"
+    ],
+    "ref": "D3 KEY DISTINCTION: schema compliance vs semantic correctness"
+  },
+  {
+    "id": "prompting-035",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A customer support agent extracts a `resolution_summary` object with a nullable `follow_up_date` field. QA asks why they should bother with a nullable type instead of just instructing the model in the prompt to \"leave the date blank if unknown.\" What is the best justification?",
+    "choices": [
+      "Prompt instructions alone are probabilistic; declaring `[\"string\",\"null\"]` in the schema makes the absence of data an explicit, schema-guaranteed representation instead of relying on the model to follow a text instruction",
+      "Nullable types are required by the API and requests without them are rejected outright",
+      "Nullable types automatically trigger the validation-retry loop whenever a value is missing",
+      "Nullable types allow `additionalProperties` to be safely set to `true` for that field"
+    ],
+    "answer": 0,
+    "explanation": "プロンプトでの指示は確率的で完全には保証されないのに対し、スキーマでnullableを明示することで欠損の表現をスキーマレベルで保証できます。これはhooksによる強制と同様に「プロンプトより構造的制約の方が信頼できる」という思想に沿っています。nullable型がAPIの必須要件というわけではありません。nullable自体がリトライループを自動発火させるわけでもありません。additionalPropertiesの許可可否とnullable型の使用は別の話です。",
+    "tags": [
+      "nullable",
+      "prompt-vs-schema",
+      "fabrication-prevention"
+    ],
+    "ref": "D3: nullable prevents fabrication"
+  },
+  {
+    "id": "prompting-036",
+    "domain": "prompting",
+    "difficulty": 1,
+    "question": "In a validation-retry loop for structured extraction, the schema validation fails three consecutive times because the model keeps omitting a required `customer_id` field. What is the correct behavior after the retry budget (e.g., `max_retries: 3`) is exhausted?",
+    "choices": [
+      "Silently return the best partial JSON obtained so far as if it were valid",
+      "Raise an error/exception after exhausting retries rather than silently accepting invalid output",
+      "Automatically disable `strict` mode and accept whatever the model returns",
+      "Switch `tool_choice` to `\"auto\"` and retry indefinitely without a cap"
+    ],
+    "answer": 1,
+    "explanation": "リトライ回数を使い切った場合の正しい振る舞いは、エラーを発生させて呼び出し元に失敗を通知することです。無効なJSONをあたかも有効であるかのように黙って返すのはサイレントな不具合の温床になります。strictを自動的に無効化するのは保証を失わせるその場しのぎの対応です。リトライ上限を設けず無限に繰り返すのも適切な設計ではありません。",
+    "tags": [
+      "validation-retry",
+      "retry-loop",
+      "error-handling"
+    ],
+    "ref": "D3: validation-retry loop pattern raise after exhaustion"
+  },
+  {
+    "id": "prompting-037",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "An extraction pipeline for expense reports asks Claude to return `stated_total` directly. To catch cases where the model's stated total doesn't match the underlying line items, the team wants the extraction call itself to help detect the mismatch, not just downstream code. Which schema design best supports this self-correction goal?",
+    "choices": [
+      "Extract both `stated_total` and an independently computed `calculated_total`, plus a boolean `conflict_detected` field, so a mismatch surfaces directly from the extraction",
+      "Add `\"minimum\": 0` to `stated_total` so negative totals are rejected at generation time",
+      "Rely on `\"strict\": true` alone, since strict mode already cross-checks numeric fields against each other",
+      "Add a `pattern` on `stated_total` restricting it to two decimal places"
+    ],
+    "answer": 0,
+    "explanation": "dual-extraction self-correctionパターンでは、stated_totalに加えてcalculated_totalとconflict_detectedフラグを同時に抽出させることで、抽出そのものから不整合を検出できるようにします。minimumはstrict mode未サポートな上、負数の排除であって合計の整合性チェックにはなりません。strict:trueはあくまで型・必須項目などスキーマレベルの保証であり、フィールド間の算術的な整合性は保証しません。patternも strict mode未サポートで、小数桁数の制約は今回の不整合検出とは無関係です。",
+    "tags": [
+      "dual-extraction",
+      "conflict_detected",
+      "self-correction"
+    ],
+    "ref": "D3: dual-extraction self-correction stated_total + calculated_total + conflict_detected"
+  },
+  {
+    "id": "prompting-038",
+    "domain": "prompting",
+    "difficulty": 3,
+    "question": "A structured extraction pipeline for scanned receipts uses strict mode with a `total_amount` field typed as `number`. Occasionally the OCR-derived text has an ambiguous total (e.g., a smudged digit could be \"$18.00\" or \"$78.00\"). The extraction always validates against the schema since it's a valid number either way, but accuracy audits show frequent silent errors on this field. What additional design change addresses this specific failure mode without touching what strict mode already guarantees?",
+    "choices": [
+      "Add a `confidence` sub-field alongside `total_amount` (e.g., `{value, confidence}`) so ambiguous extractions can be flagged for review rather than accepted silently as if certain",
+      "Add `\"minimum\": 0` to `total_amount` since strict mode enforces numeric ranges and this will catch the ambiguity",
+      "Switch `total_amount` to an `enum` listing all plausible totals so the model must pick the correct one",
+      "Remove `\"strict\": true` so the model has more freedom to express uncertainty in free text"
+    ],
+    "answer": 0,
+    "explanation": "スキーマ準拠は「妥当な数値である」ことしか保証せず、値の確からしさ(意味的な正しさ)は別問題であるため、{value, confidence}のようなフィールドレベルの確信度スコアを設けて曖昧な抽出を人手レビューに回す設計が有効です。minimumはstrict modeで未サポートであり、そもそも上下限の範囲チェックとは無関係な問題です。enumで全ての可能性のある金額を列挙するのは現実的ではありません。strictを外すことはスキーマ準拠の保証全体を失わせる過大な対応です。",
+    "tags": [
+      "confidence-scores",
+      "semantic-correctness",
+      "field-level-confidence"
+    ],
+    "ref": "D5/D3 crossover: field-level confidence {value, confidence}"
+  },
+  {
+    "id": "prompting-039",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A code-review automation prompt tells Claude to \"flag outdated comments using best judgment, being conservative.\" After rollout, engineers report many false-positive flags on comments that are merely imprecise but not actually wrong, and start ignoring the tool's output entirely. What change to the prompt best addresses the root cause?",
+    "choices": [
+      "Replace vague guidance like \"best judgment\" and \"be conservative\" with explicit criteria: what qualifies, what does NOT qualify (boundary cases), and a precise negation rule such as \"flag ONLY when claimed behavior directly contradicts actual code\"",
+      "Keep the same wording but raise `max_tokens` so Claude has more room to reason before flagging",
+      "Add `\"strict\": true` to the output schema so false positives are rejected at validation time",
+      "Tell Claude to lower its confidence threshold so it flags fewer comments overall, regardless of criteria"
+    ],
+    "answer": 0,
+    "explanation": "「best judgment」「conservative」のような曖昧な指示は解釈のばらつきを生み、誤検知（false positive）を増やします。何が該当し何が該当しないか（境界事例）を明示し、「主張された挙動が実際のコードと直接矛盾する場合のみ」のような精密な否定条件を与えることが根本対策です。誤検知は一つのカテゴリでも起きると他の正しいカテゴリへの信頼も損なうため重要です。max_tokensは出力の分量枠であり判断基準の曖昧さとは無関係です。strict:trueはJSON構造の準拠を保証するだけで、意味的な誤検知の削減にはなりません。閾値を機械的に下げるだけでは根本原因である基準の曖昧さは解決せず、見逃し（false negative）を増やす副作用もあります。",
+    "tags": [
+      "explicit-criteria",
+      "false-positive-economics",
+      "prompt-design"
+    ],
+    "ref": "D3: explicit criteria framework + false-positive economics"
+  },
+  {
+    "id": "prompting-040",
+    "domain": "prompting",
+    "difficulty": 3,
+    "question": "A developer configuring structured output for a compliance extraction tool wants three things simultaneously: (1) `risk_score` restricted to 0-100, (2) `case_id` matching a specific regex, and (3) `status` as either an object with `reason` or a plain string. They ask whether all three can be expressed directly in a strict-mode `input_schema` so the API enforces them at generation time. What is the accurate answer?",
+    "choices": [
+      "Yes, strict mode fully supports numeric ranges, regex patterns, and `oneOf`-style unions, so all three can be enforced natively",
+      "None of the three can be expressed in strict mode at all, so the schema must be abandoned in favor of free-text output",
+      "Only the `case_id` pattern is supported natively; the other two require workarounds",
+      "No: `minimum`/`maximum`, `pattern`, and `oneOf`/`anyOf` are all unsupported in strict mode, so all three constraints must be enforced with custom validation code after generation"
+    ],
+    "answer": 3,
+    "explanation": "strict modeではminimum/maximum、pattern、oneOf/anyOf/allOfのいずれも未サポートのため、risk_scoreの範囲チェック、case_idの正規表現チェック、statusの合成型のいずれもAPI側では強制されず、生成後にカスタム検証コードで担保する必要があります。したがって『すべて未サポートで後付け検証が必要』という選択肢が正解です。一部だけ対応しているという主張も誤りで、スキーマ自体を放棄する必要もありません(型・必須・enum・formatなど基本部分は引き続き有効です)。",
+    "tags": [
+      "strict-mode-limitations",
+      "minimum-maximum",
+      "pattern"
+    ],
+    "ref": "D3: strict-mode unsupported minimum/maximum, pattern, allOf/anyOf/oneOf, if/then/else"
+  },
+  {
+    "id": "prompting-041",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A structured data extraction pipeline uses strict-mode JSON Schema with tool_use. When the model returns a response that fails schema validation (a required field is missing), what is the correct retry pattern?",
+    "choices": [
+      "Immediately raise an exception and route the document to human review without retrying",
+      "Retry indefinitely with the same prompt until the schema validates",
+      "Append the validation error JSON to the prompt and retry, capping retries at about 3 before raising",
+      "Silently fill the missing field with a placeholder value and continue processing"
+    ],
+    "answer": 2,
+    "explanation": "正解は、バリデーションエラーのJSONをプロンプトに追記して再試行し、最大約3回で打ち切って例外を発生させるという検証-再試行ループのパターンである。選択肢Aは再試行を一切行わず早すぎる諦めであり改善の機会を捨てている。選択肢Bは無限リトライでコストと遅延が青天井になり、失敗の根本原因が解消されない限り無意味である。選択肢Dはデータを捏造することになり、欠落データを埋めるための再試行では実際には存在しない情報を作り出せないという原則に反する。",
+    "tags": [
+      "validation-retry",
+      "structured-output",
+      "error-handling"
+    ],
+    "ref": "D3 validation-retry loop"
+  },
+  {
+    "id": "prompting-042",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "In a structured data extraction system for invoices, an engineer wants to distinguish errors that a JSON Schema validator can automatically catch from errors that require custom logic. Which pair correctly separates the two categories?",
+    "choices": [
+      "Schema-catchable: missing required field, invalid enum value; custom-logic: calculated total not matching stated total, future-dated invoice",
+      "Schema-catchable: calculated total not matching stated total; custom-logic: missing required field",
+      "Schema-catchable: cross-field business rule violations; custom-logic: type mismatches and malformed email format",
+      "Both categories are fully caught by schema validation once strict mode and additionalProperties: false are enabled"
+    ],
+    "answer": 0,
+    "explanation": "正解は、必須フィールドの欠落や無効なenum値はスキーマ検証で自動的に検出できるが、計算合計と記載合計の不一致や未来日付といった意味的・業務ロジックの矛盾はカスタムロジックでしか検出できないという区分である。選択肢Bは逆で、合計値の不一致はスキーマでは検出不可能な意味的整合性の問題である。選択肢Cも逆転しており、型不一致やフォーマット不正はスキーマが得意とする領域である。選択肢Dは誤りで、strict modeを有効にしてもビジネスロジックの整合性までは保証されない。",
+    "tags": [
+      "schema-validation",
+      "semantic-correctness",
+      "structured-output"
+    ],
+    "ref": "D3 schema-catchable vs custom-logic"
+  },
+  {
+    "id": "prompting-043",
+    "domain": "prompting",
+    "difficulty": 3,
+    "question": "A finance team extracts invoice line items and totals using strict-mode structured output. QA discovers cases where the model reports a total that does not match the sum of the line items, yet schema validation passes every time. What extraction pattern would surface this discrepancy automatically?",
+    "choices": [
+      "Increase the temperature so the model reasons more carefully before answering",
+      "Add a regex pattern constraint on the total field inside the JSON Schema",
+      "Dual-extraction self-correction: extract stated_total and calculated_total separately, plus a conflict_detected flag",
+      "Switch from tool_use-based extraction to free-text extraction followed by manual parsing"
+    ],
+    "answer": 2,
+    "explanation": "正解は、記載された合計(stated_total)と算出した合計(calculated_total)を別々に抽出し、conflict_detectedフラグを立てるデュアル抽出による自己修正パターンである。これにより意味的な矛盾がJSON上に明示され、下流処理で検出できる。選択肢Aは無関係な調整で信頼性を保証しない。選択肢Bは誤りで、正規表現(pattern)はstrict modeのJSON Schemaではサポートされない制約である。選択肢Dは構造化出力の利点を放棄しており、根本的な解決にならない。",
+    "tags": [
+      "dual-extraction",
+      "self-correction",
+      "structured-output"
+    ],
+    "ref": "D3 dual-extraction self-correction"
+  },
+  {
+    "id": "prompting-044",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A code review automation tool flags outdated comments as a category. After several weeks, engineers start ignoring ALL flags from the tool, not just the outdated-comment ones, because that category produced many false positives. The team wants to track and reduce false positives systematically going forward. What should each flagged finding include to support this?",
+    "choices": [
+      "A severity label of 'critical' for every flag so engineers take it seriously",
+      "Only the line number where the issue was found, to keep output minimal",
+      "A confidence score generated by asking the model how sure it is about the finding",
+      "Detection metadata such as detected_pattern, file, and line so false-positive patterns can be tracked and prompt criteria refined"
+    ],
+    "answer": 3,
+    "explanation": "正解は、detected_pattern・file・lineなどの検出メタデータを付与し、誤検知(false positive)のパターンを追跡してプロンプト基準を改善できるようにすることである。これは一つのノイズの多いカテゴリが全カテゴリへの信頼を損なうという経済性の問題に対処する。選択肢Aは全てを重大扱いすることで逆にアラート疲れを助長し、根本的な誤検知削減にはつながらない。選択肢Bは情報が乏しすぎてパターン分析ができない。選択肢Cはモデルの自己申告の確信度であり、キャリブレーションされていないため信頼できない。",
+    "tags": [
+      "detection-metadata",
+      "false-positive",
+      "code-review"
+    ],
+    "ref": "D3 detection metadata for FP tracking"
+  },
+  {
+    "id": "prompting-045",
+    "domain": "prompting",
+    "difficulty": 1,
+    "question": "A developer productivity team needs to process 15,000 archived support tickets overnight to extract structured sentiment and category data, with no requirement for real-time results. Which API approach is most appropriate?",
+    "choices": [
+      "The synchronous Messages API, called in a tight loop for each ticket",
+      "The Message Batches API, since it offers roughly 50% cost savings for large, non-time-sensitive workloads",
+      "A multi-turn conversation in a single Batches API request per ticket",
+      "The synchronous API with --output-format stream-json for lower latency"
+    ],
+    "answer": 1,
+    "explanation": "正解は、リアルタイム性が不要な大量バッチ処理にはMessage Batches APIが適しており、約50%のコスト削減が得られる点である。選択肢Aは同期APIで15,000件をループ処理するのはコスト・スループットの面で非効率である。選択肢Cは誤りで、Batches APIはマルチターン会話をサポートしない。選択肢Dはストリーミング出力形式の話でありバッチ処理の選択基準とは無関係である。",
+    "tags": [
+      "batches-api",
+      "sync-vs-batch",
+      "cost-optimization"
+    ],
+    "ref": "D3 sync vs Batches API decision"
+  },
+  {
+    "id": "prompting-046",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A CI/CD pipeline runs Claude Code to perform automated pre-merge checks that must block a pull request within seconds if issues are found. Which execution model should this use?",
+    "choices": [
+      "The Message Batches API, since batch requests are cheaper regardless of use case",
+      "The Message Batches API with a short 1-hour window configured to simulate real-time behavior",
+      "Either API works identically for blocking CI checks since both guarantee sub-second latency",
+      "The synchronous Messages API, since pre-merge blocking checks require immediate results within the CI run"
+    ],
+    "answer": 3,
+    "explanation": "正解は、マージ前のブロッキングチェックはCI実行中に即座の結果が必要なため同期Messages APIを使うべきという点である。選択肢AとBはBatches APIの特性(最大24時間のウィンドウでSLAなし)を誤解しており、リアルタイム性が必要な場面には不向きである。選択肢Cは誤りで、Batches APIはレイテンシ保証がなく即時性が求められる用途には使えない。",
+    "tags": [
+      "sync-vs-batch",
+      "ci-cd",
+      "batches-api"
+    ],
+    "ref": "D3 sync vs Batches API decision"
+  },
+  {
+    "id": "prompting-047",
+    "domain": "prompting",
+    "difficulty": 3,
+    "question": "A structured data extraction team is about to run their new extraction prompt against a corpus of 40,000 scanned contracts overnight via the Batches API. What should they do immediately before submitting the full batch?",
+    "choices": [
+      "Submit the full 40,000-document batch directly since Batches API failures can be resubmitted individually",
+      "Run the same prompt on a small representative sample first to catch prompt or schema issues before committing to the full 40,000-document run",
+      "Increase the retry count to 10 to compensate for not testing beforehand",
+      "Skip sampling and rely on aggregate accuracy metrics after the full batch completes"
+    ],
+    "answer": 1,
+    "explanation": "正解は、10,000件を超える大規模バッチを投入する前に、代表的な小サンプルで同じプロンプトを試して問題を事前に洗い出すプリバッチQAである。選択肢Aは失敗したcustom_idだけ再送できるという事実はあるが、プロンプト自体の欠陥が全件に及ぶリスクを軽視している。選択肢Cはリトライ回数を増やすだけで、プロンプト品質の問題を解決しない。選択肢Dは全体完了後の事後対応であり、コストと時間を無駄にしてから気づく後手の対応である。",
+    "tags": [
+      "pre-batch-qa",
+      "batches-api",
+      "structured-output"
+    ],
+    "ref": "D3 pre-batch QA on small sample"
+  },
+  {
+    "id": "prompting-048",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A team is designing a code review automation workflow for large pull requests (10+ files). They want Pass 2 to catch integration issues like interface mismatches and cross-file data flow problems. What should Pass 2 receive as input?",
+    "choices": [
+      "Only the raw diff of the PR, with no reference to Pass 1's output, to avoid bias",
+      "A summary generated by compacting the entire conversation history from Pass 1",
+      "The original CLAUDE.md file only, since Pass 1 findings are not relevant to cross-file analysis",
+      "Pass 1's per-file findings as context, so Pass 2 can reason about cross-file integration issues building on what was already found"
+    ],
+    "answer": 3,
+    "explanation": "正解は、Pass 2はPass 1のファイル単位の結果をコンテキストとして受け取り、それを踏まえてクロスファイルの統合問題を分析するという設計である。選択肢Aは差分だけでは各ファイルの個別分析結果が失われ、統合分析の質が落ちる。選択肢Bは圧縮されたサマリーでは重要な詳細が失われるリスクがあり、Pass 1の結果をそのままコンテキストとして渡す設計とは異なる。選択肢Cは誤りで、Pass 1の結果はPass 2にとって重要な入力である。",
+    "tags": [
+      "multi-pass-review",
+      "cross-file",
+      "code-review"
+    ],
+    "ref": "D3 multi-pass review Pass1/Pass2"
+  },
+  {
+    "id": "prompting-049",
+    "domain": "prompting",
+    "difficulty": 1,
+    "question": "In a multi-pass code review architecture for a large pull request, what is the primary responsibility of Pass 1?",
+    "choices": [
+      "Aggregate findings from Pass 2 into a final human-readable report",
+      "Decide whether the PR should be merged or rejected",
+      "Analyze cross-file data flow and interface mismatches across the whole PR",
+      "Perform per-file local analysis such as bugs, style, types, and security issues with consistent depth across files"
+    ],
+    "answer": 3,
+    "explanation": "正解は、Pass 1はファイル単位でバグ・スタイル・型・セキュリティといった局所的な分析を一貫した深さで行うことである。選択肢Aは順序が逆で、Pass 1がPass 2の入力になるのであってその逆ではない。選択肢Bはマージ可否の意思決定であり、Pass 1の役割を超えている。選択肢Cはクロスファイルの統合分析であり、これはPass 2の役割である。",
+    "tags": [
+      "multi-pass-review",
+      "pass1-per-file",
+      "code-review"
+    ],
+    "ref": "D3 multi-pass review Pass1/Pass2"
+  },
+  {
+    "id": "prompting-050",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A developer asks the same Claude Code session that just implemented a complex refactor to also review its own changes for bugs before opening a pull request. The review comes back clean, but a teammate later finds a subtle logic error. What is the most likely explanation, and what is the fix?",
+    "choices": [
+      "The model's context window was too small; the fix is to increase max_tokens for the review request",
+      "The review used the wrong tool_choice setting; the fix is to force tool_choice to 'any' during review",
+      "The session lacked a CLAUDE.md file; the fix is to add project-level coding standards",
+      "Reasoning context bias: a session that made the design decisions is unlikely to question them; the fix is to generate and review in completely separate sessions"
+    ],
+    "answer": 3,
+    "explanation": "正解は、実装を行った同一セッションが自分の設計判断を疑いにくいという推論コンテキストバイアスであり、対策は生成とレビューを完全に別セッションで行うことである。選択肢Aはmax_tokensの問題ではなく、バイアスの本質を見誤っている。選択肢Bはtool_choiceの設定はレビュー品質の根本原因ではない。選択肢Cはコーディング規約の有無は問題ではなく、同一セッションの自己レビューという構造的な問題が原因である。",
+    "tags": [
+      "reasoning-context-bias",
+      "code-review",
+      "session-isolation"
+    ],
+    "ref": "D3 reasoning context bias"
+  },
+  {
+    "id": "prompting-051",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A team building a few-shot prompt to classify support tickets by escalation urgency includes three examples, but each example shows only the raw ticket text and the assigned label with no further commentary. Generalization to novel tickets is poor. What is missing from each example, per few-shot prompting best practice?",
+    "choices": [
+      "A fourth and fifth example, since more examples always improve generalization regardless of content",
+      "The reasoning that explains why that input maps to that output, so the model learns the underlying pattern rather than memorizing surface features",
+      "A confidence score attached to the assigned label in each example",
+      "A system prompt reminder that few-shot examples exist, placed after the examples themselves"
+    ],
+    "answer": 1,
+    "explanation": "優れた少数ショット例は入力・出力に加えて、なぜその出力が正しいのかを説明する推論(reasoning)を含む必要があり、これによりモデルは表面的な特徴の暗記ではなく根底にあるパターンを学習し、新規事例へ一般化できるようになる。例の数を増やすだけでは推論的根拠が欠けたままであり、最適な例数は2〜4個程度でそれ以上はむしろオーバーフィットや文脈の浪費を招く。確信度スコアの付与は分類の一般化能力とは無関係である。システムプロンプトへの言及の位置を変えるだけでは、個々の例に理由付けがないという根本的な欠落は解消されない。",
+    "tags": [
+      "few-shot",
+      "example-structure",
+      "reasoning"
+    ],
+    "ref": "D3 few-shot examples need input+output+reasoning"
+  },
+  {
+    "id": "prompting-052",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A team reviewing a 14-file pull request with a single Claude Code pass notices that the findings for files reviewed later in the PR are shallower and sometimes contradict findings from earlier files. What is the most accurate description of this failure mode?",
+    "choices": [
+      "Rate limiting from the Anthropic API caused truncated responses",
+      "The tool_choice parameter was incorrectly set to 'auto' instead of a forced tool",
+      "Attention dilution and contradictory findings from single-pass review, a known failure mode on 10+ file PRs",
+      "The PR exceeded the maximum number of tool_use blocks allowed per response"
+    ],
+    "answer": 2,
+    "explanation": "正解は、10ファイル以上のPRにおいてシングルパスレビューで生じる注意力の希薄化(attention dilution)と矛盾した所見という既知の失敗モードである。選択肢Aはレート制限の話であり症状の説明として無関係である。選択肢Bはtool_choiceの設定ミスであり、レビューの深さ低下や矛盾の直接原因ではない。選択肢Dはtool_use blockの上限という架空の制約であり、実際の失敗モードとは異なる。",
+    "tags": [
+      "single-pass-failure",
+      "attention-dilution",
+      "code-review"
+    ],
+    "ref": "D3 single-pass failure modes on 10+ file PRs"
+  },
+  {
+    "id": "prompting-053",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A team writes a classification instruction: \"Flag a database migration script as 'risky' only when it drops a column or table that still has an active foreign-key reference elsewhere in the schema.\" Compared to an earlier version that said \"Flag risky-looking migrations, using good judgment,\" what principle does the rewritten instruction correctly apply?",
+    "choices": [
+      "Few-shot prompting, because it implicitly demonstrates two examples of risky migrations",
+      "Precise negation boundaries: it defines exactly when the flag applies and, by implication, what does NOT qualify, instead of relying on vague judgment calls",
+      "Dual-extraction self-correction, because it checks the schema against a calculated value",
+      "Schema-catchable validation, because a JSON Schema enum could enforce this rule automatically"
+    ],
+    "answer": 1,
+    "explanation": "書き換え後の指示は「アクティブな外部キー参照が存在するカラム/テーブルの削除の場合に限りflagする」という明確な境界条件を定義しており、これは曖昧な『良い判断で』という表現に頼らず、何が該当し何が該当しないかを明示する精密な否定境界(precise negation boundaries)の原則を適用したものである。この指示は具体的な入出力例を示しておらず少数ショットの実演ではない。デュアル抽出による自己修正は算出値と記載値の突合というまったく別の概念である。この判定は外部キー参照の有無というスキーマ検証では捉えられない業務ロジックであり、enumで自動的に強制できるものではない。",
+    "tags": [
+      "negation-boundary",
+      "explicit-criteria",
+      "prompt-design"
+    ],
+    "ref": "D3 precise negation boundaries"
+  },
+  {
+    "id": "prompting-054",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A structured extraction system processes medical intake forms. After 3 failed validation attempts on a document missing a required 'patient_id' field, the retry loop is exhausted. What is the correct behavior?",
+    "choices": [
+      "Fabricate a plausible patient_id so the pipeline can continue without interruption",
+      "Silently drop the document from the output set with no record of the failure",
+      "Raise an error after exhausting the retry attempts, since retries cannot create data that was never present in the source",
+      "Retry a 4th and 5th time with a higher temperature setting to force compliance"
+    ],
+    "answer": 2,
+    "explanation": "正解は、リトライを使い切った後はエラーを発生させることであり、そもそも元データに存在しない情報を再試行によって作り出すことはできないという原則に基づく。選択肢Aはデータを捏造することになり許容できない。選択肢Bはサイレントに失敗を握りつぶすアンチパターンであり、失敗の記録が失われる。選択肢Dは規定のリトライ上限(約3回)を超えて延々と試行を続けるという誤ったアプローチである。",
+    "tags": [
+      "validation-retry",
+      "raise-after-exhaustion",
+      "nullable-fields"
+    ],
+    "ref": "D3 validation-retry loop max ~3"
+  },
+  {
+    "id": "prompting-055",
+    "domain": "prompting",
+    "difficulty": 3,
+    "question": "A multi-agent research system's synthesis subagent extracts claims from source documents using strict-mode structured output. QA finds that the tool correctly enforces required fields and enum values, but several outputs contain a 'summary_date' that postdates the actual publication and contradicts other extracted fields in the same object. Which statement best explains this and the fix?",
+    "choices": [
+      "This is a schema compliance failure; enabling additionalProperties: false will resolve it",
+      "This is a semantic correctness issue that schema validation cannot catch; it requires custom validation logic for cross-field and temporal consistency",
+      "This indicates tool_choice was set to 'auto' instead of forcing the extraction tool",
+      "This means the JSON Schema needs a 'pattern' constraint added to the summary_date field"
+    ],
+    "answer": 1,
+    "explanation": "正解は、これは意味的整合性(semantic correctness)の問題であり、スキーマ検証では検出できないためクロスフィールド・時系列の整合性をチェックするカスタムロジックが必要という点である。選択肢Aは誤りで、additionalProperties: falseは余分なプロパティを禁止するだけで日付の矛盾は検出できない。選択肢Cはtool_choiceの設定ミスではなく、抽出自体は正しく行われている。選択肢Dは誤りで、patternはstrict modeのJSON Schemaでサポートされない制約であり、そもそも日付の矛盾検出には向かない。",
+    "tags": [
+      "schema-catchable-vs-custom-logic",
+      "semantic-correctness",
+      "structured-output"
+    ],
+    "ref": "D3 schema-catchable vs custom-logic errors"
+  },
+  {
+    "id": "prompting-056",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A customer support automation team logs every extraction error with fields like detected_pattern, source file, and line number whenever a false positive is confirmed by a human reviewer. What is the primary purpose of collecting this detection metadata?",
+    "choices": [
+      "To enable tracking of false-positive patterns over time so prompt criteria can be refined and trust in the system restored",
+      "To satisfy an unrelated compliance audit requirement with no bearing on the extraction pipeline",
+      "To replace the need for schema validation entirely",
+      "To increase the number of retries allowed per document"
+    ],
+    "answer": 0,
+    "explanation": "正解は、誤検知(false positive)のパターンを時系列で追跡し、プロンプトの基準を洗練させてシステムへの信頼を回復するためである。選択肢Bは無関係なコンプライアンス目的であり、抽出パイプラインの改善とは関係がない。選択肢Cは誤りで、検出メタデータはスキーマ検証を置き換えるものではなく補完するものである。選択肢Dはリトライ回数とは無関係な目的である。",
+    "tags": [
+      "detection-metadata",
+      "false-positive",
+      "prompt-refinement"
+    ],
+    "ref": "D3 detection metadata for FP pattern tracking"
+  },
+  {
+    "id": "prompting-057",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A structured extraction pipeline for legal contracts wants to catch cases where the model reports a contract total that conflicts with the sum of individually extracted clauses, without relying on regex or numeric-range constraints (which are unsupported in strict mode). Which design achieves this?",
+    "choices": [
+      "Add a 'maximum' and 'minimum' constraint to the total field in the JSON Schema",
+      "Extract both stated_total and calculated_total as separate fields plus a conflict_detected boolean, then apply custom validation logic downstream",
+      "Rely solely on the enum fallback value 'other' for the total field",
+      "Increase max_retries to 10 so the model eventually self-corrects the total"
+    ],
+    "answer": 1,
+    "explanation": "正解は、stated_totalとcalculated_totalを別フィールドとして抽出し、conflict_detectedフラグを立てて下流でカスタム検証を行うデュアル抽出方式である。選択肢Aは誤りで、minimum/maximumはstrict modeのJSON Schemaではサポートされない制約である。選択肢Cはenumのfallback値であり、数値の整合性チェックとは無関係である。選択肢Dはリトライ回数を増やすだけで、モデルが自発的に矛盾を解消する保証はなく、根本的な解決にならない。",
+    "tags": [
+      "dual-extraction",
+      "self-correction",
+      "strict-mode-limitations"
+    ],
+    "ref": "D3 dual-extraction self-correction"
+  },
+  {
+    "id": "prompting-058",
+    "domain": "prompting",
+    "difficulty": 1,
+    "question": "For a document extraction workload of 12,000 scanned receipts with no real-time requirement, which combination correctly reflects the recommended API and pre-processing decision?",
+    "choices": [
+      "Use the synchronous API for cost savings and skip sampling since strict mode guarantees correctness",
+      "Use the Message Batches API for cost savings, and first validate the prompt on a small sample before running the full 12,000-document batch",
+      "Use the Message Batches API, and submit the full batch immediately since sampling is unnecessary once documents exceed 10,000",
+      "Use the synchronous API in a multi-turn conversation to maintain context across all 12,000 receipts"
+    ],
+    "answer": 1,
+    "explanation": "正解は、コスト削減のためMessage Batches APIを使い、1万件を超える本番実行の前にまず小サンプルでプロンプトを検証するプリバッチQAを行うことである。選択肢Aは同期APIのコスト効率が悪く、また strict modeはスキーマ準拠は保証するが意味的正しさは保証しないため誤り。選択肢Cはサンプリングを省略しており、大規模バッチにおけるリスクを軽視している。選択肢Dは誤りで、Batches APIはマルチターン会話をサポートしない。",
+    "tags": [
+      "pre-batch-qa",
+      "sync-vs-batch",
+      "batches-api"
+    ],
+    "ref": "D3 pre-batch QA before 10k+ docs"
+  },
+  {
+    "id": "prompting-059",
+    "domain": "prompting",
+    "difficulty": 3,
+    "question": "A CI/CD automation engineer wants to use Claude Code to review a nightly batch of 25 merged PRs (average 12 files each) for latent integration bugs, and separately wants same-day PR blocking checks for new pull requests. Which combination of design choices is correct?",
+    "choices": [
+      "Use the Batches API with a single-pass review for the nightly job, and synchronous API with a two-pass (per-file then cross-file) review for blocking checks, always self-reviewing in the same session that wrote the fix",
+      "Use the Batches API with a two-pass review (Pass 1 per-file, Pass 2 cross-file using Pass 1 as context) for the nightly 12-file PR analysis, and the synchronous API for same-day blocking checks",
+      "Use the Batches API for nightly integration analysis with Pass 2 receiving Pass 1 as context, and the Batches API for same-day blocking checks since it is cheaper",
+      "Use the synchronous API for both, and skip Pass 2 for nightly PRs since the Batches API already resolves cross-file issues automatically"
+    ],
+    "answer": 1,
+    "explanation": "正解は、夜間の一括分析はリアルタイム性が不要なためBatches APIでPass1(ファイル単位)→Pass2(クロスファイル、Pass1をコンテキストに)の2段階レビューを行い、同日中のブロッキングチェックは即時性が必要なため同期APIを使うという組み合わせである。選択肢Aは同一セッションでの自己レビューという推論コンテキストバイアスのアンチパターンを含む。選択肢Cはブロッキングチェックにも安価だからとBatches APIを使っており、SLAなしでリアルタイム性が保証されない点を無視している。選択肢Dは同期APIのみで両方対応しコスト効率を無視し、さらにBatches APIが自動でクロスファイル問題を解決するという誤った前提も含む。",
+    "tags": [
+      "multi-pass-review",
+      "sync-vs-batch",
+      "ci-cd"
+    ],
+    "ref": "D3 multi-pass review + sync vs Batches combined"
+  },
+  {
+    "id": "prompting-060",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A developer productivity team wants Claude Code to review a 20-file refactor PR reliably. Which combination of practices best avoids both single-pass failure modes and reasoning context bias?",
+    "choices": [
+      "Have the same session that wrote the refactor immediately review it in one pass, covering all 20 files together for efficiency",
+      "Run a two-pass review (Pass 1 per-file, Pass 2 cross-file with Pass 1 as context) in a session separate from the one that generated the code",
+      "Run a single-pass review but double the max_tokens so the model has room to cover all 20 files in depth",
+      "Have the generating session review its own work first, then run one additional pass focused only on style issues"
+    ],
+    "answer": 1,
+    "explanation": "正解は、Pass 1でファイル単位、Pass 2でPass 1を文脈としたクロスファイル分析を行う2段階レビューを、コードを生成したセッションとは別のセッションで実施することであり、これによりシングルパスの失敗モードと推論コンテキストバイアスの両方を回避できる。選択肢Aは同一セッションでのシングルパスレビューであり両方の問題を抱えている。選択肢Cはmax_tokensを増やしても注意力の希薄化という構造的問題は解決しない。選択肢Dは自己レビューを行っている時点で推論コンテキストバイアスが残っており、スタイルのみの追加パスでは統合問題は捕捉できない。",
+    "tags": [
+      "multi-pass-review",
+      "reasoning-context-bias",
+      "single-pass-failure"
+    ],
+    "ref": "D3 combined multi-pass + reasoning context bias"
+  }
+]

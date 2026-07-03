@@ -1,0 +1,1609 @@
+[
+  {
+    "id": "agentic-001",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "You are building a customer support agent using the agentic loop pattern (send prompt with tools, check stop_reason, execute tool, return tool_result, repeat). What should determine whether the loop continues to another turn?",
+    "choices": [
+      "Whether the model's text output contains phrases like 'let me check' or 'I need more info'",
+      "The value of the stop_reason field returned with the response",
+      "Whether the response is longer than the previous turn's response",
+      "Whether more than three tool calls have already been made in the conversation"
+    ],
+    "answer": 1,
+    "explanation": "エージェントループはstop_reasonフィールドの値によって次の動作を決定するのが正しい設計である。stop_reasonがtool_useならツールを実行して継続し、end_turnなら終了する。テキスト内容の文言解析(選択肢0)は自然言語パースのアンチパターン。応答の長さ(選択肢2)は無関係な基準。固定回数での打ち切り(選択肢3)は恣意的な反復上限のアンチパターンであり、主要な停止判断には使えない。",
+    "tags": [
+      "agentic-loop",
+      "stop_reason"
+    ],
+    "ref": "D1 agentic loop pattern"
+  },
+  {
+    "id": "agentic-002",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "In a multi-agent research system, the coordinator sends a request to Claude and receives a response with stop_reason of 'tool_use'. What is the correct next action?",
+    "choices": [
+      "Present the response text to the user as the final answer",
+      "Terminate the loop since tool_use indicates the model wants to stop",
+      "Discard the response and resend the original prompt unchanged",
+      "Execute the requested tool(s) and return tool_result blocks in the next message"
+    ],
+    "answer": 3,
+    "explanation": "stop_reasonがtool_useの場合は、モデルがツール実行を要求していることを意味するため、該当ツールを実行してtool_resultをtool_use_idと共に返し、ループを継続するのが正しい。最終回答として提示する(選択肢0)のはend_turnの場合の挙動。ループを終了する(選択肢1)は誤り、tool_useは継続シグナルである。プロンプトを再送する(選択肢2)は無意味な操作。",
+    "tags": [
+      "stop_reason",
+      "tool_use"
+    ],
+    "ref": "D1 stop_reason values"
+  },
+  {
+    "id": "agentic-003",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A developer productivity tool calls Claude with a web_search tool enabled for a long-running research task. Midway through, the response comes back with stop_reason 'pause_turn'. How should the calling code handle this?",
+    "choices": [
+      "Send the response back to the API unmodified so the server-side tool loop can continue",
+      "Treat it identically to 'end_turn' and display the current text to the user",
+      "Raise an error, since pause_turn indicates the request exceeded the context window",
+      "Apply exponential backoff and retry the exact same request from scratch"
+    ],
+    "answer": 0,
+    "explanation": "pause_turnはweb_searchのようなサーバーサイドツールの反復処理が一時停止した状態を示し、そのままレスポンスをAPIに送り返すことでループが継続される。end_turnと同一視して表示する(選択肢1)のは誤りで、まだ完了していない。コンテキストウィンドウ超過(選択肢2)はmodel_context_window_exceededの説明であり別のstop_reason。同一リクエストを最初からやり直す(選択肢3)のは不要かつ非効率。",
+    "tags": [
+      "stop_reason",
+      "pause_turn"
+    ],
+    "ref": "D1 stop_reason values"
+  },
+  {
+    "id": "agentic-004",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A structured data extraction pipeline uses a strict max_tokens setting. The API returns stop_reason 'max_tokens' with a partially formed JSON object in the content. What is the correct interpretation and response?",
+    "choices": [
+      "The content is complete and safe to parse as-is since max_tokens is only a soft advisory limit",
+      "The request violated a safety policy and should be logged as a refusal",
+      "The response was truncated before completion; the pipeline should detect this and issue a continuation or retry with a higher limit",
+      "The conversation has exceeded the model's total context window and must be restarted from scratch"
+    ],
+    "answer": 2,
+    "explanation": "max_tokensは出力が上限に達して途中で打ち切られたことを示すため、パイプラインは不完全な出力として扱い、継続要求や上限引き上げでの再試行を行うべきである。ソフトなアドバイザリで完全な内容とみなす(選択肢0)のは誤り、実際に切り詰められている。安全性による拒否(選択肢1)はrefusalの説明であり異なる。コンテキストウィンドウ超過(選択肢3)はmodel_context_window_exceededの説明で、max_tokensとは別の状況。",
+    "tags": [
+      "stop_reason",
+      "max_tokens"
+    ],
+    "ref": "D1 stop_reason values"
+  },
+  {
+    "id": "agentic-005",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A CI/CD automation script running Claude Code non-interactively receives a response with stop_reason 'refusal' and a stop_details object. What should the script do?",
+    "choices": [
+      "Parse the stop_details.explanation string with regex to decide whether to retry the same prompt",
+      "Log the refusal (including category if present), end the loop, and surface the explanation to a human rather than auto-retrying",
+      "Ignore stop_details entirely and simply resend the identical request up to the iteration cap",
+      "Treat it the same as tool_use and look for a tool_use block to execute"
+    ],
+    "answer": 1,
+    "explanation": "refusalは安全性判断によるモデルの拒否であり、ループはそこで終了し、stop_detailsのcategoryやexplanationを記録した上で人間にエスカレーションするのが正しい対応である。explanationは人間可読用でありプログラム的なパース対象ではないため、regexで解析して再試行判断に使う(選択肢0)のは誤り。stop_detailsを無視して同一リクエストを再送する(選択肢2)は安全性の意図を無視した危険な対応。tool_useと同様に扱う(選択肢3)は誤り、refusalにtool_useブロックは含まれない。",
+    "tags": [
+      "stop_reason",
+      "refusal",
+      "stop_details"
+    ],
+    "ref": "D1 stop_details on refusals"
+  },
+  {
+    "id": "agentic-006",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "In the Claude API, what does the 'category' field inside stop_details indicate when stop_reason is 'refusal'?",
+    "choices": [
+      "The specific tool that Claude refused to call",
+      "The HTTP error code that triggered the refusal",
+      "The number of retries remaining before the request is permanently blocked",
+      "A general safety classification such as 'cyber', 'bio', or null, alongside a human-readable explanation"
+    ],
+    "answer": 3,
+    "explanation": "stop_detailsのcategoryはrefusalの大まかな安全分類('cyber'、'bio'、またはnull)を表し、explanationは人間向けの説明文である。特定のツール名を示す(選択肢0)というのは誤り、refusalはツール呼び出しの問題ではなく安全性判断。HTTPエラーコード(選択肢1)ではない。残りリトライ回数(選択肢2)という概念もstop_detailsには存在しない。",
+    "tags": [
+      "stop_details",
+      "refusal"
+    ],
+    "ref": "D1 stop_details on refusals"
+  },
+  {
+    "id": "agentic-007",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "A team building a Claude Code CI pipeline on an older model version notices that refusal responses never include a populated stop_details object, only stop_reason: 'refusal'. What is the most likely explanation?",
+    "choices": [
+      "stop_details is a beta header that must be explicitly enabled with a feature flag on every request",
+      "stop_details for refusals is only populated on Opus 4.7 and later models; earlier models return refusal without it",
+      "The pipeline is missing a required tool definition, which suppresses stop_details",
+      "stop_details only appears when using the Message Batches API, never in synchronous calls"
+    ],
+    "answer": 1,
+    "explanation": "refusal時のstop_detailsはOpus 4.7以降のモデルでのみ提供される機能であり、それ以前のモデルではstop_reasonがrefusalであってもstop_detailsが伴わない、あるいはnullとなる。ベータヘッダーで有効化する必要がある(選択肢0)という記述は誤り、モデルバージョンに依存する仕様である。ツール定義の欠落が原因(選択肢2)というのは無関係。Message Batches API限定(選択肢3)という主張も誤りで、同期呼び出しでも条件を満たせば提供される。",
+    "tags": [
+      "stop_details",
+      "refusal",
+      "model-version"
+    ],
+    "ref": "D1 stop_details on refusals"
+  },
+  {
+    "id": "agentic-008",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A structured extraction agent occasionally sends very long documents that exceed the model's context window mid-response. Which stop_reason specifically signals this situation, as distinct from output truncation due to token limits?",
+    "choices": [
+      "model_context_window_exceeded",
+      "max_tokens",
+      "pause_turn",
+      "stop_sequence"
+    ],
+    "answer": 0,
+    "explanation": "model_context_window_exceededは、出力トークン上限に達する前にコンテキストウィンドウの限界に達したことを示す固有のstop_reasonであり、応答自体は有効だが内容が切り詰められている可能性がある。max_tokens(選択肢1)は出力側の上限到達であり、原因が異なる。pause_turn(選択肢2)はサーバーサイドツールの一時停止用。stop_sequence(選択肢3)はカスタム停止文字列の一致によるもので無関係。",
+    "tags": [
+      "stop_reason",
+      "model_context_window_exceeded"
+    ],
+    "ref": "D1 stop_reason values"
+  },
+  {
+    "id": "agentic-009",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "An engineer configures a custom stop sequence 'END_OF_REPORT' for a report-generation agent. After the model outputs the matching string, what does the API return in stop_reason, and what should the caller do?",
+    "choices": [
+      "stop_reason 'end_turn'; treat exactly like a natural completion with no special handling",
+      "stop_reason 'tool_use'; the caller must execute a tool before proceeding",
+      "stop_reason 'stop_sequence'; the caller should recognize the custom string was matched and handle accordingly (e.g., stripping it or finalizing output)",
+      "stop_reason 'refusal'; the request should be escalated as a safety issue"
+    ],
+    "answer": 2,
+    "explanation": "カスタムの停止文字列に一致した場合、stop_reasonは'stop_sequence'として返され、呼び出し側はどの文字列が一致したかを確認して適切に処理する必要がある。end_turnと同一視する(選択肢0)のは誤り、別の明確なstop_reasonが存在する。tool_use(選択肢1)は無関係。refusal(選択肢3)も安全性判断とは無関係な状況。",
+    "tags": [
+      "stop_reason",
+      "stop_sequence"
+    ],
+    "ref": "D1 stop_reason values"
+  },
+  {
+    "id": "agentic-010",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A junior engineer implements loop termination for a customer support agent as follows: 'if the response text does not contain any question marks or phrases like I need more information, treat the conversation as resolved and stop looping.' What is wrong with this design?",
+    "choices": [
+      "It is fine because natural language patterns are a reliable termination signal in production agents",
+      "It conflates text content with the structured stop_reason field, which is the only reliable signal for loop control; this text-parsing approach is a known anti-pattern",
+      "It should instead check whether the response contains at least one tool_use block before stopping",
+      "It should be replaced with a fixed cap of exactly 5 iterations regardless of stop_reason"
+    ],
+    "answer": 1,
+    "explanation": "テキスト内容を解析してループ終了を判断するのは、公式に非推奨とされるアンチパターンであり、正しくは構造化されたstop_reasonフィールドのみをループ制御の判断材料とすべきである。自然言語パターンは信頼できる(選択肢0)というのは誤り。tool_useブロックの有無を見る(選択肢2)は部分的に関連するが、根本的な問題であるテキスト解析への依存を修正していない。固定回数上限(選択肢3)も別のアンチパターンであり正しい修正ではない。",
+    "tags": [
+      "anti-pattern",
+      "text-parsing"
+    ],
+    "ref": "D1 anti-pattern: text-parsing termination"
+  },
+  {
+    "id": "agentic-011",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A team is debugging an agentic loop that seems to stop working reliably after exactly 5 tool calls, even when the task clearly requires more steps. Code review reveals a hardcoded 'if iteration_count >= 5: break' as the primary stopping mechanism. What is the recommended architecture?",
+    "choices": [
+      "Keep the hardcoded cap as the primary mechanism since it prevents runaway costs",
+      "Remove all iteration limits entirely and rely solely on the model's judgment with no safety backstop",
+      "Use stop_reason as the primary termination signal, and keep an iteration cap only as a defensive backstop against runaway loops, not as the main control",
+      "Replace the iteration cap with a check for whether the last tool_result contains an error"
+    ],
+    "answer": 2,
+    "explanation": "正しい設計は、stop_reasonを主たる終了判断とし、反復回数の上限はあくまで暴走防止のための保険(バックストップ)として保持することである。恣意的な反復上限を主要な停止機構として使う(選択肢0)ことがまさにアンチパターン。上限を完全に撤廃する(選択肢1)のはリスク管理を欠く。tool_resultのエラー有無だけを見る(選択肢3)はstop_reasonという正規のシグナルを無視した代替案であり不十分。",
+    "tags": [
+      "anti-pattern",
+      "iteration-cap"
+    ],
+    "ref": "D1 anti-pattern: arbitrary iteration caps"
+  },
+  {
+    "id": "agentic-012",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "During a multi-agent research task, a single Claude response contains a text block summarizing progress followed by two tool_use blocks for further searches, and stop_reason is 'tool_use'. A developer's code checks 'if response.text: mark_task_complete()' before even inspecting stop_reason. What failure mode does this introduce?",
+    "choices": [
+      "None; presence of a text block always means the task is finished regardless of stop_reason",
+      "It incorrectly treats mixed text+tool_use responses as completion, prematurely ending the loop while pending tool calls are never executed",
+      "It causes a stop_sequence mismatch error because text and tool_use cannot coexist in one response",
+      "It has no practical effect since Claude never returns text alongside tool_use blocks"
+    ],
+    "answer": 1,
+    "explanation": "単一のレスポンスにテキストブロックと複数のtool_useブロックが同時に含まれることは仕様上あり得るため、テキストの存在だけでタスク完了とみなすのはアンチパターンである。この場合、保留中のツール呼び出しが実行されないまま処理が終わってしまう。テキストの存在が常に完了を意味する(選択肢0)というのは誤った前提。text+tool_useの共存でエラーになる(選択肢2)というのは誤り、両者は共存可能。Claudeがテキストとtool_useを同時に返さない(選択肢3)という主張も誤り。",
+    "tags": [
+      "anti-pattern",
+      "text-as-completion",
+      "tool_use"
+    ],
+    "ref": "D1 anti-pattern: treating text presence as completion"
+  },
+  {
+    "id": "agentic-013",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "In a customer support agent's tool-calling flow, Claude's response includes a tool_use block with id 'toolu_01A2'. When the calling application returns the result, which field must be included to correctly pair the result with the original request?",
+    "choices": [
+      "A newly generated random UUID for the tool_result block",
+      "The name of the tool repeated as a plain string with no id at all",
+      "The original user prompt text embedded inside the tool_result content",
+      "The tool_use_id field set to exactly 'toolu_01A2', matching the original tool_use block's id"
+    ],
+    "answer": 3,
+    "explanation": "tool_resultブロックは、対応するtool_useブロックのidと完全に一致するtool_use_idを持たなければならず、これによって正しいペアリングが保証される。新しいランダムなUUIDを生成する(選択肢0)のは誤りで一致しなくなる。ツール名だけを繰り返す(選択肢1)のはidの役割を果たさない。元のユーザープロンプトを埋め込む(選択肢2)のは無関係でペアリングの要件を満たさない。",
+    "tags": [
+      "tool_use",
+      "tool_result",
+      "tool_use_id"
+    ],
+    "ref": "D1 tool_use/tool_result pairing"
+  },
+  {
+    "id": "agentic-014",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A response from Claude contains three separate tool_use blocks in a single turn (e.g., look up order, check inventory, verify discount code). How should the calling application structure its next message back to the API?",
+    "choices": [
+      "Return a single message containing all three corresponding tool_result blocks, each referencing its own tool_use_id",
+      "Send three separate follow-up messages, one per tool_result, in sequence",
+      "Return only the tool_result for the first tool_use block and ignore the other two",
+      "Merge all three tool outputs into one tool_result block sharing a single tool_use_id"
+    ],
+    "answer": 0,
+    "explanation": "単一のターンで複数のtool_useブロックが返された場合、呼び出し側は1つのメッセージの中にそれぞれ対応するtool_use_idを持つ複数のtool_resultブロックをまとめて返すのが正しい。3つの別々のメッセージに分ける(選択肢1)のは仕様に反する。1つだけ返し他を無視する(選択肢2)のは未処理のツール呼び出しを残すため誤り。複数の出力を1つのtool_use_idにまとめる(選択肢3)のはid対応の一意性を壊すため誤り。",
+    "tags": [
+      "tool_use",
+      "tool_result",
+      "multiple-blocks"
+    ],
+    "ref": "D1 tool_use/tool_result pairing"
+  },
+  {
+    "id": "agentic-015",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A tool call to a payment-verification API times out inside a Claude Code agent. The application returns a tool_result to Claude. What should be set in that tool_result to correctly signal the failure so Claude can reason about next steps?",
+    "choices": [
+      "Nothing special; return the same content shape as a successful result but with an empty string",
+      "Omit the tool_result entirely and immediately send an end_turn signal",
+      "Set \"is_error\": true on the tool_result along with descriptive content explaining the failure",
+      "Change the tool_use_id to a special reserved value indicating an error occurred"
+    ],
+    "answer": 2,
+    "explanation": "ツール呼び出しが失敗した場合は、tool_result内で\"is_error\": trueを設定し、失敗の内容を説明するcontentを付与することで、Claudeがその情報を踏まえて次の行動を判断できるようにするのが正しい。成功時と同じ形で空文字列を返す(選択肢0)のは失敗を隠蔽してしまう。tool_result自体を省略する(選択肢1)のはid対応が崩れ矛盾を生む。tool_use_idを特殊な予約値に変更する(選択肢3)のは仕様に反し、元のツール呼び出しとの対応が取れなくなる。",
+    "tags": [
+      "tool_result",
+      "is_error"
+    ],
+    "ref": "D1 tool_use/tool_result pairing"
+  },
+  {
+    "id": "agentic-016",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "A CI/CD automation script processes Claude's responses and, upon seeing stop_reason 'tool_use' with two tool_use blocks, executes only the first tool and sends back a single tool_result, then waits for the next model turn. What problem will this cause?",
+    "choices": [
+      "The API will reject the next request or Claude will be confused, since every tool_use block in the prior turn requires a matching tool_result before the conversation can proceed correctly",
+      "No problem; Claude will automatically infer the missing tool_result for the second tool_use block",
+      "The second tool_use block will silently be treated as an implicit end_turn",
+      "This only matters when using the Message Batches API, not in synchronous single-turn requests"
+    ],
+    "answer": 0,
+    "explanation": "前のターンで発行されたすべてのtool_useブロックには対応するtool_resultが必要であり、一部だけ返すと会話の整合性が崩れ、APIがリクエストを拒否するか、Claudeが混乱した応答をする原因になる。Claudeが自動的に欠落分を推測する(選択肢1)ことはない。暗黙のend_turnとして扱われる(選択肢2)という主張も誤り。Batches APIに限った問題(選択肢3)ではなく、同期呼び出しでも同様に問題になる。",
+    "tags": [
+      "tool_use",
+      "tool_result",
+      "pairing-integrity"
+    ],
+    "ref": "D1 tool_use/tool_result pairing"
+  },
+  {
+    "id": "agentic-017",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "Which stop_reason value indicates that Claude has finished its turn normally and produced a complete response ready to present to the user, with no further tool execution needed?",
+    "choices": [
+      "end_turn",
+      "pause_turn",
+      "tool_use",
+      "max_tokens"
+    ],
+    "answer": 0,
+    "explanation": "end_turnは、モデルが自然にターンを完了し、追加のツール実行なしにユーザーへ提示できる完全な応答が得られたことを示す。pause_turn(選択肢1)はサーバーサイドツールの一時停止であり完了ではない。tool_use(選択肢2)はツール実行が必要な継続シグナル。max_tokens(選択肢3)は出力が途中で切り詰められたことを示し、完了とは異なる。",
+    "tags": [
+      "stop_reason",
+      "end_turn"
+    ],
+    "ref": "D1 stop_reason values"
+  },
+  {
+    "id": "agentic-018",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "A multi-agent coordinator delegates a subtask to a research subagent and receives back a response where stop_reason is 'end_turn' but the content contains only a partial answer because the subagent's own tool_use loop was cut short internally by application code enforcing 'max 3 tool calls per subagent, no exceptions.' What is the root design flaw here?",
+    "choices": [
+      "end_turn should never appear in subagent responses, so the response itself is invalid",
+      "The subagent's tool_use_id was likely mismatched with its tool_result, corrupting the loop",
+      "The application used an arbitrary hard iteration cap as the primary stopping mechanism instead of letting stop_reason drive termination, cutting off the subagent before it naturally reached end_turn based on task completion",
+      "The coordinator failed to pass parent_tool_use_id, causing the subagent to lose context"
+    ],
+    "answer": 2,
+    "explanation": "この根本原因は、サブエージェントのループを「最大3回のツール呼び出しで例外なく打ち切る」という恣意的な固定上限で制御し、本来stop_reasonに基づいて自然に完了するはずの処理を強制的に中断してしまったことである。end_turnがサブエージェントに現れないという主張(選択肢0)は誤り。tool_use_idの不一致(選択肢1)は今回のシナリオの記述とは無関係。parent_tool_use_idの欠落(選択肢3)はトレーシングの問題であり、この打ち切りの原因ではない。",
+    "tags": [
+      "anti-pattern",
+      "iteration-cap",
+      "subagent"
+    ],
+    "ref": "D1 anti-pattern: arbitrary iteration caps"
+  },
+  {
+    "id": "agentic-019",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A developer productivity assistant built on Claude occasionally returns a response where the visible text says 'I'll go ahead and finalize this now' but stop_reason is actually 'tool_use' because a trailing tool_use block requests one more verification call. The application's control loop only reads the text and calls it done. Which best describes the bug class?",
+    "choices": [
+      "A legitimate design choice, since natural language framing accurately reflects the model's intent",
+      "A tool_result pairing bug caused by a missing is_error flag",
+      "An unavoidable consequence of the model_context_window_exceeded stop_reason",
+      "A text-parsing termination anti-pattern: the loop should have branched strictly on stop_reason rather than inferring completion from the sentence's wording"
+    ],
+    "answer": 3,
+    "explanation": "この不具合は、応答テキストの文言から完了を推測してしまうテキスト解析型終了判定のアンチパターンであり、正しくはstop_reasonのみに基づいて分岐すべきである。テキストの言い回しが意図を正確に反映しているので正当(選択肢0)という判断は誤り、モデルは実際にはまだツール呼び出しを要求している。is_errorフラグの欠落(選択肢1)は今回のシナリオとは無関係。model_context_window_exceeded(選択肢2)はこの状況とは無関係な別のstop_reason。",
+    "tags": [
+      "anti-pattern",
+      "text-parsing",
+      "stop_reason"
+    ],
+    "ref": "D1 anti-pattern: text-parsing termination"
+  },
+  {
+    "id": "agentic-020",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "A structured data extraction agent processes a response containing: a tool_use block for 'validate_schema' (id 'toolu_9x'), and a second tool_use block for 'fetch_reference_data' (id 'toolu_9y'), with stop_reason 'tool_use'. The 'validate_schema' call fails due to a malformed field. How should the application construct the next message to the API?",
+    "choices": [
+      "Skip returning any tool_result for the failed call and only return the successful fetch_reference_data result, hoping Claude infers the failure",
+      "Abort the entire workflow immediately since one of the parallel tool calls failed",
+      "Return a single message with two tool_result blocks: one for toolu_9x with is_error true and a description of the failure, and one for toolu_9y with its successful output",
+      "Combine both outcomes into one tool_result block using toolu_9x as the shared id, noting the error in the text"
+    ],
+    "answer": 2,
+    "explanation": "複数のtool_useブロックがある場合、それぞれに対応するtool_resultを1つのメッセージ内で返す必要があり、失敗したものにはis_error trueと失敗内容の説明を、成功したものには通常の出力を設定するのが正しい。失敗分の結果を省略する(選択肢0)のは対応関係を崩し、Claudeが正しく推論できなくなる。一つの失敗でワークフロー全体を中断する(選択肢1)のは部分結果を活かさないアンチパターン。2つの結果を1つのidにまとめる(選択肢3)のはtool_use_idの一意な対応関係を破壊する誤り。",
+    "tags": [
+      "tool_use",
+      "tool_result",
+      "is_error"
+    ],
+    "ref": "D1 tool_use/tool_result pairing"
+  },
+  {
+    "id": "agentic-021",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "A team is designing a multi-agent research system with a coordinator and five specialized subagents (web search, code analysis, data synthesis, citation checker, report writer). Which topology matches the architecture pattern favored by the exam guidance?",
+    "choices": [
+      "Hub-and-spoke: subagents communicate only with the coordinator, which routes all inter-subagent communication",
+      "All-to-all: every subagent can message every other subagent directly to speed up handoffs",
+      "Ring topology: each subagent passes its output to the next subagent in a fixed cycle",
+      "Mesh with a shared blackboard: subagents read and write to a common memory store without coordinator involvement"
+    ],
+    "answer": 0,
+    "explanation": "推奨されるのはhub-and-spoke構成で、コーディネーターが唯一のハブとなりサブエージェント間通信を全て仲介します。all-to-allはサブエージェント同士が直接通信するアンチパターンです。ringやblackboard共有メモリも、コーディネーターを介さない通信経路を作るため、責任分界とエラーハンドリングが曖昧になり不適切です。",
+    "tags": [
+      "hub-and-spoke",
+      "multi-agent",
+      "topology"
+    ],
+    "ref": "D1 hub-and-spoke vs all-to-all"
+  },
+  {
+    "id": "agentic-022",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "In a hub-and-spoke customer support agent architecture, the coordinator dispatches a billing subagent and a shipping subagent for one ticket. The billing subagent finishes first and discovers the customer also has a shipping issue. What should the billing subagent do?",
+    "choices": [
+      "Silently ignore the shipping issue since it is outside the billing subagent's scope",
+      "Spawn a new subagent itself to handle the shipping issue in parallel",
+      "Report its finding back to the coordinator, which decides whether to update the shipping subagent's task",
+      "Send a direct message to the shipping subagent asking it to include the new detail"
+    ],
+    "answer": 2,
+    "explanation": "コーディネーターの責務は全サブエージェント間通信のルーティングと集約であるため、billingサブエージェントは発見事項をコーディネーターに報告し、コーディネーターが次の委任を判断すべきです。サブエージェント同士の直接連絡はhub-and-spokeの原則に反します。無視するのは有用な発見を捨てることになり不適切、自律的な新規サブエージェント生成もコーディネーターの権限を越えています。",
+    "tags": [
+      "coordinator-responsibilities",
+      "hub-and-spoke",
+      "customer-support"
+    ],
+    "ref": "D1 coordinator responsibilities"
+  },
+  {
+    "id": "agentic-023",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A coordinator in a refund-processing workflow delegates to a 'verification subagent' by sending the prompt: 'Verify this customer's identity and confirm the refund is valid.' The subagent has no access to the order ID, refund amount, or the customer's prior messages, and produces an incorrect verification. What is the root cause?",
+    "choices": [
+      "The refund policy itself was ambiguous and needs rewriting",
+      "The coordinator failed to explicitly pass required context (order ID, amount, policy) since subagents do not inherit conversation history",
+      "The subagent model is too weak to perform verification tasks reliably",
+      "The subagent should have used a PreToolUse hook to fetch the missing data automatically"
+    ],
+    "answer": 1,
+    "explanation": "サブエージェントはコーディネーターの会話履歴を一切継承しないため、注文ID・金額・ポリシーなど必要な情報はプロンプトに明示的に渡す必要があります。本問の根本原因はこの文脈分離を無視した委任にあります。モデルの能力不足やポリシーの曖昧さは無関係で、PreToolUseフックはツール実行を制御する仕組みであり欠落コンテキストの補完手段ではありません。",
+    "tags": [
+      "context-isolation",
+      "subagent",
+      "refund"
+    ],
+    "ref": "D1 subagent context isolation"
+  },
+  {
+    "id": "agentic-024",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "Which statement correctly describes context inheritance for subagents launched via the Task/Agent tool?",
+    "choices": [
+      "Subagents automatically receive the full coordinator conversation history plus their assigned prompt",
+      "Subagents share a live, continuously synced context window with the coordinator",
+      "Subagents receive only what is explicitly included in the prompt the coordinator constructs for them",
+      "Subagents inherit the last five messages of the coordinator's history by default"
+    ],
+    "answer": 2,
+    "explanation": "サブエージェントは独立したコンテキストで起動され、コーディネーターの会話履歴を自動的に引き継ぐことはありません。必要な情報はすべて明示的にプロンプトへ含める必要があります。全履歴継承、ライブ同期、直近5件の自動継承といった選択肢はいずれも実際の仕組みと異なります。",
+    "tags": [
+      "context-isolation",
+      "subagent",
+      "Task-tool"
+    ],
+    "ref": "D1 subagent context isolation"
+  },
+  {
+    "id": "agentic-025",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A developer productivity tool always invokes all six available subagents (docs, tests, lint, security, performance, dependency-audit) for every single code review request, even for a one-line typo fix. What is the main downside of this design?",
+    "choices": [
+      "It violates the 4-5 tool maximum per agent principle",
+      "It wastes tokens and time by running the full pipeline instead of dynamically selecting only relevant subagents for the task at hand",
+      "It causes subagents to inherit stale conversation history from each other",
+      "It prevents the coordinator from aggregating results correctly"
+    ],
+    "answer": 1,
+    "explanation": "動的サブエージェント選択の原則では、タスクに関連するサブエージェントのみを起動すべきで、常に全パイプラインを実行するのはトークンと時間の浪費です。4-5ツール上限の原則はエージェントが持つツール数についての話であり、この設問の状況とは別問題です。サブエージェントはそもそも履歴を継承しないため無関係、また集約自体は妨げられません。",
+    "tags": [
+      "dynamic-subagent-selection",
+      "efficiency",
+      "developer-productivity"
+    ],
+    "ref": "D1 dynamic subagent selection"
+  },
+  {
+    "id": "agentic-026",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A multi-agent research system is asked to research 'trends shaping creative industries in 2026.' The coordinator decomposes the task into a single subagent scoped to 'visual arts and design trends.' What is the most likely problem with this decomposition?",
+    "choices": [
+      "The decomposition is too narrow and misses other creative industry aspects such as music, film, gaming, and literature",
+      "The coordinator should have skipped decomposition entirely and answered directly without subagents",
+      "A single subagent cannot be trusted with any research task regardless of scope",
+      "The task should have been sent to all subagents in parallel regardless of relevance"
+    ],
+    "answer": 0,
+    "explanation": "『creative industries』は視覚芸術以外にも音楽・映画・ゲーム・文学など多様な領域を含むため、視覚芸術のみへの限定は分解範囲が狭すぎるアンチパターンです。直接回答や単一サブエージェント全否定は極端すぎ、また無関係な全サブエージェント並列起動も動的選択の原則に反するため不適切です。",
+    "tags": [
+      "decomposition-breadth",
+      "research-system",
+      "anti-pattern"
+    ],
+    "ref": "D1 decomposition breadth risk"
+  },
+  {
+    "id": "agentic-027",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "A coordinator decomposes 'analyze our Q3 customer churn' into three subagents: pricing analysis, support-ticket sentiment, and product-usage analysis. After round 1, the synthesis reveals no subagent investigated competitor activity, which turned out to be a major churn driver mentioned in one ticket. What is the best next step?",
+    "choices": [
+      "Ask the sentiment subagent to expand its own scope on its own initiative without coordinator involvement",
+      "Restart the entire pipeline from scratch with all new subagents to avoid bias from round 1",
+      "Accept the round-1 synthesis as final since three subagents already ran and re-running is wasteful",
+      "Have the coordinator evaluate the gap and delegate a targeted round-2 task to a new or existing subagent focused on competitor activity"
+    ],
+    "answer": 3,
+    "explanation": "反復的改善のパターンでは、コーディネーターがラウンド1の結果を評価してギャップ（競合動向の欠落）を特定し、それを埋めるための的を絞ったラウンド2タスクを委任すべきです。ギャップを無視して受け入れるのは分解範囲の狭さを放置することになり不適切、サブエージェントが独断で範囲を広げるのはhub-and-spokeの原則違反、全面的なやり直しは不要なコストです。",
+    "tags": [
+      "iterative-refinement",
+      "gap-analysis",
+      "coordinator"
+    ],
+    "ref": "D1 iterative refinement rounds"
+  },
+  {
+    "id": "agentic-028",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "In the Claude Agent SDK / Claude Code, how should a coordinator execute three independent subagent tasks so they run in parallel rather than sequentially?",
+    "choices": [
+      "Use the `fork_session` parameter on a single Task call to triple the work automatically",
+      "Issue three separate Task/Agent tool_use calls, one per coordinator turn, waiting for each to complete before the next",
+      "Set `--max-turns 3` so the harness automatically parallelizes three subagent calls",
+      "Emit all three Task/Agent tool_use blocks within a single coordinator response"
+    ],
+    "answer": 3,
+    "explanation": "並列サブエージェント実行を実現するには、単一のコーディネーター応答内で複数のTask/Agent tool_use呼び出しを同時に発行する必要があります。ターンをまたいで1つずつ呼び出すのは逐次実行になってしまいます。fork_sessionは分岐したセッションを独立させる仕組みであり並列実行の手段ではなく、--max-turnsはターン数上限の設定であって並列化とは無関係です。",
+    "tags": [
+      "parallel-subagents",
+      "Task-tool",
+      "single-response"
+    ],
+    "ref": "D1 parallel subagent execution"
+  },
+  {
+    "id": "agentic-029",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A coordinator dispatches five subagents that each independently read 30-50 files while exploring different areas of a large codebase for a migration task. A developer worries this will blow up the coordinator's own context window. Which statement best describes why this concern is largely unfounded?",
+    "choices": [
+      "Subagents share the coordinator's context window, but Claude automatically compacts it after each subagent finishes",
+      "Each subagent's token consumption is isolated within its own context; the coordinator only receives the final summarized result, not the full exploration transcript",
+      "Subagents do not consume tokens at all since they run under separate API accounts",
+      "The concern is valid, so all five subagents must be merged into one to avoid excess token usage"
+    ],
+    "answer": 1,
+    "explanation": "サブエージェントのトークン消費は各サブエージェント自身の独立したコンテキストに隔離されており、コーディネーターは探索の全過程ではなく要約された結果のみを受け取ります。これによりコーディネーターの限られたコンテキストウィンドウを浪費せずに大規模な並行探索が可能になります。コンテキストが共有されて自動圧縮される、トークンを消費しない、統合が必須という説明はいずれも誤りです。",
+    "tags": [
+      "token-consumption-isolation",
+      "context-forking",
+      "subagent"
+    ],
+    "ref": "D1 token consumption isolation / context forking for subagents"
+  },
+  {
+    "id": "agentic-030",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "A structured data extraction pipeline uses a coordinator that fans out three subagents to extract facts from three different PDFs, then a synthesis subagent merges the results into a single report. Two of the three source documents report conflicting figures for the same metric. What should the structured context passed to the synthesis subagent look like?",
+    "choices": [
+      "Each extracted fact tagged only with its value, with the coordinator silently picking the more recent PDF's number to avoid clutter",
+      "A single merged value chosen by majority vote among the three subagents, discarding the minority result",
+      "Each extracted fact paired with source metadata such as source document name, publication date, and evidence text, so the synthesis subagent can attribute and reconcile conflicts explicitly",
+      "Only the raw PDF text blobs passed through unmodified, letting the synthesis subagent re-parse everything from scratch"
+    ],
+    "answer": 2,
+    "explanation": "構造化されたコンテキスト受け渡しでは、コンテンツとメタデータ（source_url相当のドキュメント名、公開日、根拠テキストなど）を分離して渡し、出典を明示することで矛盾を統合エージェントが明示的に判断できるようにすべきです。コーディネーターが黙って新しい方を選ぶ、多数決で少数意見を破棄するのはどちらも矛盾情報を隠蔽するアンチパターンです。生テキストのみを渡すのはメタデータによる属性保持を放棄しており非効率です。",
+    "tags": [
+      "structured-context-passing",
+      "source-metadata",
+      "data-extraction"
+    ],
+    "ref": "D1 structured context passing with source metadata"
+  },
+  {
+    "id": "agentic-031",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "In a hub-and-spoke customer support system, a 'shipping status' subagent throws an unrecoverable error after its underlying carrier-tracking API returns a malformed response. Per coordinator responsibilities, who is responsible for deciding what happens next (e.g., retry, skip, or escalate the whole case)?",
+    "choices": [
+      "The subagent itself, since it has the most direct knowledge of the error",
+      "The end customer, who should be shown the raw error message to decide",
+      "The coordinator, since handling subagent errors is one of its core responsibilities alongside decomposition, delegation, routing, and aggregation",
+      "No one; the workflow should silently continue as if the subagent had returned an empty result"
+    ],
+    "answer": 2,
+    "explanation": "コーディネーターの責務にはサブエージェントのエラー処理が明示的に含まれており、タスク分解・委任・通信ルーティング・結果集約と並ぶ中核的役割です。サブエージェント自身が独断で次の対応を決めるのはhub-and-spoke原則から外れ、生のエラーを顧客に見せるのは不適切な情報開示であり、エラーを無視して空の結果のように扱うのは結果の隠蔽というアンチパターンです。",
+    "tags": [
+      "coordinator-responsibilities",
+      "error-handling",
+      "hub-and-spoke"
+    ],
+    "ref": "D1 coordinator responsibilities (handle subagent errors)"
+  },
+  {
+    "id": "agentic-032",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "Which of the following best describes the primary responsibility set of a coordinator in a hub-and-spoke multi-agent system?",
+    "choices": [
+      "Writing all the final output text itself while subagents only fetch raw data",
+      "Executing every tool call directly instead of delegating, to minimize latency",
+      "Only monitoring token usage and cost, leaving task logic entirely to subagents",
+      "Decomposing tasks, delegating to subagents, routing inter-subagent communication, aggregating results, and handling subagent errors"
+    ],
+    "answer": 3,
+    "explanation": "コーディネーターの責務は、タスクの分解、サブエージェントへの委任、サブエージェント間通信のルーティング、結果の集約、そしてサブエージェントのエラー処理です。最終出力を全て自分で書く、全ツール呼び出しを自分で実行する、コスト監視のみに専念するといった選択肢はいずれもコーディネーターの本来の役割を狭めすぎています。",
+    "tags": [
+      "coordinator-responsibilities",
+      "hub-and-spoke"
+    ],
+    "ref": "D1 coordinator responsibilities"
+  },
+  {
+    "id": "agentic-033",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "During a multi-agent research task, one subagent's output is vague and contradicts another subagent's finding. Per the coordinator's responsibilities, what should happen next?",
+    "choices": [
+      "The two subagents should be allowed to exchange messages directly until they reach consensus",
+      "The coordinator should discard both results and terminate the workflow immediately",
+      "The coordinator should evaluate the synthesis quality, identify the gap or contradiction, and re-delegate a targeted task to resolve it",
+      "The final report should present both contradictory claims without any coordinator involvement, leaving resolution entirely to the end user with no annotation"
+    ],
+    "answer": 2,
+    "explanation": "コーディネーターは統合結果の品質を評価し、矛盾やギャップを特定した上で的を絞った再委任を行う責務があります。サブエージェント同士が直接やり取りするのはhub-and-spokeの原則違反、結果を全て破棄して終了するのは過剰反応、注釈なしに矛盾を放置するのは情報の出所管理を怠ることになり不適切です。",
+    "tags": [
+      "coordinator-responsibilities",
+      "synthesis-quality",
+      "iterative-refinement"
+    ],
+    "ref": "D1 coordinator responsibilities"
+  },
+  {
+    "id": "agentic-034",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "A Claude Code configuration for a large codebase migration spins up a coordinator that dynamically decides, per incoming task, which of ten available specialized subagents (frontend, backend, database, auth, billing, notifications, search, analytics, infra, docs) to invoke. For a task described as 'fix a typo in the login page button label,' what is the correct application of dynamic subagent selection?",
+    "choices": [
+      "Invoke all ten subagents in parallel in a single response to guarantee nothing is missed",
+      "Invoke the docs subagent first to determine which other subagents are relevant, then invoke the rest sequentially",
+      "Skip subagents entirely and have the coordinator make the edit directly, since dynamic selection only applies to research tasks",
+      "Invoke only the frontend subagent (and possibly auth if login-flow logic is touched), skipping the other unrelated subagents"
+    ],
+    "answer": 3,
+    "explanation": "動的サブエージェント選択の原則は、タスクに関連するサブエージェントのみを呼び出すことです。ログインボタンのラベル修正であればfrontend（必要なら関連するauth）だけで十分であり、10個全てを並列起動するのは無関係サブエージェントへの浪費です。docsサブエージェントを事前ルーターとして使うのは不要な間接性を加えるだけで的外れ、また動的選択は研究タスクに限らず一般的な原則です。",
+    "tags": [
+      "dynamic-subagent-selection",
+      "claude-code-configuration",
+      "migration"
+    ],
+    "ref": "D1 dynamic subagent selection"
+  },
+  {
+    "id": "agentic-035",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A developer building a CI/CD automation pipeline wants two independent Task tool calls (one for running unit tests, one for running a security scan) to execute concurrently to reduce pipeline duration. Which implementation detail is essential?",
+    "choices": [
+      "Both Task tool_use blocks must appear within the same assistant response/turn",
+      "Both subagents must be given `fork_session: true` explicitly to enable concurrency",
+      "The subagents must share the coordinator's conversation history so they can coordinate timing",
+      "The pipeline must set `--output-format stream-json` to allow concurrent execution"
+    ],
+    "answer": 0,
+    "explanation": "並列実行を実現する本質は、複数のTask/Agent tool_use呼び出しを同一の応答内にまとめて発行することです。fork_sessionは分岐セッションのための機能であり並列実行そのものの必須条件ではなく、サブエージェントは本来会話履歴を共有しない設計です。stream-json出力形式はCLIの出力形式設定であり並列実行とは無関係です。",
+    "tags": [
+      "parallel-subagents",
+      "single-response",
+      "CI/CD"
+    ],
+    "ref": "D1 parallel subagent execution"
+  },
+  {
+    "id": "agentic-036",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "A structured data extraction system coordinator passes each subagent's output to a downstream aggregator using only plain concatenated text blobs like 'Revenue grew 12% according to doc A. Revenue grew 15% according to doc B (approx).' No structured fields are attached. What is the main risk of this passing style compared to the recommended structured context pattern?",
+    "choices": [
+      "It loses machine-checkable source attribution (document name, publication date, exact evidence) needed to reconcile the conflicting figures programmatically",
+      "It is functionally identical to structured passing since both mention the source name in prose",
+      "It prevents the coordinator from ever invoking more than one subagent per aggregation step",
+      "It uses more tokens than a structured JSON representation would, which is the only downside"
+    ],
+    "answer": 0,
+    "explanation": "構造化コンテキスト受け渡しの目的は、source_url相当のドキュメント名・公開日・根拠テキストなどのメタデータをコンテンツと分離して保持し、属性追跡や矛盾の解決をプログラム的に行えるようにすることです。プレーンテキストの羅列ではこれらのメタデータがプログラムで扱いにくく、出所管理が失われます。トークン消費量の違いは本質的な問題ではなく、両者が機能的に同等という主張も誤りで、並列呼び出し回数とは無関係です。",
+    "tags": [
+      "structured-context-passing",
+      "source-metadata",
+      "aggregation"
+    ],
+    "ref": "D1 structured context passing with source metadata"
+  },
+  {
+    "id": "agentic-037",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "Which pair correctly identifies an anti-pattern related to subagent topology discussed for multi-agent architectures?",
+    "choices": [
+      "Anti-pattern: hub-and-spoke; correct pattern: all-to-all mesh for lower latency",
+      "Anti-pattern: flat all-to-all topology where subagents talk directly; correct pattern: hub-and-spoke routed through a coordinator",
+      "Anti-pattern: coordinator aggregating results; correct pattern: subagents self-aggregating without a coordinator",
+      "Anti-pattern: dynamic subagent selection; correct pattern: always invoking the full subagent roster"
+    ],
+    "answer": 1,
+    "explanation": "推奨されるのはhub-and-spoke構成であり、サブエージェントが直接会話するflatなall-to-allトポロジーはアンチパターンとされています。選択肢1はこれを逆に記述しており誤りです。コーディネーターによる結果集約はまさに推奨される責務であり、動的サブエージェント選択も推奨パターンなので、これらをアンチパターンとする記述は誤りです。",
+    "tags": [
+      "hub-and-spoke",
+      "anti-pattern",
+      "topology"
+    ],
+    "ref": "D1 hub-and-spoke vs all-to-all"
+  },
+  {
+    "id": "agentic-038",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "A multi-agent research system's coordinator delegates round 1 to a 'market sizing' subagent and a 'regulatory landscape' subagent. Round 1 results look complete and consistent, but the coordinator notices the regulatory subagent only covered US regulations for a report meant to be global. The coordinator immediately finalizes the report anyway to save time. What went wrong from an iterative-refinement standpoint?",
+    "choices": [
+      "Nothing went wrong; iterative refinement only applies when results conflict, not when they are merely incomplete in scope",
+      "The coordinator should have skipped round 1 delegation entirely and written the regulatory section itself",
+      "The coordinator should have treated the narrow regional scope as a gap and delegated a targeted round-2 task covering other regions before finalizing",
+      "The coordinator should have re-run the exact same subagent prompt a second time, since repetition alone fixes scope gaps"
+    ],
+    "answer": 2,
+    "explanation": "反復的改善では、コーディネーターがラウンド1の結果を評価してギャップ（この場合は地域範囲の狭さ）を特定し、他地域をカバーする的を絞ったラウンド2タスクを委任してから最終化すべきです。範囲の欠落を『矛盾がないから問題ない』とするのは誤り、コーディネーター自身が専門領域を書くのは分解の意味を失わせ、同一プロンプトの単純な再実行はスコープの問題を解決しません。",
+    "tags": [
+      "iterative-refinement",
+      "decomposition-breadth",
+      "research-system"
+    ],
+    "ref": "D1 iterative refinement rounds"
+  },
+  {
+    "id": "agentic-039",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "A billing subagent needs to explore two different refund-calculation strategies (prorated vs. flat-fee) against the same large transaction history dataset, without either exploratory branch's intermediate reasoning contaminating the other or the coordinator's main context. Which mechanism is designed for exactly this situation?",
+    "choices": [
+      "`fork_session`, which creates independent branches from a shared baseline so divergent approaches can be explored without cross-contamination",
+      "`parent_tool_use_id`, which only labels which subagent produced which output for tracing purposes",
+      "Raising `--max-turns` so the same subagent has enough turns to try both strategies sequentially in one context",
+      "Giving the subagent access to the coordinator's full conversation history so it can compare both strategies itself"
+    ],
+    "answer": 0,
+    "explanation": "`fork_session`は共有のベースラインから独立した分岐を作り、複数の異なるアプローチを互いに汚染することなく並行して探索するための仕組みです。`parent_tool_use_id`は出力の帰属を追跡するためのものであり分岐実行の機構ではありません。`--max-turns`は単にターン数上限の設定で、同一コンテキスト内で戦略を切り替えれば推論が混ざり合うリスクが残ります。会話履歴全体へのアクセス付与も汚染防止にはならず、むしろコンテキスト分離の原則に反します。",
+    "tags": [
+      "fork_session",
+      "context-isolation",
+      "subagent"
+    ],
+    "ref": "D1 fork_session for divergent approaches without contamination"
+  },
+  {
+    "id": "agentic-040",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "In the Claude Agent SDK, which construct is used to define a subagent's role, including its `description`, `prompt`, and allowed `tools`, so a coordinator can select and delegate to it appropriately?",
+    "choices": [
+      "The `stop_reason` field returned on each API response",
+      "The `AgentDefinition` structure",
+      "The `.mcp.json` server configuration file",
+      "The `PreToolUse` hook configuration"
+    ],
+    "answer": 1,
+    "explanation": "`AgentDefinition`はサブエージェントの`description`、`prompt`、使用可能な`tools`一覧を定義する構造であり、コーディネーターが適切なサブエージェントを選択・委任するための基盤となります。`stop_reason`はエージェントループの停止判断に使うフィールド、`.mcp.json`はMCPサーバー設定ファイル、`PreToolUse`フックはツール実行前の制御機構であり、いずれもサブエージェント定義そのものではありません。",
+    "tags": [
+      "AgentDefinition",
+      "Claude-Agent-SDK",
+      "subagent"
+    ],
+    "ref": "D1 AgentDefinition structure"
+  },
+  {
+    "id": "agentic-041",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A customer support agent has a system prompt instruction: 'Always call get_customer to verify identity before calling process_refund.' In production, an occasional trace shows process_refund executing without a prior get_customer call. What is the most reliable fix?",
+    "choices": [
+      "Rewrite the instruction in bold at the top of the system prompt and add a repeated reminder before each tool call",
+      "Lower the temperature so the model follows instructions more literally",
+      "Add a few-shot example showing the correct verification-then-refund order",
+      "Add a PreToolUse hook that blocks process_refund unless verification has already occurred in the session, returning permissionDecision deny otherwise"
+    ],
+    "answer": 3,
+    "explanation": "正解はPreToolUseフックによるprocess_refundのブロックです。プロンプト指示は確率的な効果しか持たず、金融・安全上重要なルールには決定論的な強制が必要というのがこの分野の代表例です。選択肢0（太字での指示強調）は依然としてプロンプトベースであり100%の保証にはなりません。選択肢1（温度調整）はツール呼び出し順序を保証する仕組みではなく、出力のランダム性を下げるだけです。選択肢2（few-shot例）も指示の一種にすぎず、モデルが誤って無視すれば強制力を持ちません。",
+    "tags": [
+      "hooks",
+      "PreToolUse",
+      "enforcement"
+    ],
+    "ref": "Programmatic vs prompt-based enforcement"
+  },
+  {
+    "id": "agentic-042",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "In the Claude Code hooks system, which statement correctly describes the exit-code contract for a 'command' type hook?",
+    "choices": [
+      "Exit code 0 blocks the action and exit code 2 allows it to proceed",
+      "Exit code 2 blocks the action (deny) and exit code 0 allows it to pass",
+      "Any non-zero exit code is treated as 'ask' regardless of value",
+      "Exit codes are ignored; only stdout JSON determines the decision"
+    ],
+    "answer": 1,
+    "explanation": "command型フックではexit 0が許可（pass）、exit 2がブロック（deny）という契約が定められています。選択肢0はこれを逆にしており誤りです。選択肢2は具体的な仕様（exit 2固有の意味）を無視した誤った一般化です。選択肢3はstdoutのJSON出力もpermissionDecisionとして利用され得ますが、exit codeも独立して意味を持つため誤りです。",
+    "tags": [
+      "hooks",
+      "exit-code",
+      "command-hook"
+    ],
+    "ref": "Five hook types: command exit 0/2"
+  },
+  {
+    "id": "agentic-043",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A Claude Code configuration team wants a hook that can hold a full multi-turn conversation with its own tools to decide whether a risky Bash command should run, rather than a single yes/no judgment. Which hook type should they configure?",
+    "choices": [
+      "prompt",
+      "http",
+      "mcp_tool",
+      "agent"
+    ],
+    "answer": 3,
+    "explanation": "agentタイプのフックはツールを持つマルチターンのサブエージェントとして動作し、複雑な判断が必要な場面に適しています。promptタイプは単発のLLMによるyes/no判定に限られるため要件を満たしません。httpタイプは外部Webhookへのシンプルなpostであり、対話的な多段階判断はできません。mcp_toolはMCPサーバーのツールを呼び出す仕組みで、会話型の意思決定には向いていません。",
+    "tags": [
+      "hooks",
+      "agent-hook",
+      "hook-types"
+    ],
+    "ref": "Five hook types: command/http/mcp_tool/prompt/agent"
+  },
+  {
+    "id": "agentic-044",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "The 2026 hooks system expanded to 28 events across 6 groups. Which of the following events is described in the inventory as firing when a subagent (Task/Agent) invocation completes, distinct from the main session stopping?",
+    "choices": [
+      "SubagentStop",
+      "Stop",
+      "PostToolUse",
+      "SessionEnd"
+    ],
+    "answer": 0,
+    "explanation": "SubagentStopはサブエージェント（Task/Agent呼び出し）の完了時に発火するイベントで、メインセッションの終了を示すStopとは区別されます。Stopはメインセッションの停止に対応するイベントです。PostToolUseは個々のツール呼び出し後に発火するもので、サブエージェント完了とは別概念です。SessionEndはセッション全体の終了時に発火し、サブエージェント単位のイベントではありません。",
+    "tags": [
+      "hooks",
+      "events",
+      "SubagentStop"
+    ],
+    "ref": "Hooks system: 28 events / 6 groups"
+  },
+  {
+    "id": "agentic-045",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A developer productivity team wants a hook that runs before any tool call so it can enforce a business rule deterministically, and wants the hook's output to explicitly tell the harness whether to allow, deny, or prompt the user. Which JSON field in the hook's output carries that decision?",
+    "choices": [
+      "additionalContext",
+      "hookEventName",
+      "permissionDecision",
+      "isRetryable"
+    ],
+    "answer": 2,
+    "explanation": "permissionDecisionフィールドが'allow'、'deny'、'ask'のいずれかを持ち、フックの判断結果を表します。additionalContextは補足情報を追加するためのフィールドで意思決定そのものではありません。hookEventNameはどのイベントに対する応答かを示すだけで決定内容ではありません。isRetryableはツールエラーの再試行可否を示すフィールドであり、フックの許可/拒否判断とは無関係です。",
+    "tags": [
+      "hooks",
+      "permissionDecision",
+      "PreToolUse"
+    ],
+    "ref": "Hook decision output JSON"
+  },
+  {
+    "id": "agentic-046",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "A structured data extraction pipeline calls a tool that returns raw API responses containing customer SSNs and internal timestamps in inconsistent formats. The team wants Claude to never see the raw SSN and to always see timestamps normalized to ISO 8601, without changing the tool's underlying implementation. Which mechanism should they add?",
+    "choices": [
+      "A PreToolUse hook that rewrites the tool's input arguments before the call",
+      "A UserPromptSubmit hook that filters the user's initial request",
+      "A stricter input_schema with additionalProperties: false on the tool definition",
+      "A PostToolUse hook that scrubs and normalizes the tool result before it reaches Claude's context"
+    ],
+    "answer": 3,
+    "explanation": "PostToolUseフックはツール実行結果がClaudeに渡される前にインターセプトでき、機密データのスクラビングやタイムスタンプの正規化といった後処理に最適です。PreToolUseは呼び出し前の入力に介入するものであり、返ってくる結果の中身は変えられません。UserPromptSubmitはユーザーの初期プロンプトに対するフックであり、ツール結果とは無関係です。input_schemaの強化は入力バリデーションの話であり、ツールが返す出力内容のスクラブや正規化とは無関係です。",
+    "tags": [
+      "hooks",
+      "PostToolUse",
+      "data-scrubbing"
+    ],
+    "ref": "PostToolUse hooks intercept results before Claude sees them"
+  },
+  {
+    "id": "agentic-047",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A team is authoring a SKILL.md for a 'deploy' skill that should automatically run a validation hook whenever this specific skill is active, without affecting hook behavior in the rest of the project. Where should this hook be declared?",
+    "choices": [
+      "In the global ~/.claude/settings.json only",
+      "In .claude/settings.local.json so it stays machine-local",
+      "In a separate .claude/rules/deploy.md file with paths frontmatter",
+      "In the hooks frontmatter field inside the SKILL.md file itself"
+    ],
+    "answer": 3,
+    "explanation": "SKILL.mdのフロントマターにあるhooksフィールドを使うことで、そのスキルに固有のフックをスコープすることができます。グローバルなsettings.jsonに置くとプロジェクト全体に影響してしまい、このスキルだけに限定できません。settings.local.jsonはマシンローカルな設定用であり、スキル単位のフックスコープの仕組みではありません。.claude/rules/はコンテキスト注入用のルールファイルであり、フック定義の仕組みではありません。",
+    "tags": [
+      "hooks",
+      "SKILL.md",
+      "hook-scoping"
+    ],
+    "ref": "Hook scoping: hooks frontmatter in SKILL.md"
+  },
+  {
+    "id": "agentic-048",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "Where should a team store MCP server and permission settings that must apply to every developer on the project and be checked into version control so all teammates share the same baseline?",
+    "choices": [
+      ".claude/settings.local.json",
+      ".claude/settings.json",
+      "~/.claude/settings.json",
+      "managed policy settings only"
+    ],
+    "answer": 1,
+    "explanation": ".claude/settings.jsonはプロジェクトスコープでバージョン管理される設定ファイルであり、チーム全員が共有すべき標準設定を置く場所として正しいです。settings.local.jsonはマシンローカルでgitignoreされるため個人設定用であり共有には不向きです。~/.claude/settings.jsonはユーザースコープであり、そのユーザーの全プロジェクトに影響するためプロジェクト固有の共有設定には適しません。managed policyは組織管理者が強制するポリシー用であり、プロジェクトチームが自由に編集する場所ではありません。",
+    "tags": [
+      "settings",
+      "scopes",
+      "project-settings"
+    ],
+    "ref": "Settings file scopes: user/project/local/managed"
+  },
+  {
+    "id": "agentic-049",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A developer wants to override a project's shared hook configuration on their own laptop only, for example disabling a slow linting hook while debugging, without ever risking that change being committed and applied to the whole team. Which settings file should they edit?",
+    "choices": [
+      ".claude/settings.local.json",
+      ".claude/settings.json",
+      "~/.claude/settings.json",
+      "the managed policy file"
+    ],
+    "answer": 0,
+    "explanation": ".claude/settings.local.jsonはgitignore対象のマシンローカル設定であり、個人環境だけに影響してチームには反映されないため、この要件に正しく合致します。.claude/settings.jsonはプロジェクト共有かつバージョン管理される設定であり、コミットされるとチーム全体に影響してしまいます。~/.claude/settings.jsonはユーザースコープでそのユーザーの全プロジェクトに影響するため、このプロジェクト限定の一時変更には粒度が合いません。managed policyは組織管理者用であり開発者個人が編集する対象ではありません。",
+    "tags": [
+      "settings",
+      "scopes",
+      "local-settings"
+    ],
+    "ref": "Settings file scopes: user/project/local/managed"
+  },
+  {
+    "id": "agentic-050",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "An org administrator wants to guarantee that a data-loss-prevention hook cannot be disabled or overridden by any individual project or developer, even if they edit their own settings.local.json. Which settings scope should the DLP hook be defined in?",
+    "choices": [
+      "Project scope (.claude/settings.json)",
+      "User scope (~/.claude/settings.json)",
+      "Managed policy scope",
+      "Local scope (.claude/settings.local.json)"
+    ],
+    "answer": 2,
+    "explanation": "managed policyは組織管理者が強制するスコープであり、プロジェクトやユーザー、ローカル設定によって上書きされないため、この要件に合致します。プロジェクトスコープの設定はチーム内の誰でも編集可能でありDLPの強制力としては不十分です。ユーザースコープは個々の開発者が自由に変更できるため強制力がありません。ローカルスコープは最も緩く、個人が自由に上書きできるためこの目的には全く適しません。",
+    "tags": [
+      "settings",
+      "managed-policy",
+      "enforcement"
+    ],
+    "ref": "Settings file scopes: managed policy (org admin)"
+  },
+  {
+    "id": "agentic-051",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A multi-agent research system coordinator needs to guarantee that no subagent can call a 'publish_report' tool unless a 'fact_check' tool has already run and returned a passing result in that subagent's own execution. Which design correctly enforces this?",
+    "choices": [
+      "Add a PreToolUse hook on publish_report that checks whether fact_check has run and denies the call otherwise",
+      "Instruct the subagent's prompt: 'You must run fact_check before publish_report'",
+      "Rely on the coordinator to review subagent output after the fact and re-delegate if fact_check was skipped",
+      "Add a code comment in the tool definition explaining the required order"
+    ],
+    "answer": 0,
+    "explanation": "PreToolUseフックによってpublish_report呼び出し前にfact_checkの実行状況を検証し、条件を満たさない場合にdenyするのが決定論的で確実な方法です。プロンプト指示はモデルが誤って無視する可能性があり保証にはなりません。コーディネーターによる事後レビューは既にpublish_reportが実行された後の対処であり、事前防止にはなりません。コード内のコメントは実行時に何の強制力も持ちません。",
+    "tags": [
+      "hooks",
+      "PreToolUse",
+      "multi-agent"
+    ],
+    "ref": "Programmatic vs prompt-based enforcement"
+  },
+  {
+    "id": "agentic-052",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "Which of the following is one of the five hook types available in the Claude Code hooks system, alongside command, http, and mcp_tool?",
+    "choices": [
+      "prompt and agent",
+      "webhook and cron",
+      "retry and fallback",
+      "sync and async"
+    ],
+    "answer": 0,
+    "explanation": "5種類のフックタイプはcommand、http、mcp_tool、prompt、agentであり、promptとagentが正しい組み合わせです。webhookはhttpタイプの別名にすぎずcronという独立したフックタイプは存在しません。retryやfallbackはエラー処理の概念でありフックタイプではありません。syncやasyncはフックの実行モデルの一般用語であり、公式に定義された5つのフックタイプ名ではありません。",
+    "tags": [
+      "hooks",
+      "hook-types"
+    ],
+    "ref": "Five hook types: command/http/mcp_tool/prompt/agent"
+  },
+  {
+    "id": "agentic-053",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A CI/CD automation pipeline uses a PreToolUse hook to gate a 'deploy_to_prod' tool. The hook script queries an external change-management API over HTTPS and needs up to 10 seconds to respond. Rather than writing a shell script that shells out to curl, which hook type is purpose-built for delegating the decision to an external webhook?",
+    "choices": [
+      "command",
+      "http",
+      "mcp_tool",
+      "prompt"
+    ],
+    "answer": 1,
+    "explanation": "httpタイプのフックはPOSTリクエストを外部Webhookに送信する用途に特化しており、この要件に最も適しています。commandタイプはシェルスクリプトを実行する仕組みであり、curlを内部で呼ぶ回避策は可能でも本来の目的には合いません。mcp_toolはMCPサーバーが提供するツールを呼び出す仕組みであり、汎用的な外部HTTP APIへの問い合わせ用ではありません。promptタイプは単発のLLM判断用であり外部システムへの問い合わせ機構ではありません。",
+    "tags": [
+      "hooks",
+      "http-hook",
+      "CI/CD"
+    ],
+    "ref": "Five hook types: http (POST webhook)"
+  },
+  {
+    "id": "agentic-054",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "A team configures a PreToolUse hook on a 'send_email' tool. The hook script exits with code 2 and also prints a JSON object to stdout containing permissionDecision: 'allow'. What should the harness do?",
+    "choices": [
+      "Trust the exit code as authoritative and block the tool call, treating the conflicting JSON as informational only",
+      "Trust the JSON output as authoritative and allow the tool call, ignoring the exit code",
+      "Average the two signals and fall back to 'ask'",
+      "Reject the hook configuration entirely as invalid before the session starts"
+    ],
+    "answer": 0,
+    "explanation": "command型フックの契約ではexit code自体が権威的なシグナルであり、exit 2はブロックを意味するため、矛盾するJSON出力よりexit codeが優先されると解釈するのが最も安全側に倒した一貫性のある挙動です。JSON出力を優先してallowにしてしまうと、明示的なdeny用exit codeの意味を無視することになり危険です。二つのシグナルを平均するという概念はフック契約に存在しません。設定自体を無効として起動を拒否するという扱いも仕様にはなく、実行時の矛盾ハンドリングの問題です。",
+    "tags": [
+      "hooks",
+      "exit-code",
+      "permissionDecision"
+    ],
+    "ref": "Command hook exit 0/2 vs permissionDecision JSON"
+  },
+  {
+    "id": "agentic-055",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A developer productivity team writes a SKILL.md for a 'run-tests' skill and wants a hook to automatically post a Slack notification whenever this skill's tool calls fail, but only while this skill is active — not globally for every tool call in the project. What is the correct approach?",
+    "choices": [
+      "Declare the hook globally in .claude/settings.json and add a conditional check inside the hook script for the skill name",
+      "Declare the hook in ~/.claude/settings.json so every developer gets it automatically",
+      "Declare the hook in the hooks frontmatter of the run-tests SKILL.md so it is scoped to that skill",
+      "Declare the hook in .claude/settings.local.json since it only needs to run during local test runs"
+    ],
+    "answer": 2,
+    "explanation": "SKILL.mdのhooksフロントマターに定義することで、そのスキルがアクティブな間だけフックがスコープされ、要件どおりの挙動になります。settings.jsonにグローバルに書いて条件分岐で絞り込む方法は動作はしても複雑で意図に反した設計であり、スキルスコープの仕組みを使う本来の方法ではありません。~/.claude/settings.jsonに書くとプロジェクト全体・全ツール呼び出しに影響し、スキル限定にはなりません。settings.local.jsonもマシンローカルスコープであり、スキル単位のスコーピングとは別の軸です。",
+    "tags": [
+      "hooks",
+      "SKILL.md",
+      "hook-scoping"
+    ],
+    "ref": "Hook scoping: hooks frontmatter in SKILL.md"
+  },
+  {
+    "id": "agentic-056",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "A customer support agent's process_refund tool occasionally gets called even though the transcript shows the model 'said' it would verify the customer first. What general principle explains why relying on the model's stated intentions is unreliable for enforcement?",
+    "choices": [
+      "Prompt-based instructions are probabilistic and best-effort; only programmatic mechanisms like hooks give deterministic 100% enforcement for critical rules",
+      "The model's context window was too small to hold the instruction",
+      "The refund tool's input_schema was missing a required field",
+      "The stop_reason was misinterpreted as end_turn instead of tool_use"
+    ],
+    "answer": 0,
+    "explanation": "プロンプトによる指示は確率的にしか効かず、金融や安全に関わる重要なルールを保証するには、フックのようなプログラム的な強制メカニズムが必要というのがこの分野の核心的な原則です。コンテキストウィンドウのサイズは今回のシナリオの原因として提示されておらず論点のすり替えです。input_schemaの不備はツール呼び出しの引数検証に関する話であり、検証プロセスの省略とは別問題です。stop_reasonの誤解釈はエージェントループの停止判定に関する話であり、今回のツール呼び出し順序の保証問題とは無関係です。",
+    "tags": [
+      "enforcement",
+      "prompt-based",
+      "hooks"
+    ],
+    "ref": "Programmatic vs prompt-based enforcement (heavily tested)"
+  },
+  {
+    "id": "agentic-057",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A team maintains a shared .claude/settings.json in their git repository that defines a project-wide PostToolUse hook for scrubbing PII from tool outputs. A new contributor clones the repo and wants to temporarily disable that hook while debugging on their own machine, without ever committing a change that would remove the hook for the whole team. What should they do?",
+    "choices": [
+      "Directly edit and commit a change to .claude/settings.json removing the hook, then revert it later",
+      "Add an override in .claude/settings.local.json that disables the hook for their machine only",
+      "Ask the org administrator to update the managed policy to disable the hook temporarily",
+      "Edit ~/.claude/settings.json to disable all PostToolUse hooks across every project"
+    ],
+    "answer": 1,
+    "explanation": "settings.local.jsonはgitignoreされるマシンローカルスコープであり、個人環境限定でオーバーライドを行うのに最も適した場所です。プロジェクト共有ファイルを直接編集してコミットする方法は、一時的であってもチーム全体に影響するリスクがあり不適切です。組織管理者に依頼してmanaged policyを変更する方法は、この程度のローカルなデバッグ目的には過剰であり非効率です。~/.claude/settings.jsonを編集すると、そのユーザーの全プロジェクトに影響してしまい、対象プロジェクトだけに限定できません。",
+    "tags": [
+      "settings",
+      "scopes",
+      "local-override"
+    ],
+    "ref": "Settings file scopes: local vs project"
+  },
+  {
+    "id": "agentic-058",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "A structured data extraction system uses a PostToolUse hook to normalize dates returned by a document-parsing tool before Claude sees them. A reviewer notices the hook also silently drops the 'confidence' field from every tool result to reduce noise. What is the risk of this design?",
+    "choices": [
+      "PostToolUse hooks cannot modify tool results at all, so this configuration would fail outright",
+      "Scrubbing results this way is functionally identical to prompt-based enforcement and provides no reliability benefit",
+      "The hook is silently discarding information the model needs for downstream decisions, which is a scrubbing anti-pattern distinct from legitimate normalization",
+      "PostToolUse hooks only run on errors, so a successful parse would never trigger the scrub"
+    ],
+    "answer": 2,
+    "explanation": "PostToolUseフックはタイムスタンプ正規化のような正当な整形には有効ですが、confidenceのように下流の判断に必要な情報を無断で削ってしまうのは、有用なスクラビングと区別すべきアンチパターンです。PostToolUseフックはツール結果を変更できないという選択肢は誤りで、まさに結果を書き換えられる点がこの機能の核心です。スクラブが常にプロンプトベース強制と同じという主張も誤りで、PostToolUseはプログラム的（決定論的）に結果を変更する仕組みです。PostToolUseはエラー時だけ発火するという説明も誤りで、成功時にも結果を処理できます。",
+    "tags": [
+      "hooks",
+      "PostToolUse",
+      "anti-pattern"
+    ],
+    "ref": "PostToolUse result scrubbing"
+  },
+  {
+    "id": "agentic-059",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A Claude Code configuration lead is deciding where to put a company-wide rule that no developer, anywhere in the org, should ever be able to disable telemetry reporting hooks, regardless of which project they work in or what they put in their personal settings. Which scope is designed for exactly this org-wide, non-overridable requirement?",
+    "choices": [
+      "User scope, applied consistently by convention across the team",
+      "Project scope, documented in the team wiki as mandatory",
+      "Managed policy scope, controlled by org admins and taking precedence over other scopes",
+      "Local scope, with a pre-commit check that verifies it wasn't changed"
+    ],
+    "answer": 2,
+    "explanation": "managed policyスコープはまさに組織全体で強制され、他のどのスコープよりも優先される非上書き可能な設定のために設計されています。ユーザースコープは各開発者が自由に変更できるため、慣習に頼るだけでは強制力がありません。プロジェクトスコープもチームメンバーが編集可能であり、wikiに書くだけでは技術的な強制にはなりません。ローカルスコープは最も上書きしやすいスコープであり、pre-commitチェックを足しても本質的な強制力の高さでは managed policy に及びません。",
+    "tags": [
+      "settings",
+      "managed-policy",
+      "org-wide"
+    ],
+    "ref": "Settings file scopes: managed policy (org admin)"
+  },
+  {
+    "id": "agentic-060",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "A team wants a hook that runs once, briefly asks a single yes/no question to an LLM (e.g., 'does this commit message look suspicious?') and returns a decision, without needing tool access or a multi-turn conversation. Which hook type fits this exactly?",
+    "choices": [
+      "agent",
+      "prompt",
+      "mcp_tool",
+      "command"
+    ],
+    "answer": 1,
+    "explanation": "promptタイプのフックは単発のLLMによるyes/no判定に特化しており、この要件に正確に合致します。agentタイプはツールを持つマルチターンのサブエージェントであり、単純な一発判定には過剰です。mcp_toolはMCPサーバーが提供するツールを呼び出す仕組みであり、LLMへの単純な質問応答とは異なります。commandタイプはシェルスクリプトの実行であり、LLM判断そのものを直接扱う仕組みではありません。",
+    "tags": [
+      "hooks",
+      "prompt-hook",
+      "hook-types"
+    ],
+    "ref": "Five hook types: prompt (single LLM yes/no)"
+  },
+  {
+    "id": "agentic-061",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "A developer is building a multi-agent research system using the Claude Agent SDK in Python. Which two elements form the primary entry point for launching an agent session?",
+    "choices": [
+      "query() function combined with ClaudeAgentOptions",
+      "AgentDefinition combined with parent_tool_use_id",
+      "fork_session combined with a hook decision JSON",
+      "The Task tool combined with a PreToolUse hook"
+    ],
+    "answer": 0,
+    "explanation": "Claude Agent SDKの主要なエントリーポイントはquery()関数とClaudeAgentOptionsであり、これらを組み合わせてエージェントセッションを起動する。AgentDefinitionとparent_tool_use_idはサブエージェント定義や属性追跡のための要素であり、起動そのものの手段ではない。fork_sessionはセッション分岐の機能で起動用ではない。TaskツールはClaude Code側の呼称でSDKのエントリーポイントではなく、PreToolUseはフックの一種に過ぎない。",
+    "tags": [
+      "claude-agent-sdk",
+      "query",
+      "ClaudeAgentOptions"
+    ],
+    "ref": "D1 Agent SDK basics"
+  },
+  {
+    "id": "agentic-062",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "In a multi-agent research system built on the Claude Agent SDK, a team lead wants each subagent's role to be declared with a clear purpose, its system prompt, and the exact tool set it may use. Which construct should they use to define this?",
+    "choices": [
+      "A ClaudeAgentOptions object with only the tools field set",
+      "A fork_session call with a shared baseline",
+      "An AgentDefinition object with description, prompt, and tools fields",
+      "A PostToolUse hook with additionalContext set"
+    ],
+    "answer": 2,
+    "explanation": "AgentDefinitionはサブエージェントごとの役割を定義するための構造体で、description・prompt・toolsの3フィールドを持つ。ClaudeAgentOptionsはセッション全体の設定用でtoolsフィールドだけでは個々のサブエージェント定義にならない。fork_sessionはセッション分岐機能であり役割定義の手段ではない。PostToolUseフックはツール実行後の結果加工用であり役割定義とは無関係。",
+    "tags": [
+      "AgentDefinition",
+      "claude-agent-sdk",
+      "multi-agent"
+    ],
+    "ref": "D1 AgentDefinition structure"
+  },
+  {
+    "id": "agentic-063",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "A developer notices that in Claude Code the delegation mechanism is called the \"Task\" tool, but when reading the Claude Agent SDK documentation for the same underlying mechanism, what name should they expect to see?",
+    "choices": [
+      "Agent",
+      "Subprocess",
+      "Delegate",
+      "Worker"
+    ],
+    "answer": 0,
+    "explanation": "Claude Codeの「Task」ツールとClaude Agent SDKの「Agent」は同一の仕組みを指す別名であり、この命名対応は試験で重視されるポイントである。Subprocess、Delegate、Workerはいずれもドキュメント上の正式名称ではなく紛らわしい誤答choicesである。",
+    "tags": [
+      "Task-Agent-naming",
+      "claude-agent-sdk",
+      "claude-code"
+    ],
+    "ref": "D1 Task=Agent naming"
+  },
+  {
+    "id": "agentic-064",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A team is debugging a multi-agent research pipeline where several subagents produce output that gets aggregated by a coordinator. When inspecting the raw message log to figure out which subagent invocation produced a particular piece of output, which field should they trace?",
+    "choices": [
+      "session_id",
+      "custom_id",
+      "stop_reason",
+      "parent_tool_use_id"
+    ],
+    "answer": 3,
+    "explanation": "parent_tool_use_idはサブエージェントの出力がどのツール呼び出しに由来するかを追跡するための属性フィールドであり、メッセージの帰属関係を明らかにする。session_idはセッション全体の識別子でサブエージェント単位の追跡には使えない。custom_idはMessage Batches APIでの相関付けに使うものでこの文脈とは無関係。stop_reasonはループ終了理由を示すもので出力の出所とは無関係である。",
+    "tags": [
+      "parent_tool_use_id",
+      "multi-agent",
+      "debugging"
+    ],
+    "ref": "D1 message attribution"
+  },
+  {
+    "id": "agentic-065",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "A multi-agent research system needs to explore two competing analysis approaches on the same large dataset without letting the exploratory work of one approach pollute the context of the other, while still starting both from the same accumulated research state. Which Claude Agent SDK feature best supports this requirement?",
+    "choices": [
+      "fork_session to create independent branches from a shared baseline",
+      "parent_tool_use_id to tag both approaches for later comparison",
+      "A single subagent with a longer max_turns budget",
+      "Sequential prompt chaining across two fixed steps"
+    ],
+    "answer": 0,
+    "explanation": "fork_sessionは共有のベースラインから独立した分岐セッションを作る機能で、複数の異なるアプローチを互いに汚染させることなく並行して試すのに適している。parent_tool_use_idは出力の帰属追跡用であり分岐生成の機能ではない。単一サブエージェントでturn数を増やすだけでは2つのアプローチのコンテキストが混ざってしまう。プロンプトチェイニングは既知の固定ステップの逐次実行であり、分岐して探索する用途には合わない。",
+    "tags": [
+      "fork_session",
+      "multi-agent",
+      "context-isolation"
+    ],
+    "ref": "D1 fork_session"
+  },
+  {
+    "id": "agentic-066",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A customer support agent built on Claude escalates a billing dispute to a human agent. The engineering team is deciding what to hand off. Which approach matches the recommended architecture?",
+    "choices": [
+      "Pass the full raw conversation transcript so the human can read every message",
+      "Pass a structured summary with customer ID, issue, order details, actions taken, and a recommended action",
+      "Pass only the last customer message, since context can be reconstructed on demand",
+      "Pass the model's internal stop_reason and tool_use blocks for full transparency"
+    ],
+    "answer": 1,
+    "explanation": "推奨されるハンドオフ設計は、顧客ID・問題内容・注文詳細・実施済みアクション・推奨アクションを含む構造化サマリーを渡すことであり、人間の担当者は通常トランスクリプト全体を見られない前提で設計する。生のトランスクリプト全体を渡すのは冗長で本来の設計思想に反する。最後のメッセージだけでは文脈が失われ判断材料が不足する。stop_reasonやtool_use blockは内部的なループ制御情報であり人間向けの引き継ぎ情報としては不適切である。",
+    "tags": [
+      "human-handoff",
+      "structured-summary",
+      "escalation"
+    ],
+    "ref": "D1 human handoff"
+  },
+  {
+    "id": "agentic-067",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A team wants a hook that fires specifically when a subagent (launched via the Task/Agent tool) finishes its work, so the coordinator can log completion metrics before deciding on the next delegation. Which hook event is designed for this?",
+    "choices": [
+      "`SubagentStop`",
+      "`Stop`",
+      "`PreCompact`",
+      "`SessionEnd`"
+    ],
+    "answer": 0,
+    "explanation": "`SubagentStop`はサブエージェント（Task/Agentツールで起動されたもの）が作業を終えた時点で発火するイベントであり、まさにコーディネーターが次の委任判断の前にサブエージェント完了時の処理を行うのに適したフックである。`Stop`はメインエージェントの応答終了時に発火するイベントでサブエージェント単位のものではない。`PreCompact`はコンテキスト圧縮の直前に発火するイベント、`SessionEnd`はセッション全体の終了時に発火するイベントであり、いずれもサブエージェント個別の完了とは異なるタイミングである。",
+    "tags": [
+      "hooks",
+      "SubagentStop",
+      "multi-agent"
+    ],
+    "ref": "D1 hook events (SubagentStop)"
+  },
+  {
+    "id": "agentic-068",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A developer using Claude Code returns to a long-running feature branch the next morning. Overnight, a teammate merged changes that touched several files the developer's session had previously read and cached tool results for. What is the recommended action?",
+    "choices": [
+      "Always use --resume since it preserves the most context and saves tokens",
+      "Use --resume and trust the model to notice the files changed on its own",
+      "Use --fork-session to branch off the stale session without any summary",
+      "Start a fresh session and explicitly tell it what changed via a summary"
+    ],
+    "answer": 3,
+    "explanation": "ファイルが変更されコンテキストが古くなっている場合は、新規セッションを開始し何が変わったかを明示的に伝えるサマリーを与えるのが推奨される。--resumeはツール結果がまだ有効な場合にのみ適しており、今回のように内容が変わった状況では古いキャッシュされた前提に基づいて誤った判断をするリスクがある。モデルが自動的に変更に気づくという保証はなく、それに頼るのは危険である。fork_sessionは分岐生成の機能であり、状況の説明を省略してよい理由にはならない。",
+    "tags": [
+      "session-management",
+      "resume",
+      "context-drift"
+    ],
+    "ref": "D1 session management"
+  },
+  {
+    "id": "agentic-069",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "In Claude Code, under what circumstance is using --resume <session> appropriate rather than starting a fresh session?",
+    "choices": [
+      "When the underlying files have changed significantly since the last session",
+      "When the developer wants to reduce token usage regardless of file changes",
+      "When the previous session's tool results are still valid and relevant",
+      "When multiple unrelated tasks need to share the same context window"
+    ],
+    "answer": 2,
+    "explanation": "--resumeは前回セッションのツール結果がまだ有効で状況が変わっていない場合に適切な選択である。ファイルが大きく変更された場合は前提が崩れているため新規セッションの方が適切。トークン削減だけを理由にファイル変更を無視して再開するのはコンテキストドリフトのリスクを高める。無関係な複数タスクを同じセッションに詰め込むことは推奨されるセッション管理の考え方ではない。",
+    "tags": [
+      "session-management",
+      "resume",
+      "claude-code"
+    ],
+    "ref": "D1 session management"
+  },
+  {
+    "id": "agentic-070",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "A CI/CD automation pipeline uses Claude Code to review a pull request touching 40 files across a monorepo. A reviewer complains that single-pass review missed a case where a renamed function in one module broke a caller in an unrelated module. Which architecture change addresses this failure mode?",
+    "choices": [
+      "Increase --max-turns so the single pass has more time to think",
+      "Split the PR into 40 separate single-file review sessions with no shared context",
+      "Switch to --output-format stream-json so results are easier to parse",
+      "Run Pass 1 as per-file local analysis, then Pass 2 as a cross-file integration pass"
+    ],
+    "answer": 3,
+    "explanation": "大規模PRのレビューでは、まずファイル単位のローカル解析（Pass 1）を行い、続いてクロスファイルの統合的な整合性チェック（Pass 2）を行う多段階レビューが推奨され、これにより関数名変更が他モジュールの呼び出し元に与える影響のような統合バグを検出できる。max_turnsを増やすだけでは単一パスの注意力散漫という根本原因は解決しない。40個の完全に独立したセッションに分割すると、そもそもクロスファイルの依存関係を検出する手段がなくなる。出力フォーマットの変更は解析の質には影響しない。",
+    "tags": [
+      "multi-pass-review",
+      "cross-file",
+      "code-review"
+    ],
+    "ref": "D1 multi-pass PR review"
+  },
+  {
+    "id": "agentic-071",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A developer productivity team is designing an automated PR review bot. They want it to first flag issues within each individual file (bugs, style, types, security) at a consistent depth, and only afterward reason about how those files interact. What is the primary risk of skipping this structure and doing a single combined pass instead?",
+    "choices": [
+      "The bot will run out of available tools before finishing",
+      "Attention dilution and missed integration issues across files",
+      "The bot will be forced to use tool_choice: any for every file",
+      "The PreToolUse hook will block the review from starting"
+    ],
+    "answer": 1,
+    "explanation": "単一パスでファイル単位とクロスファイルの分析を同時にこなそうとすると、注意力が分散し（attention dilution）、ファイル間の統合的な問題を見落とすリスクが高まる。これがマルチパスレビューを推奨する理由である。ツール不足の問題ではなくレビューの認知的構造の問題である。tool_choice: anyはツール呼び出しを強制する設定でこのシナリオとは無関係。PreToolUseフックは特定操作の事前ブロック用でレビュー品質の劣化とは無関係である。",
+    "tags": [
+      "multi-pass-review",
+      "attention-dilution",
+      "code-review"
+    ],
+    "ref": "D1 multi-pass review failure modes"
+  },
+  {
+    "id": "agentic-072",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "An engineer building a developer productivity tool needs to decide between prompt chaining and dynamic adaptive decomposition for a task. The task is: \"investigate why the checkout service is intermittently slow.\" Which approach is most appropriate and why?",
+    "choices": [
+      "Prompt chaining, because the exact sequence of diagnostic steps is known upfront",
+      "Prompt chaining, because it guarantees a fixed token budget regardless of findings",
+      "Dynamic adaptive decomposition, because it eliminates the need for a coordinator",
+      "Dynamic adaptive decomposition, because subtasks emerge only as findings surface"
+    ],
+    "answer": 3,
+    "explanation": "「なぜ遅いのか」を調査するようなタスクは事前に手順が確定しておらず、調査の過程で見つかった手がかりに応じてサブタスクが動的に生まれるため、動的適応的分解が適している。プロンプトチェイニングは既知の固定順序ステップに向いており、原因不明の調査には合わない。プロンプトチェイニングが固定トークン予算を保証するという性質は正しくない。動的分解を使ってもコーディネーターの役割が不要になるわけではなく、依然として結果の統合や再委任が必要である。",
+    "tags": [
+      "dynamic-decomposition",
+      "prompt-chaining",
+      "task-decomposition"
+    ],
+    "ref": "D1 decomposition strategies"
+  },
+  {
+    "id": "agentic-073",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A CI/CD automation script running Claude Code non-interactively receives a response where `stop_reason` is `refusal` and `stop_details.category` is `\"cyber\"`. The team wants to programmatically decide how to handle this. What is the correct way to interpret and act on this?",
+    "choices": [
+      "Parse `stop_details.explanation` text with a regex to decide the retry strategy, since it is designed for machine parsing",
+      "Treat `category` as a coarse machine-readable signal (e.g., route cyber-related refusals to a security review queue) while treating `explanation` as human-readable context, not a parsing target",
+      "Ignore `stop_details` entirely since it is only populated for `end_turn` responses",
+      "Automatically retry the exact same request, since `refusal` behaves like a transient error category"
+    ],
+    "answer": 1,
+    "explanation": "`stop_details`の`category`（\"cyber\"、\"bio\"、またはnull）は機械的に扱える大まかな分類シグナルとして使えるが、`explanation`は人間可読な説明であり構文解析の対象にすべきではない。`explanation`をregexで解析して制御ロジックに使うのは誤った使い方である。`stop_details`はrefusal時に設定されるものであり`end_turn`用ではないため、無視するという説明も誤り。refusalは安全性判断によるモデルの拒否であり一時的エラー（transient error）ではないため、単純な再試行は不適切である。",
+    "tags": [
+      "stop_details",
+      "refusal",
+      "category"
+    ],
+    "ref": "D1 stop_details category field"
+  },
+  {
+    "id": "agentic-074",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "A CI/CD automation team uses Claude Code to review large PRs nightly and also uses the Claude Agent SDK to run a multi-agent research system that fans out competing hypotheses via fork_session. A new engineer proposes merging the two systems so the PR-review coordinator can fork_session per file instead of doing a per-file then cross-file pass. What is the main problem with this proposal?",
+    "choices": [
+      "fork_session cannot be called from Claude Code, only from the Agent SDK directly",
+      "fork_session automatically merges all branches back into one context, defeating the purpose of per-file isolation",
+      "Forking per file would isolate each file's analysis but provide no mechanism for the cross-file integration pass that catches inter-file issues",
+      "PreToolUse hooks cannot run inside a forked session, so financial-rule enforcement would be lost"
+    ],
+    "answer": 2,
+    "explanation": "fork_sessionはファイルごとに独立した分岐を作れるが、それだけでは各分岐間の情報統合を行う仕組みがなく、クロスファイルの整合性チェック（Pass 2）に相当する統合的な分析が失われてしまう。fork_session自体はClaude CodeベースのワークフローでもAgent SDK的な概念として利用可能であり、呼べないという制約は誤り。fork_sessionが自動的にすべての分岐をマージするという挙動は事実に反する。フックの継承についての制約は本シナリオの核心的な問題ではない。",
+    "tags": [
+      "fork_session",
+      "multi-pass-review",
+      "cross-file"
+    ],
+    "ref": "D1 fork_session vs multi-pass review"
+  },
+  {
+    "id": "agentic-075",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A team building a customer support agent wants financial refund approval to be enforced with 100% reliability, not best-effort. They are also building a research subagent architecture using AgentDefinition. Which design correctly separates these two concerns?",
+    "choices": [
+      "Use a prompt instruction like \"always verify before refund\" inside the AgentDefinition prompt field for both concerns",
+      "Use a PreToolUse hook to deterministically block process_refund until verification, and use AgentDefinition's tools field to scope what each research subagent can call",
+      "Rely on the coordinator's judgment at runtime to decide both when to allow refunds and which tools each subagent needs",
+      "Encode the refund rule as a stop_sequence so the model halts before calling process_refund"
+    ],
+    "answer": 1,
+    "explanation": "返金のような金銭的に重要なルールはPreToolUseフックによる決定論的な強制で100%のガードレールを実現すべきであり、一方でサブエージェントに使わせるツールの範囲はAgentDefinitionのtoolsフィールドで明示的にスコープするのが正しい設計分担である。プロンプト内の指示文だけに頼る方法は確率的で失敗の可能性がある。コーディネーターの実行時判断に両方を委ねるのは金融系ルールに対して信頼性が不十分。stop_sequenceはテキスト内の停止文字列一致であり、ツール呼び出しをブロックする仕組みではない。",
+    "tags": [
+      "PreToolUse",
+      "AgentDefinition",
+      "enforcement"
+    ],
+    "ref": "D1 programmatic vs prompt enforcement + AgentDefinition"
+  },
+  {
+    "id": "agentic-076",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A structured data extraction pipeline is being redesigned as a multi-agent system with three specialized subagents (tables, narrative text, and footnotes), each defined via `AgentDefinition`. The lead wants each subagent restricted so it can only call the tools relevant to its own section type, rather than every tool available to the pipeline. Which `AgentDefinition` field enforces this scoping?",
+    "choices": [
+      "The `description` field, since it documents which tools the subagent is intended to use",
+      "The `tools` field, which explicitly lists the tool set a given subagent is allowed to call",
+      "The `prompt` field, since instructing the subagent in text about which tools to use is sufficient",
+      "There is no per-subagent scoping; all subagents always share the full tool list configured on the coordinator"
+    ],
+    "answer": 1,
+    "explanation": "`AgentDefinition`の`tools`フィールドは、そのサブエージェントが呼び出せるツールの集合を明示的に制限するためのものであり、これにより各サブエージェントを自分のセクション種別に関連するツールだけに限定できる。`description`はサブエージェントの役割説明であり選択のためのメタ情報に過ぎずアクセス制御ではない。`prompt`内の指示文だけに頼るのはプロンプトベースの強制であり確率的で信頼性が低い。ツールが常に全サブエージェントで共有されるという説明は誤りで、`tools`フィールドによる個別スコープが可能である。",
+    "tags": [
+      "AgentDefinition",
+      "tools-scoping",
+      "claude-agent-sdk"
+    ],
+    "ref": "D1 AgentDefinition tools field scoping"
+  },
+  {
+    "id": "agentic-077",
+    "domain": "agentic",
+    "difficulty": 1,
+    "question": "According to the Claude Agent SDK documentation, how should a coordinator invoke multiple subagents to run them in parallel rather than sequentially?",
+    "choices": [
+      "By issuing multiple Task/Agent tool_use calls in a single response",
+      "By setting --max-turns to a higher number",
+      "By using the Message Batches API with custom_id correlation",
+      "By enabling bypassPermissions mode"
+    ],
+    "answer": 0,
+    "explanation": "並列実行を得るには単一の応答の中で複数のTask/Agent tool_use呼び出しをまとめて発行することが必須である。max_turnsを増やすのはターン数の上限であり並列性とは無関係。Message Batches APIはマルチターン不可のバッチ処理用でエージェントの並列サブタスク実行の仕組みとは異なる。bypassPermissionsは権限確認をスキップする危険なモードであり並列実行とは無関係である。",
+    "tags": [
+      "parallel-execution",
+      "Task-Agent",
+      "claude-agent-sdk"
+    ],
+    "ref": "D1 parallel subagent execution"
+  },
+  {
+    "id": "agentic-078",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "A Claude Code configuration for CI/CD automation resumes a long-lived session across nightly runs using --resume so token costs stay low. One morning, the pipeline fails: the agent confidently references a config file that was deleted the previous evening. What is the most likely root cause and correct fix?",
+    "choices": [
+      "The agent's stop_reason was misconfigured; switch to checking tool_result content instead",
+      "The Message Batches API silently dropped the custom_id for that file; resubmit the whole batch",
+      "The AgentDefinition for the CI subagent lacked a tools field; add Read and Glob explicitly",
+      "The session was resumed with stale cached context after the underlying files changed; start a fresh session and supply an explicit change summary"
+    ],
+    "answer": 3,
+    "explanation": "--resumeを使い続けたことで前夜のファイル削除後もセッションが古いキャッシュされた前提を保持してしまい、存在しないファイルを参照するという問題が起きたと考えられる。正しい対処は新規セッションを開始し、何が変わったかを明示的に伝えるサマリーを与えることである。stop_reasonはループ終了判定のための仕組みでありファイル参照の誤りとは無関係。Message Batches APIのcustom_idはバッチ処理の相関付け用でこの単一セッションの文脈とは関係ない。tools定義の欠如はツール呼び出し不能を招くが、今回のような「存在しないファイルを参照する」挙動の説明にはならない。",
+    "tags": [
+      "session-management",
+      "resume",
+      "context-drift"
+    ],
+    "ref": "D1 session management resume vs fresh"
+  },
+  {
+    "id": "agentic-079",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A multi-agent research system's coordinator dispatches a subagent to summarize a competitor's pricing page for a report. The subagent comes back asking which competitor and which product line, even though the coordinator had already discussed both at length earlier in its own conversation. What is the most likely explanation?",
+    "choices": [
+      "The subagent's AgentDefinition.tools field did not list the fetch tool needed to load the page",
+      "The developer forgot to pass fork_session:true when launching the subagent",
+      "Subagents do not inherit the coordinator's conversation history, so the competitor name and product line must be passed explicitly in the subagent's prompt",
+      "The subagent's prompt exceeded the model_context_window, triggering truncation"
+    ],
+    "answer": 2,
+    "explanation": "サブエージェントはコーディネーターの会話履歴を継承しないため、競合名や製品ラインといった必要な情報は明示的にサブエージェントのプロンプトに渡さなければならない。これを怠ると、コーディネーターが既に把握している前提をサブエージェントが知らず、確認を求め返してくる。tools fieldにfetchツールがないなら，ページ取得自体ができずエラーになるはずで質問返しにはならない。fork_sessionは分岐生成のための機能で情報欠落の原因ではない。コンテキストウィンドウ超過によるtruncationは出力が途切れる問題であり、前提情報を尋ね返す挙動の説明にはならない。",
+    "tags": [
+      "subagent-context-isolation",
+      "multi-agent",
+      "AgentDefinition"
+    ],
+    "ref": "D1 subagent context isolation"
+  },
+  {
+    "id": "agentic-080",
+    "domain": "agentic",
+    "difficulty": 3,
+    "question": "A developer productivity platform runs an automated review bot over a 60-file PR. Leadership wants both (a) guaranteed enforcement that no PR merges without a security-sensitive-file check having run, and (b) thorough review quality across the whole diff. Which combination correctly addresses both goals?",
+    "choices": [
+      "A PreToolUse hook gating the merge-approval tool on a completed security-file-check tool call, combined with a per-file Pass 1 followed by a cross-file Pass 2 review",
+      "A prompt-based instruction for enforcement, combined with splitting the PR into 60 fully isolated single-file sessions",
+      "tool_choice: any to force some tool call, combined with a single combined per-file-and-cross-file pass to save turns",
+      "A single review pass with a strongly worded system prompt telling the model to always check security-sensitive files before approving"
+    ],
+    "answer": 0,
+    "explanation": "確実な強制にはPreToolUseフックによる決定論的なゲーティングが必要であり、レビュー品質の担保にはファイル単位のPass 1とクロスファイルのPass 2という多段階レビューが必要で、この二つを組み合わせるのが正解である。プロンプト指示だけに頼る強制は確率的であり100%の保証にならない。60個の完全孤立セッションに分割するとクロスファイルの統合分析ができなくなる。tool_choice: anyは何らかのツール呼び出しを強制するだけで特定の検査の実行を保証せず、また単一の統合パスは注意力分散のリスクを抱える。",
+    "tags": [
+      "PreToolUse",
+      "multi-pass-review",
+      "enforcement"
+    ],
+    "ref": "D1 programmatic enforcement + multi-pass review combined"
+  },
+  {
+    "id": "agentic-081",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A multi-agent research system is asked to research \"emerging risks facing global supply chains in 2026.\" The coordinator decomposes the task into a single subagent scoped to \"semiconductor shortages.\" A reviewer flags this as too narrow. Which other decomposition mistake below is structurally the same kind of error?",
+    "choices": [
+      "A support-ticket triage coordinator invokes all eight of its subagents, including a legal-review subagent, for a request that only concerns a shipping delay",
+      "A code-migration coordinator decomposes 'modernize the auth module' into only a single 'update password hashing' subagent, omitting session handling, token refresh, and third-party SSO integration entirely",
+      "A billing coordinator passes the full order ID and refund amount into a subagent's prompt instead of a vague natural-language description",
+      "A CI coordinator emits two independent Task tool_use calls in the same response instead of across two separate turns"
+    ],
+    "answer": 1,
+    "explanation": "半導体不足のみに限定した供給網リスク調査と同様に、認証モジュールの近代化を『パスワードハッシュ更新』のみに限定するのも、セッション管理・トークン更新・サードパーティSSO連携といった重要な側面を見落とす『分解範囲が狭すぎる』という同種のアンチパターンである。無関係な全サブエージェントを起動する例は動的サブエージェント選択の問題であり別種の誤り、具体的情報をきちんと渡す例はむしろ推奨されるコンテキスト分離対応の好例、単一応答内での並列tool_use発行は推奨される並列実行のベストプラクティスであり、いずれも分解範囲の狭さとは異なる論点である。",
+    "tags": [
+      "decomposition-breadth",
+      "anti-pattern",
+      "task-decomposition"
+    ],
+    "ref": "D1 decomposition breadth risk"
+  }
+]

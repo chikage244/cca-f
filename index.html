@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ja" data-theme="">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>CCA-F 学習アプリ</title>
+<meta name="description" content="Claude Certified Architect – Foundations 試験対策アプリ" />
+<link rel="stylesheet" href="./css/style.css" />
+<link rel="manifest" href="./manifest.webmanifest" />
+<link rel="icon" href="./icons/favicon.ico" sizes="any" />
+<link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+
+<!-- iOS: standalone home-screen app support -->
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="CCA-F" />
+
+<!-- Theme color: matches manifest, split light/dark for the browser chrome -->
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f6f8" />
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111318" />
+</head>
+<body>
+<header class="app-header">
+  <span class="app-header__title">CCA-F 学習</span>
+  <a class="app-header__settings" href="#/settings" aria-label="設定">⚙️</a>
+</header>
+
+<main id="view"></main>
+
+<nav class="tab-bar" aria-label="メインナビゲーション">
+  <a class="tab-bar__item" href="#/" data-route="#/">
+    <span class="tab-bar__icon" aria-hidden="true">🏠</span>
+    <span class="tab-bar__label">ホーム</span>
+  </a>
+  <a class="tab-bar__item" href="#/quiz" data-route="#/quiz">
+    <span class="tab-bar__icon" aria-hidden="true">📝</span>
+    <span class="tab-bar__label">学習</span>
+  </a>
+  <a class="tab-bar__item" href="#/review" data-route="#/review">
+    <span class="tab-bar__icon" aria-hidden="true">🔁</span>
+    <span class="tab-bar__label">復習</span>
+  </a>
+  <a class="tab-bar__item" href="#/cards" data-route="#/cards">
+    <span class="tab-bar__icon" aria-hidden="true">🃏</span>
+    <span class="tab-bar__label">カード</span>
+  </a>
+  <a class="tab-bar__item" href="#/exam" data-route="#/exam">
+    <span class="tab-bar__icon" aria-hidden="true">⏱️</span>
+    <span class="tab-bar__label">模試</span>
+  </a>
+</nav>
+
+<!-- Update-available toast (hidden until a new SW takes control) -->
+<div id="update-toast" class="update-toast" role="status" hidden>
+  <button type="button" id="update-toast-btn" class="update-toast__btn">
+    新しいバージョンがあります — タップで更新
+  </button>
+</div>
+
+<!-- iOS "add to home screen" install hint (shown once, dismissible) -->
+<div id="ios-install-banner" class="ios-install-banner" role="status" hidden>
+  <span class="ios-install-banner__text">共有 → ホーム画面に追加 でインストール</span>
+  <button type="button" id="ios-install-dismiss" class="ios-install-banner__dismiss" aria-label="閉じる">✕</button>
+</div>
+
+<script type="module" src="./js/app.js"></script>
+<script>
+  // Service worker registration + update flow. Kept as a plain inline
+  // script (not a module) so it runs independently of app.js and can never
+  // block app boot if something in the SW path throws.
+  if ("serviceWorker" in navigator) {
+    // A page loaded with no controller yet (first-ever visit, or a hard
+    // reload that bypassed the SW) will still fire one "controllerchange"
+    // event the moment the new worker calls clients.claim() during its very
+    // first activation. That first claim is not an update — it's just the
+    // SW turning on — so it must not trigger the update toast. Only treat
+    // controllerchange as "an update is available" when this page was
+    // already under an active controller when it loaded.
+    const hadControllerOnLoad = !!navigator.serviceWorker.controller;
+
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(() => {
+        // Offline-first app still works without a SW; ignore registration
+        // failures (e.g. unsupported browser, privacy mode restrictions).
+      });
+    });
+
+    let reloadedOnce = false;
+    let firstControllerChangeSeen = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (reloadedOnce) return;
+
+      const isFirstClaim = !firstControllerChangeSeen && !hadControllerOnLoad;
+      firstControllerChangeSeen = true;
+      if (isFirstClaim) return;
+
+      // Never yank the exam runner out from under an in-progress exam:
+      // the timer is wall-clock based and a reload would lose the in-memory
+      // runner state before the user finishes.
+      let examInProgress = false;
+      try {
+        examInProgress = localStorage.getItem("ccaf.v1.exam.active") != null;
+      } catch (err) {
+        examInProgress = false;
+      }
+      if (examInProgress) return;
+
+      const toast = document.getElementById("update-toast");
+      const btn = document.getElementById("update-toast-btn");
+      if (!toast || !btn) return;
+      toast.hidden = false;
+      btn.addEventListener(
+        "click",
+        () => {
+          reloadedOnce = true;
+          window.location.reload();
+        },
+        { once: true }
+      );
+    });
+  }
+
+  // iOS Safari "add to home screen" hint: only for iOS Safari, only when
+  // not already launched as a standalone PWA, and only once ever.
+  (function iosInstallBanner() {
+    const IOS_BANNER_KEY = "ccaf.v1.ui.iosBannerDismissed";
+    const ua = navigator.userAgent || "";
+    const isIOS = /iP(hone|ad|od)/.test(ua) || (ua.includes("Macintosh") && "ontouchend" in document);
+    const isSafari = /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+
+    if (!isIOS || !isSafari || isStandalone) return;
+
+    let dismissed = false;
+    try {
+      dismissed = localStorage.getItem(IOS_BANNER_KEY) === "1";
+    } catch (err) {
+      dismissed = false;
+    }
+    if (dismissed) return;
+
+    const banner = document.getElementById("ios-install-banner");
+    const dismissBtn = document.getElementById("ios-install-dismiss");
+    if (!banner || !dismissBtn) return;
+    banner.hidden = false;
+    dismissBtn.addEventListener("click", () => {
+      banner.hidden = true;
+      try {
+        localStorage.setItem(IOS_BANNER_KEY, "1");
+      } catch (err) {
+        // Ignore; banner will just reappear next visit in private mode.
+      }
+    });
+  })();
+</script>
+</body>
+</html>

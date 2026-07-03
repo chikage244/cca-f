@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background: fills entire canvas (safe for maskable crop) -->
+  <rect width="512" height="512" fill="#111318"/>
+
+  <!-- Central 80% safe zone: 51.2px margin all sides -> content within [51.2, 460.8] -->
+  <g transform="translate(256,196)">
+    <!-- Graduation cap: board (diamond) -->
+    <polygon points="0,-70 150,-8 0,54 -150,-8" fill="#7c96ff"/>
+    <!-- Tassel button -->
+    <circle cx="0" cy="-8" r="13" fill="#b197fc"/>
+    <!-- Tassel cord -->
+    <path d="M 96 -40 L 114 42 L 96 76" fill="none" stroke="#b197fc" stroke-width="10" stroke-linecap="round"/>
+    <!-- Cap base band -->
+    <path d="M -104 24 L -104 74 Q -104 106 0 116 Q 104 106 104 74 L 104 24 L 0 70 Z" fill="#e9ecff"/>
+  </g>
+
+  <!-- Bold monogram, kept inside safe zone -->
+  <text x="256" y="400" text-anchor="middle" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="88" font-weight="700" fill="#eceef1" letter-spacing="1">CCA-F</text>
+</svg>

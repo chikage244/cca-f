@@ -1,0 +1,1047 @@
+[
+  {
+    "id": "mcp-001",
+    "domain": "mcp",
+    "difficulty": 1,
+    "question": "A developer is defining a custom tool for a customer support agent. They write a name and an input_schema but only a one-line description: \"Gets order info.\" What is the most important reason to expand this description before deploying?",
+    "choices": [
+      "Longer descriptions are required by the JSON-RPC 2.0 protocol spec",
+      "The description is the primary mechanism Claude uses to decide which tool to call, so a vague one degrades tool selection reliability",
+      "Descriptions are only shown to human developers reading the code, not to the model",
+      "input_schema alone fully determines which tool the model will invoke"
+    ],
+    "answer": 1,
+    "explanation": "正解は1。ツールの説明文はClaudeがどのツールを呼ぶべきか判断する際の主要な手がかりであり、曖昧だと誤選択が増える。選択肢0はJSON-RPC 2.0がdescriptionの長さを要求するという事実がなく誤り。選択肢2はdescriptionがモデルに渡される核心情報である点を無視しており誤り。選択肢3はinput_schemaだけでは選択理由を説明できないため誤り。",
+    "tags": [
+      "tool-description",
+      "tool-selection"
+    ],
+    "ref": "D4: tool descriptions primary mechanism"
+  },
+  {
+    "id": "mcp-002",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A team is writing the description for a new `search_invoices` tool used by a structured data extraction agent. Which of the following description drafts best follows the required components for reliable tool selection?",
+    "choices": [
+      "\"Searches invoices.\" — kept short so the model isn't distracted by extra text",
+      "A description covering when to use it, an example input like {\"vendor\": \"Acme Corp\", \"date_range\": \"2026-01-01/2026-03-31\"}, the output shape, behavior on zero matches, and how it differs from `search_receipts`",
+      "A description that only lists the JSON Schema `properties` and `required` fields, since the schema is machine-readable and sufficient",
+      "A description written entirely in past tense describing what the tool did in previous runs, to give the model historical context"
+    ],
+    "answer": 1,
+    "explanation": "正解は1。ツール説明には目的・利用場面、入力形式と例、出力形式、エッジケースの挙動、類似ツールとの差別化という必須要素をすべて含めるべきとされる。選択肢0は情報不足で選択ミスを招く。選択肢2はスキーマだけでは自然言語の意図説明が欠け不十分。選択肢3は過去形の実行履歴は説明の要件と無関係。",
+    "tags": [
+      "tool-description",
+      "description-components"
+    ],
+    "ref": "D4: required description components"
+  },
+  {
+    "id": "mcp-003",
+    "domain": "mcp",
+    "difficulty": 1,
+    "question": "In the tool definition schema used by the Claude API, which set of fields correctly represents the top-level structure of a single tool definition?",
+    "choices": [
+      "`name`, `description`, `input_schema`",
+      "`title`, `summary`, `parameters_list`",
+      "`tool_id`, `handler_function`, `output_type`",
+      "`name`, `endpoint_url`, `auth_token`"
+    ],
+    "answer": 0,
+    "explanation": "正解は0。ツール定義スキーマは`name`、`description`、`input_schema`（JSON Schemaで`properties`・`required`・`enum`等を含む）で構成される。選択肢1・2・3はAPI仕様に存在しない架空のフィールド名であり誤り。特に`endpoint_url`や`auth_token`はツール定義そのものではなくMCPサーバー設定側の関心事である。",
+    "tags": [
+      "tool-definition-schema",
+      "input_schema"
+    ],
+    "ref": "D4: tool definition schema"
+  },
+  {
+    "id": "mcp-004",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A CI/CD automation agent needs guaranteed schema-compliant tool input. The team enables strict mode on a tool's input_schema. Which combination correctly satisfies strict mode requirements?",
+    "choices": [
+      "`\"strict\": true` plus a `pattern` regex on every string field to guarantee format",
+      "`\"strict\": true` with `minimum`/`maximum` bounds on all numeric fields",
+      "`\"strict\": true` combined with `anyOf` branches to allow flexible shapes",
+      "`\"strict\": true`, `\"additionalProperties\": false`, and every property listed in `required`"
+    ],
+    "answer": 3,
+    "explanation": "正解は3。strict modeでは`additionalProperties: false`と全プロパティを`required`に含めることでスキーマ準拠が保証される。選択肢0の`pattern`や選択肢1の`minimum`/`maximum`はstrict modeでサポートされないJSON Schema機能であり誤り。選択肢2の`anyOf`もstrict modeでは非対応のため誤り。",
+    "tags": [
+      "strict-mode",
+      "input_schema"
+    ],
+    "ref": "D4: strict mode requirements"
+  },
+  {
+    "id": "mcp-005",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A developer productivity agent has two tools: `analyze_content` (runs sentiment and keyword extraction on any text) and `analyze_document` (extracts structured fields from uploaded files). Users report the agent frequently calls the wrong one for PDF invoices. What is the root cause and best fix?",
+    "choices": [
+      "The agent has too many tools overall; the fix is to delegate both tools to a separate subagent",
+      "The two tool names and descriptions overlap ambiguously; rename them for clear differentiation (e.g., `analyze_freeform_text` vs `extract_document_fields`) or consolidate into one tool",
+      "The model cannot distinguish between any two tools with the word \"analyze\" in the name, so both tools should be renamed to avoid that word entirely",
+      "This is expected behavior; the fix is to add a `tool_choice` forcing `analyze_document` on every request regardless of content type"
+    ],
+    "answer": 1,
+    "explanation": "正解は1。`analyze_content`と`analyze_document`のような曖昧に重複する命名・説明は典型的なアンチパターンであり、明確な差別化のためのリネームまたは統合が正しい対処。選択肢0はツール数がわずか2つなので4-5個上限の問題ではなく的外れ。選択肢2は「analyze」という単語自体が問題という過度な一般化で誤り。選択肢3は他の入力タイプに対応できなくなるため不適切。",
+    "tags": [
+      "ambiguous-overlap",
+      "tool-naming"
+    ],
+    "ref": "D4: analyze_content vs analyze_document anti-pattern"
+  },
+  {
+    "id": "mcp-006",
+    "domain": "mcp",
+    "difficulty": 3,
+    "question": "A multi-agent research system's single agent is configured with 18 tools (web search, 4 database connectors, 6 file format parsers, 3 citation formatters, and 4 summarization variants). The agent frequently calls the wrong tool or fails to call any relevant tool. A team member proposes rewriting every tool description in more detail and adding usage examples to the system prompt. Why is this likely to fail as the primary fix?",
+    "choices": [
+      "Because tool descriptions cannot exceed a fixed character limit, so more detail is impossible to add",
+      "Because system prompt examples are ignored by the model when tool_choice is set to \"auto\"",
+      "Because with 18+ tools, selection reliability degrades structurally regardless of description quality; the fix is architectural — distribute the tools across specialized subagents at 4-5 tools each",
+      "Because adding descriptions increases token cost without any effect on tool selection accuracy either way"
+    ],
+    "answer": 2,
+    "explanation": "正解は2。18個以上のツールを1つのエージェントに持たせると選択精度が構造的に劣化し、この問題の正しい解決策はより良い説明文やプロンプト例ではなく、専門化されたサブエージェントに4-5個ずつ分散させるアーキテクチャ変更である。選択肢0は文字数上限の話ではなく誤り。選択肢1はtool_choice auto がプロンプト例を無視するという事実はなく誤り。選択肢3は「効果がない」と言い切る点が不正確（多少の改善はあり得るが本質的解決にならない）。",
+    "tags": [
+      "tool-count-limit",
+      "subagent-distribution"
+    ],
+    "ref": "D4: 4-5 tools max, distribute not describe"
+  },
+  {
+    "id": "mcp-007",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A team is redesigning a customer support agent that currently has 20 tools in one flat agent. Following the recommended architecture pattern, how should responsibilities be distributed?",
+    "choices": [
+      "Keep one agent but wrap all 20 tools in a single `tool_choice: any` call so the model must always pick one",
+      "Distribute tools evenly across 20 separate single-tool subagents so each subagent never needs to choose between tools",
+      "Merge all 20 tools into one mega-tool with a `mode` parameter selecting sub-behavior, keeping a single flat agent",
+      "Split into a coordinator that routes requests plus specialized subagents (e.g., a search subagent, an analysis subagent, an action subagent), each holding roughly 4-5 tools"
+    ],
+    "answer": 3,
+    "explanation": "正解は3。推奨アーキテクチャはコーディネーターが振り分けを行い、検索・分析・アクションなど専門化されたサブエージェントがそれぞれ4-5個程度のツールを持つ分散構成である。選択肢0はtool_choiceの設定を変えてもツール数過多の問題は解決しない。選択肢1は極端で非効率、単一ツールのサブエージェントを20個作るのはコーディネーションのオーバーヘッドが大きく現実的でない。選択肢2はツールの選択問題を1つの巨大ツール内に隠すだけで、説明の複雑さの問題は解消されない。",
+    "tags": [
+      "coordinator-specialist",
+      "subagent-distribution"
+    ],
+    "ref": "D4: tool distribution architecture"
+  },
+  {
+    "id": "mcp-008",
+    "domain": "mcp",
+    "difficulty": 1,
+    "question": "In a coordinator + specialist subagent architecture for tool distribution, what is the coordinator's role with respect to tools?",
+    "choices": [
+      "The coordinator holds all tools itself and only uses subagents for logging",
+      "The coordinator holds no tools and instead routes tasks to the appropriate specialized subagent, each of which holds a small, focused tool set",
+      "The coordinator duplicates every tool so both it and each subagent can call any tool directly",
+      "The coordinator randomly assigns tools to subagents at runtime to balance load"
+    ],
+    "answer": 1,
+    "explanation": "正解は1。コーディネーターはルーティングに専念し、実際のツール実行は少数の焦点を絞ったツールセットを持つ専門サブエージェントに委ねる。選択肢0はツール分散の目的に反し、コーディネーター自体が過負荷になる。選択肢2はツールの重複保持がツール数上限の問題を再発させるため誤り。選択肢3の「ランダム割り当て」は根拠のない架空の仕組みで誤り。",
+    "tags": [
+      "coordinator-specialist",
+      "tool-distribution"
+    ],
+    "ref": "D4: coordinator + specialist distribution"
+  },
+  {
+    "id": "mcp-009",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A structured data extraction pipeline calls the Claude API and wants to guarantee that the model always returns a tool call (never a plain text answer) but does not care which of the three available extraction tools is chosen. Which `tool_choice` setting is correct?",
+    "choices": [
+      "`\"tool_choice\": \"auto\"`",
+      "`\"tool_choice\": {\"type\": \"tool\", \"name\": \"extract_invoice_data\"}`",
+      "Omit `tool_choice` entirely and rely on a system prompt instruction",
+      "`\"tool_choice\": \"any\"`"
+    ],
+    "answer": 3,
+    "explanation": "正解は3。`\"any\"`はモデルに必ず何らかのツールを呼ばせるが、どのツールかは強制しないため要件に合致する。選択肢0の`\"auto\"`はテキスト回答も許容してしまうため要件を満たさない。選択肢1は特定の1つのツールに固定してしまい「どれでもよい」という要件に反する。選択肢2はプロンプト指示だけでは確実性が低く、確実なツール呼び出しの保証にならない。",
+    "tags": [
+      "tool_choice",
+      "any"
+    ],
+    "ref": "D4: tool_choice any vs auto"
+  },
+  {
+    "id": "mcp-010",
+    "domain": "mcp",
+    "difficulty": 3,
+    "question": "A CI/CD pipeline requires that `extract_metadata` always runs before `validate_schema` in a strict workflow order, and the pipeline cannot tolerate the model skipping straight to `validate_schema` or answering in plain text. Which `tool_choice` configuration enforces this at the first step?",
+    "choices": [
+      "`\"tool_choice\": \"any\"`, trusting that the model will naturally call `extract_metadata` first because it's listed first in the tools array",
+      "`\"tool_choice\": \"auto\"` with a system prompt stating \"always call extract_metadata first\"",
+      "No `tool_choice` setting can enforce call ordering; this must be handled entirely by a PreToolUse hook instead",
+      "`\"tool_choice\": {\"type\": \"tool\", \"name\": \"extract_metadata\"}` for the first API call, forcing that exact tool before proceeding to the next step"
+    ],
+    "answer": 3,
+    "explanation": "正解は3。`{\"type\": \"tool\", \"name\": \"...\"}`形式は特定のツールを強制するため、ワークフローの順序を確実に制御できる。選択肢0の\"any\"はどれかのツール呼び出しを保証するだけで順序は保証しない。選択肢1の\"auto\"はプロンプト指示に依存し確率的にしか機能しない。選択肢2はtool_choiceで実際に順序を強制できるため「不可能」という主張が誤り（hookは別の目的のための機構であり、ここでの唯一の解ではない）。",
+    "tags": [
+      "tool_choice",
+      "forced-tool",
+      "workflow-ordering"
+    ],
+    "ref": "D4: tool_choice named form workflow ordering"
+  },
+  {
+    "id": "mcp-011",
+    "domain": "mcp",
+    "difficulty": 1,
+    "question": "What is the key limitation of `\"tool_choice\": \"any\"` that engineers commonly misunderstand?",
+    "choices": [
+      "It forces the model to call a tool, but does not let the model choose which specific tool to call — the model still decides that itself",
+      "It forces both a specific tool call AND a specific ordering of subsequent calls",
+      "It disables all tools except the first one listed in the tools array",
+      "It is functionally identical to omitting `tool_choice` altogether"
+    ],
+    "answer": 0,
+    "explanation": "正解は0。\"any\"はツール呼び出しを強制するが、どのツールを呼ぶかはモデル自身の判断に委ねられる点がよくある誤解である。選択肢1は順序まで強制するという誤った理解。選択肢2は最初のツールだけに制限するという誤り。選択肢3は\"auto\"（デフォルト）と\"any\"は明確に異なり、\"auto\"はテキスト回答も許すため同一ではない。",
+    "tags": [
+      "tool_choice",
+      "any",
+      "common-trap"
+    ],
+    "ref": "D4: trap - any forces call not tool"
+  },
+  {
+    "id": "mcp-012",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A customer support agent uses default tool_choice behavior across a conversation. In a turn where the customer merely says \"thank you, that's all I needed,\" the agent should be able to respond with plain text rather than being forced to call a tool. Which `tool_choice` setting supports this behavior?",
+    "choices": [
+      "`\"tool_choice\": \"any\"`",
+      "`\"tool_choice\": {\"type\": \"tool\", \"name\": \"close_ticket\"}`",
+      "`\"tool_choice\": \"auto\"`",
+      "`\"tool_choice\": \"none\"` for the entire conversation, with a manual override re-enabling tools on every turn"
+    ],
+    "answer": 2,
+    "explanation": "正解は2。\"auto\"はデフォルト設定で、モデルがツールを呼ぶかテキストで応答するかを自ら判断できるため、この会話終了シナリオに適する。選択肢0の\"any\"は必ず何らかのツール呼び出しを強制してしまい単純な御礼への応答に不向き。選択肢1は特定ツールを強制し柔軟性がない。選択肢3の\"none\"はツール呼び出し自体を常に禁止する設定であり、会話全体に適用すると必要な場面でツールを呼べなくなる上、「毎ターン手動で上書き」という運用は\"auto\"を使うより明らかに非効率・非現実的である。",
+    "tags": [
+      "tool_choice",
+      "auto"
+    ],
+    "ref": "D4: tool_choice auto default"
+  },
+  {
+    "id": "mcp-013",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A developer productivity agent's `run_tests` tool description says only: \"Runs the test suite.\" No input examples, output shape, or edge-case notes are given. During a session, the model repeatedly calls `run_tests` with malformed input and mishandles a \"no tests found\" result as if it were a failure. What description gap most directly explains this?",
+    "choices": [
+      "The tool is missing from the `tools` array entirely, so the model is guessing at its interface",
+      "The tool's `input_schema` uses `strict: true`, which is incompatible with test-running tools",
+      "The agent has too many tools configured, causing selection errors unrelated to this specific tool's description",
+      "The description omits input format with examples and edge-case behavior, both of which are required components for reliable tool use"
+    ],
+    "answer": 3,
+    "explanation": "正解は3。ツール説明には入力形式の例やエッジケースの挙動(例:テストが見つからない場合の扱い)を含める必要があり、これが欠けていると誤った入力生成や結果の誤解釈が起きる。選択肢0はツールが存在すること自体は問題文から明らかなので誤り。選択肢1はstrict modeとテストツールの非互換性という事実はなく誤り。選択肢2は単一ツールの説明品質の問題であり、ツール数過多とは無関係。",
+    "tags": [
+      "tool-description",
+      "edge-case-behavior"
+    ],
+    "ref": "D4: required description components - edge cases"
+  },
+  {
+    "id": "mcp-014",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "An MCP server for a file-editing agent needs to request user input mid-task (e.g., asking the user to pick which of three ambiguous files they meant) before continuing, rather than guessing. Which MCP client-side primitive is designed for the server to request this from the user through the client?",
+    "choices": [
+      "Elicitation, which lets the server request user input via the client",
+      "Sampling, which lets the server request an LLM completion from the client",
+      "Roots, which define filesystem boundaries for the client",
+      "Resources, which expose read-only content/data for the server to serve"
+    ],
+    "answer": 0,
+    "explanation": "正解は0。elicitationはサーバーがクライアント経由でユーザーに入力を求めるためのクライアント側プリミティブであり、曖昧な状況でユーザーに確認を取りたい場合にまさに適している。samplingはサーバーがクライアントにLLM補完の生成を依頼する仕組みでユーザー入力の取得とは異なる。rootsはクライアントがアクセスを許可するファイルシステムの境界を定義するものでユーザーへの問い合わせ機能ではない。resourcesはサーバー側プリミティブであり、読み取り専用データを提供するものでユーザー入力の要求とは無関係である。",
+    "tags": [
+      "client-primitives",
+      "elicitation",
+      "mcp-architecture"
+    ],
+    "ref": "D4: MCP client-side primitives (elicitation)"
+  },
+  {
+    "id": "mcp-015",
+    "domain": "mcp",
+    "difficulty": 1,
+    "question": "Which of the following is explicitly called out as the correct differentiation strategy when two tools like `analyze_content` and `analyze_document` have ambiguous, overlapping purposes?",
+    "choices": [
+      "Leave both tools as-is and add a `tool_choice: any` to force a decision either way",
+      "Delete the less-used tool without further analysis to simplify the tool list",
+      "Rename the tools for clear differentiation (or consolidate them into a single tool) so their purposes no longer overlap",
+      "Add a third arbitration tool whose only job is to decide between the two ambiguous tools"
+    ],
+    "answer": 2,
+    "explanation": "正解は2。曖昧に重複するツールの正しい対処は、名前を差別化のために変更するか、1つのツールに統合することである。選択肢0はtool_choiceの設定変更では名前や説明の曖昧さそのものは解決されない。選択肢1は分析なしに削除すると必要な機能が失われる可能性があり不適切。選択肢3は仲裁用の新ツールを追加することはツール数を増やし問題を悪化させる可能性がある。",
+    "tags": [
+      "ambiguous-overlap",
+      "tool-naming"
+    ],
+    "ref": "D4: rename or consolidate anti-pattern fix"
+  },
+  {
+    "id": "mcp-016",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A Claude Code configuration for an internal support bot defines a tool `get_data` that can fetch either customer profiles or order histories depending on a `type` parameter, alongside a separate tool `fetch_records` that does something similar for internal audit logs. Engineers notice Claude sometimes calls `fetch_records` when it means to look up a customer profile. What is the best diagnosis?",
+    "choices": [
+      "The two tools have overlapping, insufficiently differentiated names and descriptions, similar to the analyze_content/analyze_document anti-pattern, and should be renamed or merged",
+      "The `input_schema` for `get_data` must be missing entirely, since Claude cannot call a tool without one",
+      "This is a sign that the agent needs `tool_choice: \"any\"` to prevent it from choosing incorrectly",
+      "The bot needs more tools added so Claude has more context to disambiguate between the two"
+    ],
+    "answer": 0,
+    "explanation": "正解は0。`get_data`と`fetch_records`という名称も目的も重複気味なツールは、`analyze_content`/`analyze_document`と同種の曖昧な重複アンチパターンであり、リネームまたは統合が適切な対処。選択肢1はinput_schemaの有無とは無関係な誤った推測。選択肢2の\"any\"はどれかのツールを強制するだけで、正しいツールを選ばせる効果はない。選択肢3はツールを追加することがむしろ選択の複雑さを増し逆効果になる。",
+    "tags": [
+      "ambiguous-overlap",
+      "tool-naming"
+    ],
+    "ref": "D4: ambiguous overlap anti-pattern variant"
+  },
+  {
+    "id": "mcp-017",
+    "domain": "mcp",
+    "difficulty": 3,
+    "question": "A structured extraction agent needs the model to always call `extract_line_items` first, and only after that result is returned, forces a second call to `compute_totals`. An engineer proposes setting `tool_choice: \"any\"` for both API calls to keep things simple, arguing \"any\" guarantees a tool call happens at each step so the sequence will hold. What is wrong with this reasoning?",
+    "choices": [
+      "Nothing is wrong; \"any\" is equivalent to forcing named tools in sequence since it always results in a tool call",
+      "\"any\" is deprecated and no longer a valid tool_choice value, so the entire pipeline would fail with an error",
+      "\"any\" only guarantees that some tool is called, not which one — the model could call `compute_totals` first or skip `extract_line_items` entirely; only the named form `{\"type\":\"tool\",\"name\":\"extract_line_items\"}` enforces the specific tool at each step",
+      "\"any\" works correctly for the first call but is incompatible with strict-mode input_schema on the second call"
+    ],
+    "answer": 2,
+    "explanation": "正解は2。\"any\"はツール呼び出しがあることを保証するだけで、どのツールが呼ばれるかは保証しないため、順序制御には不十分。特定のツールを強制するにはnamed形式`{\"type\":\"tool\",\"name\":\"...\"}`が必要。選択肢0はこの区別を無視しており誤り。選択肢1は\"any\"が非推奨という事実はなく誤り。選択肢3はstrict modeとの非互換性という架空の制約であり誤り。",
+    "tags": [
+      "tool_choice",
+      "any",
+      "workflow-ordering"
+    ],
+    "ref": "D4: any vs named tool_choice for ordering"
+  },
+  {
+    "id": "mcp-018",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A team building a customer support agent wants to add a `input_schema` with strict validation for a new `issue_refund` tool. Which schema snippet correctly follows both the tool definition schema and strict-mode requirements described for this exam?",
+    "choices": [
+      "`{\"type\": \"object\", \"properties\": {\"order_id\": {\"type\": \"string\"}, \"amount\": {\"type\": \"number\"}}, \"required\": [\"order_id\", \"amount\"], \"additionalProperties\": false, \"strict\": true}`",
+      "`{\"type\": \"object\", \"properties\": {\"order_id\": {\"type\": \"string\"}, \"amount\": {\"type\": \"number\"}}, \"required\": [\"order_id\"], \"additionalProperties\": true}`",
+      "`{\"type\": \"object\", \"properties\": {\"order_id\": {\"type\": \"string\", \"pattern\": \"^ORD-[0-9]+$\"}, \"amount\": {\"type\": \"number\"}}, \"required\": [\"order_id\", \"amount\"], \"strict\": true}`",
+      "`{\"type\": \"object\", \"properties\": {\"order_id\": {\"type\": \"string\"}, \"amount\": {\"type\": \"number\"}}, \"strict\": true}`"
+    ],
+    "answer": 0,
+    "explanation": "正解は0。strict modeは`additionalProperties: false`と全プロパティが`required`に含まれることを要求しており、この選択肢はその両方を満たし、非対応機能(pattern等)も使っていない。選択肢1は`additionalProperties: true`かつ`amount`が`required`に含まれず要件違反。選択肢2は`pattern`という非対応機能を使用しつつ`additionalProperties: false`が欠落している。選択肢3は`additionalProperties`と`required`の両方が欠落しており明確に不十分。",
+    "tags": [
+      "strict-mode",
+      "input_schema"
+    ],
+    "ref": "D4: strict mode additionalProperties + required"
+  },
+  {
+    "id": "mcp-019",
+    "domain": "mcp",
+    "difficulty": 1,
+    "question": "A tool result in a customer support agent's MCP server includes the fields `isError`, `errorCategory`, `isRetryable`, `description`, `partial_results`, and `attempted_action`. What is the primary purpose of this structured shape?",
+    "choices": [
+      "To let the agent decide the correct next action programmatically instead of guessing from a message",
+      "To satisfy strict-mode JSON Schema requirements for the tool's input_schema definition",
+      "To reduce the number of tokens consumed by the tool_result block overall",
+      "To allow the MCP host to skip calling the tool a second time"
+    ],
+    "answer": 0,
+    "explanation": "構造化エラーはisRetryableやerrorCategoryなどのフィールドにより、エージェントが自動でリトライ・修正・エスカレーションを判断できるようにするものである。strict modeはinput_schemaの話でありエラー応答の目的ではない。トークン削減は副次的効果に過ぎず主目的ではない。ツール呼び出し回数の制御とも直接関係しない。",
+    "tags": [
+      "structured-error",
+      "mcp",
+      "tool-result"
+    ],
+    "ref": "D4 structured error response shape"
+  },
+  {
+    "id": "mcp-020",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "In a multi-agent research system, a subagent's web-search tool returns `{\"isError\": true, \"errorCategory\": \"Transient\", \"isRetryable\": true, \"description\": \"Upstream API returned 503\", \"attempted_action\": \"search_papers(query='CRISPR 2025')\"}`. What should the coordinator do?",
+    "choices": [
+      "Escalate to a human immediately since any isError:true means the workflow cannot continue",
+      "Rewrite the query and treat this as a validation problem",
+      "Silently drop the result and continue as if no search was requested",
+      "Retry the same call after an exponential backoff delay"
+    ],
+    "answer": 3,
+    "explanation": "errorCategoryがTransientかつisRetryable:trueなので、指数バックオフでのリトライが正しい対応である。isError:trueだからといって即座に人間へエスカレーションするのは誤り（Permissionカテゴリの対応）。クエリを書き換えるのはValidationカテゴリへの対応であり今回は該当しない。結果を無視するのはサイレント抑制のアンチパターンである。",
+    "tags": [
+      "transient-error",
+      "exponential-backoff",
+      "retry"
+    ],
+    "ref": "D4 error taxonomy: Transient"
+  },
+  {
+    "id": "mcp-021",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A structured data extraction pipeline calls a `lookup_invoice` MCP tool with a malformed invoice ID. The tool returns `errorCategory: \"Validation\"`, `isRetryable: false`. What is the correct agent behavior?",
+    "choices": [
+      "Retry the identical call three times with exponential backoff before giving up",
+      "Escalate immediately to a human reviewer without attempting a fix",
+      "Treat this the same as a Transient error since isError is true in both cases",
+      "Correct the malformed input (e.g., reformat the ID) and call the tool again with the fixed value"
+    ],
+    "answer": 3,
+    "explanation": "Validationカテゴリはリトライ不可であり、入力を修正してから再試行するのが正しい。同じ入力でバックオフしながら繰り返すのはTransient向けの対応であり無意味である。人間へのエスカレーションはPermissionやBusinessカテゴリでの対応であり、単純な入力ミスでは過剰対応。isError:trueだけを見てカテゴリを無視するのは誤り。",
+    "tags": [
+      "validation-error",
+      "fix-input",
+      "taxonomy"
+    ],
+    "ref": "D4 error taxonomy: Validation"
+  },
+  {
+    "id": "mcp-022",
+    "domain": "mcp",
+    "difficulty": 1,
+    "question": "A billing tool used by a Claude Code CI/CD pipeline returns `errorCategory: \"Business\"` with description \"Account is frozen pending fraud review.\" Which response matches the taxonomy for this category?",
+    "choices": [
+      "Retry with exponential backoff since the account may unfreeze soon",
+      "Silently return an empty result to keep the pipeline green",
+      "Reformat the request payload and resubmit automatically",
+      "Inform the user of the policy state and escalate for a decision if action is required"
+    ],
+    "answer": 3,
+    "explanation": "Businessカテゴリ（ポリシー違反や凍結アカウントなど）は利用者への通知およびエスカレーションが適切な対応である。バックオフでのリトライはTransient向けであり凍結状態は時間経過で解決しない。ペイロード修正はValidation向けの対応であり今回の原因ではない。サイレントに空の結果を返すのはアンチパターンであるサイレント抑制そのものである。",
+    "tags": [
+      "business-error",
+      "escalate",
+      "taxonomy"
+    ],
+    "ref": "D4 error taxonomy: Business"
+  },
+  {
+    "id": "mcp-023",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A developer productivity agent calls an internal `deploy_service` MCP tool. The response is `errorCategory: \"Permission\", description: \"OAuth token expired\", isRetryable: false`. What is the architecturally correct handling?",
+    "choices": [
+      "Retry immediately since a fresh attempt might succeed",
+      "Automatically request broader scopes from the OAuth provider and continue",
+      "Route the failure to a human who can refresh or reauthorize credentials",
+      "Mark the deployment as complete with a note that permissions were skipped"
+    ],
+    "answer": 2,
+    "explanation": "Permissionカテゴリ（アクセス拒否や期限切れトークン）は人間の介入が必要であり、認証情報の更新を人間に委ねるのが正しい。即時リトライは無意味（トークンは自動更新されない）。エージェントが勝手にスコープを拡大要求するのはセキュリティ上不適切で最小権限の原則に反する。権限エラーを無視して完了扱いにするのは危険なサイレント抑制である。",
+    "tags": [
+      "permission-error",
+      "human-escalation",
+      "oauth"
+    ],
+    "ref": "D4 error taxonomy: Permission"
+  },
+  {
+    "id": "mcp-024",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "In a customer support resolution agent, an order-lookup tool call returns HTTP 200 with body `[]`. How should this be distinguished from a call that times out?",
+    "choices": [
+      "Both should trigger the identical fallback message, since the agent found nothing to show either way",
+      "A 200 with empty array should always be retried just like a timeout, since both indicate missing data",
+      "The agent should treat the empty array as a Permission error that requires human escalation",
+      "A 200 with empty array means the search ran and found nothing; a timeout means the search never ran, so 'no orders exist' cannot be assumed"
+    ],
+    "answer": 3,
+    "explanation": "HTTP 200＋空配列は検索が正常実行され該当なしという有効な結果であるのに対し、タイムアウトは検索自体が実行されていない失敗である。両者を同一視して同じフォールバックメッセージを出すのは誤りで、エージェントの応答は根本的に異なるべきである。空配列をタイムアウトと同様にリトライするのは不要な処理。空配列をPermissionエラー扱いするのは的外れである。",
+    "tags": [
+      "empty-vs-failed",
+      "http-status",
+      "response-check"
+    ],
+    "ref": "D4 empty vs failed distinction"
+  },
+  {
+    "id": "mcp-025",
+    "domain": "mcp",
+    "difficulty": 3,
+    "question": "During a partial outage, a customer support agent's order-history tool starts returning HTTP 503 for some requests. A teammate proposes catching all tool errors and returning `[]` to the agent so the conversation flow doesn't break. What is wrong with this approach?",
+    "choices": [
+      "It violates strict mode JSON Schema by making additionalProperties true",
+      "It is silent suppression: the agent presents '[]' as 'no orders found' when the lookup never actually executed",
+      "It increases token usage compared to returning the real error message",
+      "It causes the tool_use_id to no longer match, which breaks the tool_result binding"
+    ],
+    "answer": 1,
+    "explanation": "エラーを握りつぶして空配列にすり替えるのは名指しされたアンチパターン「サイレント抑制」であり、エージェントは実際には検索が失敗しているのに「注文なし」という誤った結論を顧客に伝えてしまう。strict modeやadditionalPropertiesとは無関係。トークン量の増減は本質的な問題ではない。tool_use_idの整合性にも影響しない。",
+    "tags": [
+      "silent-suppression",
+      "anti-pattern",
+      "outage"
+    ],
+    "ref": "D4 anti-pattern: silent suppression"
+  },
+  {
+    "id": "mcp-026",
+    "domain": "mcp",
+    "difficulty": 1,
+    "question": "Which of the following MCP tool error descriptions is an example of the 'generic error message' anti-pattern the exam warns against?",
+    "choices": [
+      "{\"isError\": true, \"description\": \"Operation failed\"}",
+      "{\"isError\": true, \"errorCategory\": \"Transient\", \"description\": \"Payment gateway timed out after 30s\", \"isRetryable\": true}",
+      "{\"isError\": true, \"errorCategory\": \"Validation\", \"description\": \"customer_id must match pattern ^CUST-[0-9]{6}$\", \"isRetryable\": false}",
+      "{\"isError\": true, \"errorCategory\": \"Permission\", \"description\": \"API key lacks scope: refunds:write\", \"isRetryable\": false}"
+    ],
+    "answer": 0,
+    "explanation": "「Operation failed」だけを返すのは、原因もカテゴリもリトライ可否も分からない典型的な汎用エラーのアンチパターンである。他の3つはerrorCategoryや具体的な原因、isRetryableを含んでおり、エージェントが次の行動を判断できる十分な情報を提供している。",
+    "tags": [
+      "generic-error",
+      "anti-pattern"
+    ],
+    "ref": "D4 anti-pattern: generic Operation failed"
+  },
+  {
+    "id": "mcp-027",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A multi-agent research system's coordinator delegates a five-step data-gathering workflow to a subagent. Step 3 of 5 fails with a non-retryable Business error (dataset license restriction). What is the best design for the subagent's response to the coordinator?",
+    "choices": [
+      "Abort the entire workflow and report only that step 3 failed, discarding steps 1, 2, 4, and 5",
+      "Return partial_results from the completed steps plus a clear description of what step 3 attempted and why it failed",
+      "Silently skip step 3 and return the other four steps' results as if nothing went wrong",
+      "Retry step 3 indefinitely until the license issue resolves itself"
+    ],
+    "answer": 1,
+    "explanation": "partial_resultsを使って完了済みステップの結果と失敗の詳細を返すのが正しい設計であり、名指しされたアンチパターン「単一ステップの失敗でワークフロー全体を中断する」ことを避けられる。ステップ3以外を破棄して中断するのはまさにそのアンチパターン。失敗を隠して報告しないのはサイレント抑制。Businessカテゴリはリトライ不可なので無限リトライは無意味。",
+    "tags": [
+      "partial-results",
+      "workflow-abort",
+      "anti-pattern"
+    ],
+    "ref": "D4 anti-pattern: aborting whole workflow"
+  },
+  {
+    "id": "mcp-028",
+    "domain": "mcp",
+    "difficulty": 3,
+    "question": "A CI/CD pipeline runs Claude Code with `-p` in headless mode to run a batch of automated code-quality checks across 20 files using an MCP linting tool. One file's lint tool call fails with a Transient error (linter service restarted mid-run) while the other 19 succeed. What is the most reliable pipeline design?",
+    "choices": [
+      "Fail the entire pipeline run immediately so that no results at all get reported to the team",
+      "Report all 20 files as passing since 19 out of 20 individual lint checks succeeded",
+      "Collect partial_results for the 19 successful files, retry the failed file with backoff, and flag its status separately",
+      "Suppress the failed file's result entirely and report only the 19 files with no mention of the gap"
+    ],
+    "answer": 2,
+    "explanation": "Transientエラーはバックオフ付きリトライが適切であり、同時に成功した19ファイルの部分結果を保持して報告することで、単一障害でパイプライン全体を止めるアンチパターンを避けられる。全体を即座に失敗させるのは過剰反応。19件成功を根拠に20件全て合格とするのは失敗を無視した誤った報告。失敗ファイルを黙って除外するのはサイレント抑制である。",
+    "tags": [
+      "partial-results",
+      "ci-cd",
+      "transient-error"
+    ],
+    "ref": "D4 anti-pattern: aborting workflow / partial results"
+  },
+  {
+    "id": "mcp-029",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A Claude Code configuration includes an MCP tool `check_inventory` that during a warehouse system outage returns HTTP 500 errors. An engineer configures the tool wrapper to catch all exceptions and always return `{\"in_stock\": true}` so the shopping assistant 'keeps working.' What is the primary risk of this design?",
+    "choices": [
+      "It will cause a JSON Schema strict-mode validation failure at the tool_result level",
+      "It will exceed the tool's input_schema token budget while the outage is ongoing",
+      "It prevents the tool from ever being retried again for the remainder of the session",
+      "It fabricates a plausible but false in-stock answer during the outage, so neither agent nor customer can tell it's wrong"
+    ],
+    "answer": 3,
+    "explanation": "障害中に常にtrueを返す設計は、エラーを隠して虚偽の情報を提示するサイレント抑制の典型例であり、エージェントも顧客も誤りに気づけないため実際の失敗を表面化するより悪い結果を招く。JSON Schemaのstrict mode検証やトークン予算とは無関係。リトライ可否の制御にも直接関係しない。",
+    "tags": [
+      "silent-suppression",
+      "outage",
+      "fabricated-response"
+    ],
+    "ref": "D4 anti-pattern: silent suppression during outage"
+  },
+  {
+    "id": "mcp-030",
+    "domain": "mcp",
+    "difficulty": 1,
+    "question": "Which pairing correctly matches an error category from the exam's taxonomy to its recommended agent response?",
+    "choices": [
+      "Transient -> fix the input and do not retry",
+      "Validation -> exponential backoff retry",
+      "Permission -> escalate to a human",
+      "Business -> retry indefinitely without informing anyone"
+    ],
+    "answer": 2,
+    "explanation": "Permission（アクセス拒否や期限切れトークンなど）は人間へのエスカレーションが正しい対応である。Transientは指数バックオフでのリトライが正しく「入力修正」ではない。Validationは入力修正が正しく「バックオフ retry」ではない。Businessは通知・エスカレーションが必要であり、黙って無限リトライするのは誤り。",
+    "tags": [
+      "taxonomy",
+      "error-category-mapping"
+    ],
+    "ref": "D4 error category taxonomy overview"
+  },
+  {
+    "id": "mcp-031",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A structured data extraction agent's document-fetch tool call times out after 30 seconds while pulling page 4 of a 10-page contract. The tool returns `isError: true, errorCategory: \"Transient\", partial_results: {pages_fetched: [1,2,3]}, attempted_action: \"fetch_page(4)\"`. What should the agent do with `partial_results` here?",
+    "choices": [
+      "Ignore partial_results entirely and restart extraction of all 10 pages from page 1 again",
+      "Discard partial_results and report the whole 10-page document as unextractable",
+      "Keep the fetched pages 1-3, retry from page 4 with backoff, and only report a gap if retries are exhausted",
+      "Report pages 1-3 as complete and silently mark pages 4 through 10 as 'no content found'"
+    ],
+    "answer": 2,
+    "explanation": "partial_resultsを活用し、既に取得済みの1〜3ページは保持したまま失敗した箇所からバックオフ付きで再試行し、それでも失敗する場合のみギャップを明示して報告するのが正しい。全ページを最初からやり直すのは非効率でpartial_resultsの意義を無視している。ドキュメント全体を抽出不能として破棄するのも過剰。ページ4-10を「内容なし」と偽るのはサイレント抑制である。",
+    "tags": [
+      "partial-results",
+      "transient-error",
+      "extraction"
+    ],
+    "ref": "D4 structured error: partial_results usage"
+  },
+  {
+    "id": "mcp-032",
+    "domain": "mcp",
+    "difficulty": 3,
+    "question": "A hub-and-spoke multi-agent research system's search subagent's tool call fails, and the subagent forwards this to the coordinator as simply `{\"isError\": true, \"description\": \"Search failed\"}` with no `errorCategory`, no `attempted_action`, and no indication of what query or source was being searched. The coordinator cannot decide whether to retry, rephrase, or give up. Which named error anti-pattern does this best illustrate?",
+    "choices": [
+      "Silent suppression, because the failure was hidden from the coordinator entirely",
+      "Missing context: the error lacks enough detail (category, attempted action, source) for the coordinator to determine an appropriate next step",
+      "Killing the entire workflow on a single step failure, because the coordinator will necessarily abort",
+      "Empty vs failed confusion, because the tool returned HTTP 200 with an empty array"
+    ],
+    "answer": 1,
+    "explanation": "このエラーは実際には失敗を隠していない（isError: trueは明示されている）ため「サイレント抑制」ではなく、`errorCategory`・`attempted_action`・検索対象などの文脈情報が欠落しており、コーディネーターが次に取るべき行動（再試行・言い換え・断念）を判断できないという「コンテキスト不足」のアンチパターンに該当する。ワークフロー全体を中断するかどうかはこの設問の主眼ではなく、必ず中断するとは限らない。今回はエラー自体が明示されておりHTTP 200+空配列のケースでもないため、empty vs failedの混同ではない。",
+    "tags": [
+      "missing-context",
+      "anti-pattern",
+      "structured-error-fields"
+    ],
+    "ref": "D4 error anti-pattern: missing context"
+  },
+  {
+    "id": "mcp-033",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A developer productivity tool wraps a flaky third-party API. The team wants the MCP tool to tell Claude clearly when it is safe to automatically retry versus when Claude should change its approach. Which field in the structured error response directly answers 'is it safe to retry as-is'?",
+    "choices": [
+      "attempted_action",
+      "isRetryable",
+      "description",
+      "partial_results"
+    ],
+    "answer": 1,
+    "explanation": "isRetryableフィールドがまさに「このまま自動リトライしてよいか」を明示的に伝えるためのものである。attempted_actionは何を試みたかの記録であり再試行可否そのものではない。descriptionは人間可読な説明でエージェントが確実にパースできる保証はない。partial_resultsは途中経過のデータであり再試行可否の判断材料ではない。",
+    "tags": [
+      "isRetryable",
+      "structured-error-fields"
+    ],
+    "ref": "D4 structured error response shape"
+  },
+  {
+    "id": "mcp-034",
+    "domain": "mcp",
+    "difficulty": 1,
+    "question": "In an MCP tool's structured error response, what is the purpose of the `attempted_action` field?",
+    "choices": [
+      "It records what operation the tool tried to perform, giving context for diagnosing the failure",
+      "It specifies whether the tool_result should be automatically retried by the calling agent",
+      "It lists the JSON Schema properties that were required by input_schema but were missing",
+      "It defines the exponential backoff interval to wait between retries, in milliseconds"
+    ],
+    "answer": 0,
+    "explanation": "attempted_actionは、ツールが実際に何を実行しようとしたかを記録し、エージェントや人間のレビュアーが障害を診断する際の文脈情報を提供するためのフィールドである。リトライ可否を示すのはisRetryableの役割。必須プロパティの欠落はJSON Schemaバリデーションの話でありこのフィールドの目的ではない。バックオフ間隔を定義するものでもない。",
+    "tags": [
+      "attempted_action",
+      "structured-error-fields"
+    ],
+    "ref": "D4 structured error response shape"
+  },
+  {
+    "id": "mcp-035",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A customer support agent's refund-lookup MCP tool returns `{\"isError\": true, \"errorCategory\": \"Business\", \"isRetryable\": false, \"description\": \"Refund exceeds the account's $500 monthly approval limit\", \"attempted_action\": \"issue_refund(amount=650, order_id='ORD-9931')\"}`. What is the architecturally correct next step for the agent?",
+    "choices": [
+      "Automatically split the refund into two smaller transactions under $500 each and process both immediately",
+      "Retry the identical call with exponential backoff, since a fresh attempt may bypass the approval limit",
+      "Inform the customer of the policy limit and escalate the case for human approval of the excess amount, rather than attempting to process it unilaterally",
+      "Silently cap the refund at $500 and tell the customer that is the full amount owed"
+    ],
+    "answer": 2,
+    "explanation": "Businessカテゴリ（承認上限超過というポリシー上の制約）に対する正しい対応は、状況を顧客に伝え、必要であれば人間による承認へエスカレーションすることである。上限を回避するために取引を分割して自動処理するのは、まさにポリシー違反を回避しようとする不適切な振る舞いである。承認上限は時間経過や再試行では解消されないため、バックオフによるリトライは無意味（Businessカテゴリはリトライ対象ではない）。返金額を勝手に上限まで切り下げて顧客に伝えるのは、実際の返金対象額を偽って伝えるサイレント抑制に近い不適切な対応である。",
+    "tags": [
+      "business-error",
+      "escalate",
+      "taxonomy"
+    ],
+    "ref": "D4 error taxonomy: Business (approval limits)"
+  },
+  {
+    "id": "mcp-036",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A team building an MCP server for a CI/CD pipeline wants to correctly categorize a failure where the tool call succeeded but the requested action violates an internal compliance policy (e.g., 'cannot deploy to production outside change window'). Which errorCategory and response pair is correct?",
+    "choices": [
+      "Transient; retry the deployment with exponential backoff until the change window opens",
+      "Validation; reformat the deployment request payload and resubmit",
+      "Business; inform the requester of the policy violation and escalate if an override is needed",
+      "Permission; assume the CI service account's credentials have expired"
+    ],
+    "answer": 2,
+    "explanation": "コンプライアンスポリシー違反はBusinessカテゴリに該当し、要求者への通知および必要であれば人間へのエスカレーションが正しい対応である。バックオフでのリトライはTransient向けで、変更ウィンドウはリトライで解決する問題ではない。ペイロードの再フォーマットはValidation向けの対応で今回の原因とは無関係。認証情報の期限切れはPermissionカテゴリであり、ポリシー違反とは別の問題である。",
+    "tags": [
+      "business-error",
+      "compliance",
+      "ci-cd"
+    ],
+    "ref": "D4 error taxonomy: Business"
+  },
+  {
+    "id": "mcp-037",
+    "domain": "mcp",
+    "difficulty": 1,
+    "question": "A developer is explaining the MCP architecture to a new hire configuring Claude Code with three separate MCP servers (a database server, a filesystem server, and a ticketing server). How does the Host relate to each server?",
+    "choices": [
+      "The Host maintains a single shared Client connection multiplexed across all three servers",
+      "The Host creates one dedicated Client for each server, a 1:1 connection per server",
+      "The Host connects directly to each server without any Client abstraction layer",
+      "The Host only connects to one server at a time and must disconnect before adding another"
+    ],
+    "answer": 1,
+    "explanation": "正解はMCPアーキテクチャの基本構造で、Host（例: Claude Code）は各Serverに対して1:1のClientを作成して接続します。選択肢Aは1つのClientで複数サーバーを多重化するという誤った理解です。選択肢CはClientという抽象層の存在を無視しています。選択肢Dは複数サーバーへの同時接続が可能という事実に反します。",
+    "tags": [
+      "mcp-architecture",
+      "host-client-server"
+    ],
+    "ref": "D4 MCP architecture"
+  },
+  {
+    "id": "mcp-038",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A developer productivity team is deploying an MCP server that runs entirely on the same machine as Claude Code, with no need for remote access. Which transport should they choose, and why?",
+    "choices": [
+      "stdio, because it runs as a local process with no network overhead",
+      "Streamable HTTP, because it supports SSE streaming which is required for all MCP servers",
+      "Streamable HTTP, because stdio is deprecated in favor of remote transports",
+      "stdio, because it is the only transport that supports JSON-RPC 2.0"
+    ],
+    "answer": 0,
+    "explanation": "正解はstdioで、ローカルプロセスとして動作しネットワークオーバーヘッドがないため、同一マシン上での利用に最適です。選択肢BはSSEが必須という誤った前提です。選択肢Cはstdioが非推奨という誤情報です。選択肢DはJSON-RPC 2.0は両方のトランスポートで使われるため誤りです。",
+    "tags": [
+      "transport",
+      "stdio"
+    ],
+    "ref": "D4 transports"
+  },
+  {
+    "id": "mcp-039",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A multi-agent research system needs to connect to an MCP server hosted in the cloud, accessible from multiple distributed coordinator instances. Which transport fits this requirement?",
+    "choices": [
+      "stdio, since it can be piped over a network socket to reach remote servers",
+      "stdio, because it is the recommended transport for all production deployments",
+      "Streamable HTTP, using HTTP POST with optional SSE streaming",
+      "Neither transport supports remote or distributed servers"
+    ],
+    "answer": 2,
+    "explanation": "正解はStreamable HTTPで、HTTP POSTとオプションのSSEストリーミングによりリモート・クラウド・分散環境向けに設計されています。選択肢Aはstdioがローカルプロセス通信専用である点を誤解しています。選択肢Bは逆で、stdioはローカル向けです。選択肢Dはリモート対応のトランスポートが存在しないという誤りです。",
+    "tags": [
+      "transport",
+      "streamable-http"
+    ],
+    "ref": "D4 transports"
+  },
+  {
+    "id": "mcp-040",
+    "domain": "mcp",
+    "difficulty": 1,
+    "question": "During MCP session setup for a customer support agent's tool integration, what is the correct order of the JSON-RPC 2.0 initialization sequence?",
+    "choices": [
+      "tools/list -> initialize -> notifications/initialized -> tools/call",
+      "initialize -> notifications/initialized -> tools/list -> tools/call",
+      "initialize -> tools/call -> notifications/initialized -> tools/list",
+      "notifications/initialized -> initialize -> tools/call -> tools/list"
+    ],
+    "answer": 1,
+    "explanation": "正解はinitialize（能力交渉）→ notifications/initialized → tools/list → tools/callの順です。他の選択肢はいずれも初期化前にツール呼び出しや一覧取得を行おうとしており、プロトコル上不正な順序です。initializeが完了して初めてサーバーの機能を利用できます。",
+    "tags": [
+      "json-rpc",
+      "initialization"
+    ],
+    "ref": "D4 protocol init sequence"
+  },
+  {
+    "id": "mcp-041",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A structured data extraction pipeline uses an MCP server that exposes both tools and resources. The engineer wants Claude to browse a catalog of available documents before deciding which one to fetch. Which server-side primitive should the server expose for this catalog-browsing behavior?",
+    "choices": [
+      "prompts, since they define reusable interaction templates for browsing",
+      "resources, since they expose read-only content with uri, name, and mimeType for browsing before fetching",
+      "sampling, since it lets the server request a completion from the client",
+      "roots, since they define the filesystem boundaries the server can browse"
+    ],
+    "answer": 1,
+    "explanation": "正解はresourcesで、uri・name・mimeTypeを持つ読み取り専用コンテンツのカタログを提供し、探索的なツール呼び出しを減らします。選択肢Aのpromptsはテンプレート用でカタログ閲覧目的ではありません。選択肢Cのsamplingはクライアント側プリミティブで用途が異なります。選択肢Dのrootsもクライアント側プリミティブでファイルシステム境界の定義用です。",
+    "tags": [
+      "resources",
+      "server-primitives"
+    ],
+    "ref": "D4 server primitives"
+  },
+  {
+    "id": "mcp-042",
+    "domain": "mcp",
+    "difficulty": 1,
+    "question": "An architect is categorizing MCP primitives for a design document. Which of the following is a client-side primitive rather than a server-side primitive?",
+    "choices": [
+      "tools, executable functions the server provides",
+      "resources, read-only content the server exposes",
+      "elicitation, where the server requests user input through the client",
+      "prompts, interaction templates the server defines"
+    ],
+    "answer": 2,
+    "explanation": "正解はelicitationで、サーバーがクライアント経由でユーザー入力を要求するクライアント側プリミティブです。tools・resources・promptsはすべてサーバー側プリミティブであり、選択肢A・B・Dはその点で誤りです。",
+    "tags": [
+      "client-primitives",
+      "elicitation"
+    ],
+    "ref": "D4 client-side primitives"
+  },
+  {
+    "id": "mcp-043",
+    "domain": "mcp",
+    "difficulty": 3,
+    "question": "Two engineers on a team both have Claude Code configured for the same repository. One added a new MCP server entry to `~/.claude.json` and is confused why teammates don't see it after pulling the latest commit. What is the root cause?",
+    "choices": [
+      "MCP server configs cannot be added incrementally; the whole file must be regenerated",
+      "The teammate needs to run `tools/list` manually to sync the new server",
+      "MCP servers require a restart of the entire operating system to be shared across users",
+      "`~/.claude.json` is a personal, non-version-controlled file, so it never propagates to teammates via git"
+    ],
+    "answer": 3,
+    "explanation": "正解は`~/.claude.json`が個人用の設定ファイルであり、バージョン管理されないためgit経由でチームに共有されないことです。チーム共有すべき設定は`.mcp.json`に置く必要があります。選択肢Aはファイル全体の再生成が必要という誤情報です。選択肢Bはtools/listはプロトコル内部の動作でユーザーが手動実行するものではありません。選択肢CはOS再起動という無関係な要求です。",
+    "tags": [
+      "mcp-json",
+      "config-scope-trap"
+    ],
+    "ref": "D4 .mcp.json vs ~/.claude.json trap"
+  },
+  {
+    "id": "mcp-044",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A team wants every developer who clones their repository to automatically get the same set of MCP servers (a Postgres server and an internal API server) without manual setup. Where should this configuration live?",
+    "choices": [
+      "In `~/.claude.json`, since it applies to all projects on the machine",
+      "In an environment variable exported in each developer's shell profile",
+      "In a `.claude/settings.local.json` file so it stays consistent per machine",
+      "In `.mcp.json` at the project root, since it is version-controlled and shared across the team"
+    ],
+    "answer": 3,
+    "explanation": "正解は`.mcp.json`をプロジェクトルートに置くことで、これはバージョン管理されチーム標準として共有されます。選択肢Aの`~/.claude.json`は個人設定でありgit管理外です。選択肢Bはシェル環境変数任せで再現性がありません。選択肢Cの`settings.local.json`はマシンローカルかつgitignore対象で共有されません。",
+    "tags": [
+      "mcp-json",
+      "team-config"
+    ],
+    "ref": "D4 .mcp.json project scope"
+  },
+  {
+    "id": "mcp-045",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "An engineer is writing the `.mcp.json` entry for a database MCP server that needs a connection string containing a password. What is the correct way to supply this secret?",
+    "choices": [
+      "Hard-code the password directly in the `env` field of `.mcp.json` for simplicity",
+      "Base64-encode the password and paste it into `args` so it is obfuscated",
+      "Store the password in a comment above the server entry so future maintainers can find it",
+      "Use `${DB_PASSWORD}` in the `env` field so the value expands from an environment variable, never committing the secret itself"
+    ],
+    "answer": 3,
+    "explanation": "正解は`env`フィールドで`${VAR_NAME}`形式による環境変数展開を使い、シークレット自体は決してコミットしないことです。選択肢Aは平文パスワードの直接コミットで重大なセキュリティリスクです。選択肢Bはbase64エンコードは暗号化ではなく容易に復元可能なため誤りです。選択肢CはJSONにコメントは書けず、また秘密情報の露出にもなります。",
+    "tags": [
+      "env-expansion",
+      "secrets"
+    ],
+    "ref": "D4 env var expansion"
+  },
+  {
+    "id": "mcp-046",
+    "domain": "mcp",
+    "difficulty": 3,
+    "question": "A security review flags a `.mcp.json` file committed to the team's public repository. The file contains `\"env\": {\"API_KEY\": \"${SUPPORT_API_KEY}\"}`. Is this a violation, and why?",
+    "choices": [
+      "Yes, because `${VAR}` syntax always leaks the resolved secret value into the committed file",
+      "Yes, because MCP server env blocks must never reference external variables at all",
+      "No, because `${SUPPORT_API_KEY}` is only a placeholder expanded at runtime from the environment; the actual secret is never written to the file",
+      "Yes, because committing any `.mcp.json` file that references API keys is a violation regardless of whether `${VAR}` expansion is used"
+    ],
+    "answer": 2,
+    "explanation": "正解は`${VAR}`構文がプレースホルダーであり、実行時に環境変数から展開されるため、実際のシークレット値がファイルに書き込まれることはないという点です。選択肢Aはこの展開の仕組みを誤解しています。選択肢Bは外部変数参照自体を禁止するという誤った規則です。選択肢Dは`${VAR}`展開を使えばシークレット自体は書き込まれないため、APIキーを参照するだけで一律に違反とする主張は誤りです。",
+    "tags": [
+      "env-expansion",
+      "secrets"
+    ],
+    "ref": "D4 secrets never committed"
+  },
+  {
+    "id": "mcp-047",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A structured data extraction agent is repeatedly calling a search-style tool many times just to discover what document types exist before it can extract anything useful. The MCP server providing this data supports resources. What architectural change would reduce these exploratory tool calls?",
+    "choices": [
+      "Expose a resources catalog (uri, name, mimeType) so Claude can browse available content before deciding what to fetch",
+      "Add more few-shot examples to the tool description to teach Claude to search less",
+      "Increase the tool's `max_retries` so failed searches succeed faster",
+      "Force `tool_choice` to the specific search tool so Claude cannot call anything else"
+    ],
+    "answer": 0,
+    "explanation": "正解はresourcesカタログを公開し、uri・name・mimeTypeによって事前にコンテンツを閲覧できるようにすることで、探索的なツール呼び出しを減らせます。選択肢Bは根本的なアーキテクチャの問題を解決しません。選択肢Cはリトライ回数の増加とは無関係です。選択肢Dは特定ツールへの強制であり、むしろ探索の柔軟性を失わせ問題を悪化させます。",
+    "tags": [
+      "resources",
+      "exploration-efficiency"
+    ],
+    "ref": "D4 resources reduce exploratory calls"
+  },
+  {
+    "id": "mcp-048",
+    "domain": "mcp",
+    "difficulty": 1,
+    "question": "Which of the following is one of Claude Code's built-in tools used for locating content by matching text patterns inside files (as opposed to matching filenames)?",
+    "choices": [
+      "Glob, which matches filename patterns",
+      "Read, which returns file contents given a path",
+      "Bash, which executes shell commands",
+      "Grep, which searches file content by pattern"
+    ],
+    "answer": 3,
+    "explanation": "正解はGrepで、ファイル内容のパターン検索を行うツールです。選択肢AのGlobはファイル名パターンのマッチング用で内容検索ではありません。選択肢Bのreadは既知のパスからファイル内容を返すツールで検索機能ではありません。選択肢CのBashはシェルコマンド実行用で内容パターン検索に特化したツールではありません。",
+    "tags": [
+      "built-in-tools",
+      "grep"
+    ],
+    "ref": "D4 built-in tools"
+  },
+  {
+    "id": "mcp-049",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A developer configuring Claude Code for a new large codebase asks it to fix a bug in an authentication flow. Which exploration pattern should Claude follow for efficient context usage?",
+    "choices": [
+      "Read every file in the repository upfront to build full context before making any changes",
+      "Use Bash to `cat` the entire `src/` directory into a single buffer before starting",
+      "Grep for relevant entry points, Read those files, then follow imports via further Grep/Read, iterating as needed",
+      "Skip exploration entirely and use Edit directly based on the bug description alone"
+    ],
+    "answer": 2,
+    "explanation": "正解はGrepでエントリポイントを検索し、それらをReadし、importを辿ってさらにGrep/Readを繰り返すパターンです。これはコンテキストを節約しつつ関連コードを特定します。選択肢Aと選択肢Bは「read-everything-upfront」というアンチパターンでコンテキストを浪費します。選択肢Dは調査なしでの編集であり誤った変更のリスクが高まります。",
+    "tags": [
+      "exploration-pattern",
+      "anti-pattern"
+    ],
+    "ref": "D4 exploration pattern"
+  },
+  {
+    "id": "mcp-050",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A developer wants Claude Code to locate every file whose name matches `*.config.ts` across a large repository before deciding which one to open, without searching inside file contents. Which built-in Claude Code tool is designed specifically for filename-pattern matching, as distinct from content search?",
+    "choices": [
+      "Grep, which searches inside file contents by pattern",
+      "Glob, which matches filename patterns",
+      "Bash, which would need a custom `find` invocation instead of a dedicated tool",
+      "Read, which returns the contents of a file once its path is already known"
+    ],
+    "answer": 1,
+    "explanation": "正解はGlobで、ファイル内容ではなくファイル名パターンのマッチングに特化した組み込みツールである。Grepはファイル内容をパターン検索するツールでありファイル名の一致には使わない。Bashで`find`を独自に呼び出すことも技術的には可能だが、専用ツールであるGlobを使う方が適切で標準的なアプローチである。Readは既知のパスからファイル内容を取得するツールであり、そもそもファイルを名前で探す機能を持たない。",
+    "tags": [
+      "built-in-tools",
+      "glob"
+    ],
+    "ref": "D4 built-in tools: Glob vs Grep"
+  },
+  {
+    "id": "mcp-051",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "Claude Code attempts to use the Edit tool to change a line of configuration, but the operation fails because the target string appears five times in the file. What is the correct fallback approach?",
+    "choices": [
+      "Retry the same Edit call repeatedly until it succeeds by chance",
+      "Use Bash with `sed` to force the replacement instead of any built-in file tool",
+      "Read the whole file, construct the modified content in memory, and Write it back",
+      "Switch to Grep to locate and directly modify the matching lines"
+    ],
+    "answer": 2,
+    "explanation": "正解はファイル全体をReadし、修正済みの内容を構築してWriteで書き戻すフォールバックです。これはEditツールの一意マッチ制限に対する標準的な対処法です。選択肢Aは同じ失敗を繰り返すだけで解決になりません。選択肢Bはsedの使用が可能な場合もありますが、これは標準的に推奨されるフォールバックパターンではありません。選択肢DのGrepは検索専用ツールでありファイル内容の変更はできません。",
+    "tags": [
+      "edit-tool",
+      "unique-match-limitation"
+    ],
+    "ref": "D4 Edit unique-match limitation"
+  },
+  {
+    "id": "mcp-052",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "An MCP server for an internal ticketing system defines both `get_ticket` (fetches a single ticket by ID) and `fetch_ticket_details` (also fetches a single ticket by ID, but additionally includes comment history). Claude frequently calls the wrong one, sometimes missing needed comment history and sometimes fetching more data than needed. What is the most direct fix, consistent with the tool-naming differentiation principle?",
+    "choices": [
+      "Rename the tools to clearly signal the difference (e.g., `get_ticket_summary` vs `get_ticket_with_comments`) or consolidate into one tool with an `include_comments` parameter",
+      "Leave the names as-is and set `tool_choice: \"any\"` so at least some tool is always called",
+      "Add both tools to a 19th and 20th slot on the same single agent, since more tools give the model more options to pick from",
+      "Delete `fetch_ticket_details` without further analysis, since having only one ticket-fetching tool always resolves ambiguity"
+    ],
+    "answer": 0,
+    "explanation": "正解は、`get_ticket`と`fetch_ticket_details`のような曖昧に重複する名前・説明を、差別化のためにリネームするか、パラメータで挙動を切り替えられる1つのツールに統合することである。`tool_choice: \"any\"`は何らかのツール呼び出しを強制するだけで、どちらが正しいツールかという曖昧さの解消にはならない。ツールを増やして同じエージェントに持たせるのはツール数上限の原則に反し、選択の複雑さをむしろ悪化させる。分析なしにどちらかを削除すると、コメント履歴が必要な場面で機能が失われる可能性があり不適切である。",
+    "tags": [
+      "ambiguous-overlap",
+      "tool-naming"
+    ],
+    "ref": "D4 ambiguous overlap anti-pattern"
+  },
+  {
+    "id": "mcp-053",
+    "domain": "mcp",
+    "difficulty": 3,
+    "question": "A multi-agent research system's coordinator invokes an MCP tool. The server crashes mid-call and the client never receives a `tools/call` response. Which statement correctly explains why the coordinator cannot simply resend `tools/list` to recover, and must instead re-run `initialize` from scratch?",
+    "choices": [
+      "`tools/list` and `tools/call` both depend on the connection having already completed `initialize` -> `notifications/initialized`, and a crashed server loses that established session state, so the handshake must happen again",
+      "`tools/list` implicitly performs `initialize` if it has not already happened, so no recovery is needed",
+      "MCP servers do not need any initialization sequence when using stdio transport",
+      "`notifications/initialized` is optional and can be skipped entirely for stdio-based servers"
+    ],
+    "answer": 0,
+    "explanation": "正解は`tools/list`も`tools/call`も、`initialize`→`notifications/initialized`が完了した後でなければ有効に機能せず、サーバーがクラッシュするとそのセッション状態が失われるため、再初期化が必要になるという点です。選択肢Bは`tools/list`が自動的にinitializeを行うという誤った仕様理解です。選択肢Cはstdioでも初期化シーケンスは必須であるため誤りです。選択肢Dは`notifications/initialized`がstdioで省略可能という誤った例外規定です。",
+    "tags": [
+      "json-rpc",
+      "initialization",
+      "session-recovery"
+    ],
+    "ref": "D4 protocol init sequence dependency"
+  },
+  {
+    "id": "mcp-054",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "An architect is deciding whether a new capability for an internal tool should be implemented as an MCP server `tool` (executable function) or an MCP server `resource` (read-only content). The capability simply lets Claude browse a static list of product SKUs and their metadata without performing any action. Which is the better fit?",
+    "choices": [
+      "A tool, because tools are always preferred for any data access in MCP",
+      "A prompt, since prompts are meant for exposing static catalogs of data",
+      "Neither; this should be handled entirely with sampling on the client side",
+      "A resource, since it is read-only content best suited for browsing rather than an executable action"
+    ],
+    "answer": 3,
+    "explanation": "正解はresourceで、実行アクションを伴わない読み取り専用コンテンツの閲覧に適しています。選択肢Aはtoolsが常にデータアクセスに優先されるという誤った一般化です。選択肢Bのpromptsは対話テンプレート用であり静的カタログの公開用途ではありません。選択肢CのsamplingはクライアントがサーバーにLLM補完を要求する仕組みで、静的データ閲覧とは無関係です。",
+    "tags": [
+      "resources",
+      "tools-vs-resources"
+    ],
+    "ref": "D4 server primitives distinction"
+  }
+]
