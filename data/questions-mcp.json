@@ -10,6 +10,13 @@
       "Descriptions are only shown to human developers reading the code, not to the model",
       "input_schema alone fully determines which tool the model will invoke"
     ],
+    "questionJa": "開発者がカスタマーサポートエージェント用にカスタムツールを定義している。nameとinput_schemaは書いたが、descriptionは「注文情報を取得する。」という一行だけである。デプロイ前にこの説明文を拡充すべき最も重要な理由は何か。",
+    "choicesJa": [
+      "より長い説明文はJSON-RPC 2.0のプロトコル仕様で必須とされているから",
+      "descriptionはClaudeがどのツールを呼ぶか判断する際の主要な手がかりであり、曖昧だとツール選択の信頼性が低下するから",
+      "descriptionはコードを読む人間の開発者にのみ表示され、モデルには渡されないから",
+      "input_schemaだけでモデルがどのツールを呼び出すかが完全に決まるから"
+    ],
     "answer": 1,
     "explanation": "正解は1。ツールの説明文はClaudeがどのツールを呼ぶべきか判断する際の主要な手がかりであり、曖昧だと誤選択が増える。選択肢0はJSON-RPC 2.0がdescriptionの長さを要求するという事実がなく誤り。選択肢2はdescriptionがモデルに渡される核心情報である点を無視しており誤り。選択肢3はinput_schemaだけでは選択理由を説明できないため誤り。",
     "tags": [
@@ -28,6 +35,13 @@
       "A description covering when to use it, an example input like {\"vendor\": \"Acme Corp\", \"date_range\": \"2026-01-01/2026-03-31\"}, the output shape, behavior on zero matches, and how it differs from `search_receipts`",
       "A description that only lists the JSON Schema `properties` and `required` fields, since the schema is machine-readable and sufficient",
       "A description written entirely in past tense describing what the tool did in previous runs, to give the model historical context"
+    ],
+    "questionJa": "あるチームが、構造化データ抽出エージェントで使う新しい`search_invoices`ツールの説明文を書いている。信頼性の高いツール選択に必要な要素を最もよく満たしている説明文の草案はどれか。",
+    "choicesJa": [
+      "「請求書を検索する。」— モデルが余計な文章に気を取られないよう短くまとめた",
+      "いつ使うべきか、`{\"vendor\": \"Acme Corp\", \"date_range\": \"2026-01-01/2026-03-31\"}`のような入力例、出力形式、該当件数が0件の場合の挙動、`search_receipts`との違いを網羅した説明文",
+      "スキーマは機械可読で十分だという理由で、JSON Schemaの`properties`と`required`フィールドのみを列挙した説明文",
+      "モデルに過去の実行履歴の文脈を与えるため、そのツールが過去の実行で何をしたかをすべて過去形で記述した説明文"
     ],
     "answer": 1,
     "explanation": "正解は1。ツール説明には目的・利用場面、入力形式と例、出力形式、エッジケースの挙動、類似ツールとの差別化という必須要素をすべて含めるべきとされる。選択肢0は情報不足で選択ミスを招く。選択肢2はスキーマだけでは自然言語の意図説明が欠け不十分。選択肢3は過去形の実行履歴は説明の要件と無関係。",
@@ -48,6 +62,13 @@
       "`tool_id`, `handler_function`, `output_type`",
       "`name`, `endpoint_url`, `auth_token`"
     ],
+    "questionJa": "Claude APIで使われるツール定義スキーマにおいて、1つのツール定義のトップレベル構造を正しく表しているフィールドの組み合わせはどれか。",
+    "choicesJa": [
+      "`name`、`description`、`input_schema`",
+      "`title`、`summary`、`parameters_list`",
+      "`tool_id`、`handler_function`、`output_type`",
+      "`name`、`endpoint_url`、`auth_token`"
+    ],
     "answer": 0,
     "explanation": "正解は0。ツール定義スキーマは`name`、`description`、`input_schema`（JSON Schemaで`properties`・`required`・`enum`等を含む）で構成される。選択肢1・2・3はAPI仕様に存在しない架空のフィールド名であり誤り。特に`endpoint_url`や`auth_token`はツール定義そのものではなくMCPサーバー設定側の関心事である。",
     "tags": [
@@ -66,6 +87,13 @@
       "`\"strict\": true` with `minimum`/`maximum` bounds on all numeric fields",
       "`\"strict\": true` combined with `anyOf` branches to allow flexible shapes",
       "`\"strict\": true`, `\"additionalProperties\": false`, and every property listed in `required`"
+    ],
+    "questionJa": "CI/CD自動化エージェントには、スキーマに準拠したツール入力の保証が必要である。チームはあるツールのinput_schemaでstrict modeを有効にした。strict modeの要件を正しく満たす組み合わせはどれか。",
+    "choicesJa": [
+      "`\"strict\": true`に加えて、形式を保証するためすべての文字列フィールドに`pattern`正規表現を設定する",
+      "`\"strict\": true`と、すべての数値フィールドへの`minimum`/`maximum`の範囲設定",
+      "`\"strict\": true`と、柔軟な形状を許容する`anyOf`分岐の組み合わせ",
+      "`\"strict\": true`、`\"additionalProperties\": false`、そしてすべてのプロパティを`required`に列挙すること"
     ],
     "answer": 3,
     "explanation": "正解は3。strict modeでは`additionalProperties: false`と全プロパティを`required`に含めることでスキーマ準拠が保証される。選択肢0の`pattern`や選択肢1の`minimum`/`maximum`はstrict modeでサポートされないJSON Schema機能であり誤り。選択肢2の`anyOf`もstrict modeでは非対応のため誤り。",
@@ -86,6 +114,13 @@
       "The model cannot distinguish between any two tools with the word \"analyze\" in the name, so both tools should be renamed to avoid that word entirely",
       "This is expected behavior; the fix is to add a `tool_choice` forcing `analyze_document` on every request regardless of content type"
     ],
+    "questionJa": "ある開発者生産性向上エージェントには`analyze_content`（任意のテキストに対して感情分析とキーワード抽出を行う）と`analyze_document`（アップロードされたファイルから構造化フィールドを抽出する）という2つのツールがある。ユーザーからPDF請求書に対して間違ったツールが頻繁に呼ばれるという報告がある。根本原因と最善の修正策は何か。",
+    "choicesJa": [
+      "エージェント全体のツール数が多すぎることが原因であり、修正策は両方のツールを別のサブエージェントに委譲することである",
+      "2つのツールの名前と説明が曖昧に重複しているのが原因であり、明確に差別化するためにリネームする（例：`analyze_freeform_text`と`extract_document_fields`）か、1つのツールに統合するのが正しい",
+      "モデルは「analyze」という単語を含む2つのツールをどれも区別できないため、両方のツールをその単語を完全に避けるようリネームすべきである",
+      "これは想定内の挙動であり、修正策はコンテンツの種類にかかわらず毎回`analyze_document`を強制する`tool_choice`を追加することである"
+    ],
     "answer": 1,
     "explanation": "正解は1。`analyze_content`と`analyze_document`のような曖昧に重複する命名・説明は典型的なアンチパターンであり、明確な差別化のためのリネームまたは統合が正しい対処。選択肢0はツール数がわずか2つなので4-5個上限の問題ではなく的外れ。選択肢2は「analyze」という単語自体が問題という過度な一般化で誤り。選択肢3は他の入力タイプに対応できなくなるため不適切。",
     "tags": [
@@ -104,6 +139,13 @@
       "Because system prompt examples are ignored by the model when tool_choice is set to \"auto\"",
       "Because with 18+ tools, selection reliability degrades structurally regardless of description quality; the fix is architectural — distribute the tools across specialized subagents at 4-5 tools each",
       "Because adding descriptions increases token cost without any effect on tool selection accuracy either way"
+    ],
+    "questionJa": "あるマルチエージェント型リサーチシステムの単一エージェントに18個のツール（Web検索、4つのデータベースコネクタ、6つのファイル形式パーサー、3つの引用フォーマッター、4つの要約バリアント）が設定されている。このエージェントは頻繁に誤ったツールを呼び出すか、関連するツールを一切呼び出せない。あるメンバーは、すべてのツール説明文をより詳細に書き直し、システムプロンプトに使用例を追加することを提案している。これが主要な修正策として失敗しやすいのはなぜか。",
+    "choicesJa": [
+      "ツール説明文には固定の文字数上限があり、それ以上詳細を追加することが不可能だから",
+      "tool_choiceが\"auto\"に設定されている場合、システムプロンプトの例はモデルに無視されるから",
+      "18個以上のツールがあると、説明文の質にかかわらず選択の信頼性が構造的に劣化するため、正しい修正はアーキテクチャ上の変更、つまり専門化されたサブエージェントに4-5個ずつツールを分散させることだから",
+      "説明文を追加するとトークンコストが増加するだけで、ツール選択の精度にはいずれにせよ影響しないから"
     ],
     "answer": 2,
     "explanation": "正解は2。18個以上のツールを1つのエージェントに持たせると選択精度が構造的に劣化し、この問題の正しい解決策はより良い説明文やプロンプト例ではなく、専門化されたサブエージェントに4-5個ずつ分散させるアーキテクチャ変更である。選択肢0は文字数上限の話ではなく誤り。選択肢1はtool_choice auto がプロンプト例を無視するという事実はなく誤り。選択肢3は「効果がない」と言い切る点が不正確（多少の改善はあり得るが本質的解決にならない）。",
@@ -124,6 +166,13 @@
       "Merge all 20 tools into one mega-tool with a `mode` parameter selecting sub-behavior, keeping a single flat agent",
       "Split into a coordinator that routes requests plus specialized subagents (e.g., a search subagent, an analysis subagent, an action subagent), each holding roughly 4-5 tools"
     ],
+    "questionJa": "あるチームが、現在1つのフラットなエージェントに20個のツールを持つカスタマーサポートエージェントを再設計している。推奨されるアーキテクチャパターンに従うと、責務はどのように分散させるべきか。",
+    "choicesJa": [
+      "エージェントは1つのままにし、モデルが必ず1つを選ばなければならないよう、20個すべてのツールを単一の`tool_choice: any`呼び出しでラップする",
+      "各サブエージェントがツール間で選択する必要が一切ないよう、20個のツールを20個の単一ツール・サブエージェントに均等に分散する",
+      "1つのフラットなエージェントのまま、20個のツールをすべて`mode`パラメータでサブの振る舞いを切り替える1つの巨大ツールに統合する",
+      "リクエストを振り分けるコーディネーターと、専門化されたサブエージェント（例：検索サブエージェント、分析サブエージェント、アクションサブエージェント）に分割し、それぞれが4-5個程度のツールを持つ"
+    ],
     "answer": 3,
     "explanation": "正解は3。推奨アーキテクチャはコーディネーターが振り分けを行い、検索・分析・アクションなど専門化されたサブエージェントがそれぞれ4-5個程度のツールを持つ分散構成である。選択肢0はtool_choiceの設定を変えてもツール数過多の問題は解決しない。選択肢1は極端で非効率、単一ツールのサブエージェントを20個作るのはコーディネーションのオーバーヘッドが大きく現実的でない。選択肢2はツールの選択問題を1つの巨大ツール内に隠すだけで、説明の複雑さの問題は解消されない。",
     "tags": [
@@ -143,6 +192,13 @@
       "The coordinator duplicates every tool so both it and each subagent can call any tool directly",
       "The coordinator randomly assigns tools to subagents at runtime to balance load"
     ],
+    "questionJa": "ツール分散のためのコーディネーター＋専門サブエージェント・アーキテクチャにおいて、ツールに関するコーディネーターの役割は何か。",
+    "choicesJa": [
+      "コーディネーターがすべてのツールを自身で保持し、サブエージェントはロギングのためだけに使う",
+      "コーディネーターはツールを一切持たず、代わりにタスクを適切な専門サブエージェントへルーティングし、各サブエージェントは小さく焦点を絞ったツールセットを持つ",
+      "コーディネーターはすべてのツールを複製し、コーディネーター自身とサブエージェントの両方が任意のツールを直接呼び出せるようにする",
+      "コーディネーターは実行時にランダムにツールをサブエージェントへ割り当て、負荷を分散する"
+    ],
     "answer": 1,
     "explanation": "正解は1。コーディネーターはルーティングに専念し、実際のツール実行は少数の焦点を絞ったツールセットを持つ専門サブエージェントに委ねる。選択肢0はツール分散の目的に反し、コーディネーター自体が過負荷になる。選択肢2はツールの重複保持がツール数上限の問題を再発させるため誤り。選択肢3の「ランダム割り当て」は根拠のない架空の仕組みで誤り。",
     "tags": [
@@ -160,6 +216,13 @@
       "`\"tool_choice\": \"auto\"`",
       "`\"tool_choice\": {\"type\": \"tool\", \"name\": \"extract_invoice_data\"}`",
       "Omit `tool_choice` entirely and rely on a system prompt instruction",
+      "`\"tool_choice\": \"any\"`"
+    ],
+    "questionJa": "ある構造化データ抽出パイプラインがClaude APIを呼び出し、モデルが必ずツール呼び出しを返す（プレーンテキストの回答を返さない）ことを保証したいが、3つの利用可能な抽出ツールのうちどれが選ばれるかは気にしない。正しい`tool_choice`設定はどれか。",
+    "choicesJa": [
+      "`\"tool_choice\": \"auto\"`",
+      "`\"tool_choice\": {\"type\": \"tool\", \"name\": \"extract_invoice_data\"}`",
+      "`tool_choice`を完全に省略し、システムプロンプトの指示に頼る",
       "`\"tool_choice\": \"any\"`"
     ],
     "answer": 3,
@@ -181,6 +244,13 @@
       "No `tool_choice` setting can enforce call ordering; this must be handled entirely by a PreToolUse hook instead",
       "`\"tool_choice\": {\"type\": \"tool\", \"name\": \"extract_metadata\"}` for the first API call, forcing that exact tool before proceeding to the next step"
     ],
+    "questionJa": "あるCI/CDパイプラインでは、厳格なワークフロー順序において`extract_metadata`が必ず`validate_schema`より先に実行される必要があり、モデルが`validate_schema`に直接飛んだり、プレーンテキストで回答したりすることは許容できない。最初のステップでこれを強制する`tool_choice`設定はどれか。",
+    "choicesJa": [
+      "`\"tool_choice\": \"any\"`にし、ツール配列で最初に列挙されているという理由でモデルが自然に`extract_metadata`を最初に呼ぶことを信頼する",
+      "\"always call extract_metadata first\"と記載したシステムプロンプトとともに`\"tool_choice\": \"auto\"`を使う",
+      "呼び出し順序をtool_choiceで強制することは不可能であり、これはすべてPreToolUseフックで処理しなければならない",
+      "最初のAPI呼び出しに`\"tool_choice\": {\"type\": \"tool\", \"name\": \"extract_metadata\"}`を使い、次のステップに進む前にその特定のツールを強制する"
+    ],
     "answer": 3,
     "explanation": "正解は3。`{\"type\": \"tool\", \"name\": \"...\"}`形式は特定のツールを強制するため、ワークフローの順序を確実に制御できる。選択肢0の\"any\"はどれかのツール呼び出しを保証するだけで順序は保証しない。選択肢1の\"auto\"はプロンプト指示に依存し確率的にしか機能しない。選択肢2はtool_choiceで実際に順序を強制できるため「不可能」という主張が誤り（hookは別の目的のための機構であり、ここでの唯一の解ではない）。",
     "tags": [
@@ -200,6 +270,13 @@
       "It forces both a specific tool call AND a specific ordering of subsequent calls",
       "It disables all tools except the first one listed in the tools array",
       "It is functionally identical to omitting `tool_choice` altogether"
+    ],
+    "questionJa": "エンジニアがよく誤解する`\"tool_choice\": \"any\"`の主要な制限は何か。",
+    "choicesJa": [
+      "ツールを呼ぶことは強制するが、どの特定のツールを呼ぶかをモデルに選ばせない、というわけではなく、モデル自身がそれを判断する点",
+      "特定のツール呼び出しと、それに続く呼び出しの特定の順序の両方を強制する点",
+      "ツール配列で最初に列挙されたもの以外のすべてのツールを無効化する点",
+      "`tool_choice`を完全に省略した場合と機能的に同一である点"
     ],
     "answer": 0,
     "explanation": "正解は0。\"any\"はツール呼び出しを強制するが、どのツールを呼ぶかはモデル自身の判断に委ねられる点がよくある誤解である。選択肢1は順序まで強制するという誤った理解。選択肢2は最初のツールだけに制限するという誤り。選択肢3は\"auto\"（デフォルト）と\"any\"は明確に異なり、\"auto\"はテキスト回答も許すため同一ではない。",
@@ -221,6 +298,13 @@
       "`\"tool_choice\": \"auto\"`",
       "`\"tool_choice\": \"none\"` for the entire conversation, with a manual override re-enabling tools on every turn"
     ],
+    "questionJa": "あるカスタマーサポートエージェントは会話全体でデフォルトのtool_choiceの挙動を使用している。顧客が「ありがとう、それだけで十分です」とだけ言ったターンでは、エージェントはツール呼び出しを強制されるのではなく、プレーンテキストで応答できるべきである。この挙動をサポートする`tool_choice`設定はどれか。",
+    "choicesJa": [
+      "`\"tool_choice\": \"any\"`",
+      "`\"tool_choice\": {\"type\": \"tool\", \"name\": \"close_ticket\"}`",
+      "`\"tool_choice\": \"auto\"`",
+      "会話全体を通して`\"tool_choice\": \"none\"`にし、毎ターン手動でツールを再有効化するオーバーライドを行う"
+    ],
     "answer": 2,
     "explanation": "正解は2。\"auto\"はデフォルト設定で、モデルがツールを呼ぶかテキストで応答するかを自ら判断できるため、この会話終了シナリオに適する。選択肢0の\"any\"は必ず何らかのツール呼び出しを強制してしまい単純な御礼への応答に不向き。選択肢1は特定ツールを強制し柔軟性がない。選択肢3の\"none\"はツール呼び出し自体を常に禁止する設定であり、会話全体に適用すると必要な場面でツールを呼べなくなる上、「毎ターン手動で上書き」という運用は\"auto\"を使うより明らかに非効率・非現実的である。",
     "tags": [
@@ -240,6 +324,13 @@
       "The agent has too many tools configured, causing selection errors unrelated to this specific tool's description",
       "The description omits input format with examples and edge-case behavior, both of which are required components for reliable tool use"
     ],
+    "questionJa": "ある開発者生産性向上エージェントの`run_tests`ツールの説明文には「テストスイートを実行する。」としか書かれていない。入力例、出力形式、エッジケースについての記載は一切ない。あるセッション中、モデルは`run_tests`を不正な入力で繰り返し呼び出し、「テストが見つからない」という結果をあたかも失敗であるかのように誤って処理している。この挙動を最も直接的に説明する説明文の不足はどれか。",
+    "choicesJa": [
+      "ツールが`tools`配列に完全に含まれておらず、モデルがそのインターフェースを推測しているから",
+      "ツールの`input_schema`が`strict: true`を使っており、これはテスト実行ツールと非互換だから",
+      "エージェントにツールが多く設定されすぎており、この特定のツールの説明文とは無関係な選択エラーが起きているから",
+      "説明文が入力形式の例とエッジケースの挙動の両方を欠いており、これらは信頼性の高いツール利用に必要な要素だから"
+    ],
     "answer": 3,
     "explanation": "正解は3。ツール説明には入力形式の例やエッジケースの挙動(例:テストが見つからない場合の扱い)を含める必要があり、これが欠けていると誤った入力生成や結果の誤解釈が起きる。選択肢0はツールが存在すること自体は問題文から明らかなので誤り。選択肢1はstrict modeとテストツールの非互換性という事実はなく誤り。選択肢2は単一ツールの説明品質の問題であり、ツール数過多とは無関係。",
     "tags": [
@@ -258,6 +349,13 @@
       "Sampling, which lets the server request an LLM completion from the client",
       "Roots, which define filesystem boundaries for the client",
       "Resources, which expose read-only content/data for the server to serve"
+    ],
+    "questionJa": "あるファイル編集エージェント向けのMCPサーバーは、タスクの途中でユーザー入力を要求する必要がある（例：曖昧な3つのファイルのうちどれを意図していたかをユーザーに選ばせる）。推測するのではなく処理を続ける前に。サーバーがクライアント経由でユーザーにこれを要求するために設計されたMCPクライアント側プリミティブはどれか。",
+    "choicesJa": [
+      "elicitation。サーバーがクライアント経由でユーザー入力を要求できるようにするもの",
+      "sampling。サーバーがクライアントにLLM補完を要求できるようにするもの",
+      "roots。クライアントのファイルシステム境界を定義するもの",
+      "resources。サーバーが提供する読み取り専用のコンテンツ・データを公開するもの"
     ],
     "answer": 0,
     "explanation": "正解は0。elicitationはサーバーがクライアント経由でユーザーに入力を求めるためのクライアント側プリミティブであり、曖昧な状況でユーザーに確認を取りたい場合にまさに適している。samplingはサーバーがクライアントにLLM補完の生成を依頼する仕組みでユーザー入力の取得とは異なる。rootsはクライアントがアクセスを許可するファイルシステムの境界を定義するものでユーザーへの問い合わせ機能ではない。resourcesはサーバー側プリミティブであり、読み取り専用データを提供するものでユーザー入力の要求とは無関係である。",
@@ -279,6 +377,13 @@
       "Rename the tools for clear differentiation (or consolidate them into a single tool) so their purposes no longer overlap",
       "Add a third arbitration tool whose only job is to decide between the two ambiguous tools"
     ],
+    "questionJa": "`analyze_content`と`analyze_document`のような2つのツールの目的が曖昧に重複している場合、正しい差別化戦略として明示的に挙げられているのはどれか。",
+    "choicesJa": [
+      "両方のツールをそのままにし、どちらにしても決定を強制するために`tool_choice: any`を追加する",
+      "ツールリストを簡素化するため、さらなる分析なしに使用頻度の低い方のツールを削除する",
+      "目的が重複しなくなるよう、明確な差別化のためにツールをリネームする（あるいは1つのツールに統合する）",
+      "2つの曖昧なツールのどちらを使うかを決めることだけを役割とする3つ目の仲裁ツールを追加する"
+    ],
     "answer": 2,
     "explanation": "正解は2。曖昧に重複するツールの正しい対処は、名前を差別化のために変更するか、1つのツールに統合することである。選択肢0はtool_choiceの設定変更では名前や説明の曖昧さそのものは解決されない。選択肢1は分析なしに削除すると必要な機能が失われる可能性があり不適切。選択肢3は仲裁用の新ツールを追加することはツール数を増やし問題を悪化させる可能性がある。",
     "tags": [
@@ -297,6 +402,13 @@
       "The `input_schema` for `get_data` must be missing entirely, since Claude cannot call a tool without one",
       "This is a sign that the agent needs `tool_choice: \"any\"` to prevent it from choosing incorrectly",
       "The bot needs more tools added so Claude has more context to disambiguate between the two"
+    ],
+    "questionJa": "ある社内サポートボット向けのClaude Code設定では、`type`パラメータに応じて顧客プロフィールまたは注文履歴のいずれかを取得できるツール`get_data`と、内部監査ログに対して同様の処理を行う別のツール`fetch_records`が定義されている。エンジニアは、Claudeが顧客プロフィールを調べるつもりのときに`fetch_records`を呼んでしまうことがあると気づいた。最善の診断はどれか。",
+    "choicesJa": [
+      "2つのツールの名前と説明が重複し十分に差別化されておらず、analyze_content/analyze_documentのアンチパターンと同種であり、リネームまたは統合すべきである",
+      "Claudeはinput_schemaなしにツールを呼び出せないため、`get_data`のinput_schemaが完全に欠落しているに違いない",
+      "これはエージェントが誤った選択をしないように`tool_choice: \"any\"`を必要としている兆候である",
+      "ボットには、Claudeが2つを区別するための文脈をより多く得られるよう、ツールをさらに追加する必要がある"
     ],
     "answer": 0,
     "explanation": "正解は0。`get_data`と`fetch_records`という名称も目的も重複気味なツールは、`analyze_content`/`analyze_document`と同種の曖昧な重複アンチパターンであり、リネームまたは統合が適切な対処。選択肢1はinput_schemaの有無とは無関係な誤った推測。選択肢2の\"any\"はどれかのツールを強制するだけで、正しいツールを選ばせる効果はない。選択肢3はツールを追加することがむしろ選択の複雑さを増し逆効果になる。",
@@ -317,6 +429,13 @@
       "\"any\" only guarantees that some tool is called, not which one — the model could call `compute_totals` first or skip `extract_line_items` entirely; only the named form `{\"type\":\"tool\",\"name\":\"extract_line_items\"}` enforces the specific tool at each step",
       "\"any\" works correctly for the first call but is incompatible with strict-mode input_schema on the second call"
     ],
+    "questionJa": "ある構造化抽出エージェントは、モデルに必ず最初に`extract_line_items`を呼ばせ、その結果が返された後にのみ、2回目の呼び出しとして`compute_totals`を強制する必要がある。あるエンジニアは、シンプルにするため両方のAPI呼び出しに`tool_choice: \"any\"`を設定することを提案し、「any」は各ステップで必ずツール呼び出しが起きることを保証するのでこの順序は保たれると主張している。この推論のどこが間違っているか。",
+    "choicesJa": [
+      "何も間違っていない。「any」は必ずツール呼び出しという結果になるため、named形式でツールを順に強制するのと等価である",
+      "「any」は非推奨であり、もはや有効なtool_choiceの値ではないため、パイプライン全体がエラーで失敗する",
+      "「any」は何らかのツールが呼ばれることを保証するだけで、どのツールかは保証しない。モデルは先に`compute_totals`を呼んだり、`extract_line_items`を完全に飛ばしたりする可能性がある。各ステップで特定のツールを強制できるのはnamed形式`{\"type\":\"tool\",\"name\":\"extract_line_items\"}`だけである",
+      "「any」は最初の呼び出しでは正しく機能するが、2回目の呼び出しでstrict modeのinput_schemaと非互換である"
+    ],
     "answer": 2,
     "explanation": "正解は2。\"any\"はツール呼び出しがあることを保証するだけで、どのツールが呼ばれるかは保証しないため、順序制御には不十分。特定のツールを強制するにはnamed形式`{\"type\":\"tool\",\"name\":\"...\"}`が必要。選択肢0はこの区別を無視しており誤り。選択肢1は\"any\"が非推奨という事実はなく誤り。選択肢3はstrict modeとの非互換性という架空の制約であり誤り。",
     "tags": [
@@ -332,6 +451,13 @@
     "difficulty": 2,
     "question": "A team building a customer support agent wants to add a `input_schema` with strict validation for a new `issue_refund` tool. Which schema snippet correctly follows both the tool definition schema and strict-mode requirements described for this exam?",
     "choices": [
+      "`{\"type\": \"object\", \"properties\": {\"order_id\": {\"type\": \"string\"}, \"amount\": {\"type\": \"number\"}}, \"required\": [\"order_id\", \"amount\"], \"additionalProperties\": false, \"strict\": true}`",
+      "`{\"type\": \"object\", \"properties\": {\"order_id\": {\"type\": \"string\"}, \"amount\": {\"type\": \"number\"}}, \"required\": [\"order_id\"], \"additionalProperties\": true}`",
+      "`{\"type\": \"object\", \"properties\": {\"order_id\": {\"type\": \"string\", \"pattern\": \"^ORD-[0-9]+$\"}, \"amount\": {\"type\": \"number\"}}, \"required\": [\"order_id\", \"amount\"], \"strict\": true}`",
+      "`{\"type\": \"object\", \"properties\": {\"order_id\": {\"type\": \"string\"}, \"amount\": {\"type\": \"number\"}}, \"strict\": true}`"
+    ],
+    "questionJa": "あるカスタマーサポートエージェントを構築しているチームが、新しい`issue_refund`ツールに厳格な検証を伴う`input_schema`を追加したいと考えている。本試験で説明されているツール定義スキーマとstrict-modeの要件の両方に正しく従っているスキーマ断片はどれか。",
+    "choicesJa": [
       "`{\"type\": \"object\", \"properties\": {\"order_id\": {\"type\": \"string\"}, \"amount\": {\"type\": \"number\"}}, \"required\": [\"order_id\", \"amount\"], \"additionalProperties\": false, \"strict\": true}`",
       "`{\"type\": \"object\", \"properties\": {\"order_id\": {\"type\": \"string\"}, \"amount\": {\"type\": \"number\"}}, \"required\": [\"order_id\"], \"additionalProperties\": true}`",
       "`{\"type\": \"object\", \"properties\": {\"order_id\": {\"type\": \"string\", \"pattern\": \"^ORD-[0-9]+$\"}, \"amount\": {\"type\": \"number\"}}, \"required\": [\"order_id\", \"amount\"], \"strict\": true}`",
@@ -356,6 +482,13 @@
       "To reduce the number of tokens consumed by the tool_result block overall",
       "To allow the MCP host to skip calling the tool a second time"
     ],
+    "questionJa": "あるカスタマーサポートエージェントのMCPサーバーにおけるツール結果には、`isError`、`errorCategory`、`isRetryable`、`description`、`partial_results`、`attempted_action`のフィールドが含まれている。この構造化された形式の主な目的は何か。",
+    "choicesJa": [
+      "エージェントがメッセージから推測するのではなく、正しい次のアクションをプログラム的に判断できるようにするため",
+      "ツールのinput_schema定義に対するstrict-modeのJSON Schema要件を満たすため",
+      "tool_resultブロック全体で消費されるトークン数を削減するため",
+      "MCPホストがそのツールを2回目に呼ぶのをスキップできるようにするため"
+    ],
     "answer": 0,
     "explanation": "構造化エラーはisRetryableやerrorCategoryなどのフィールドにより、エージェントが自動でリトライ・修正・エスカレーションを判断できるようにするものである。strict modeはinput_schemaの話でありエラー応答の目的ではない。トークン削減は副次的効果に過ぎず主目的ではない。ツール呼び出し回数の制御とも直接関係しない。",
     "tags": [
@@ -375,6 +508,13 @@
       "Rewrite the query and treat this as a validation problem",
       "Silently drop the result and continue as if no search was requested",
       "Retry the same call after an exponential backoff delay"
+    ],
+    "questionJa": "あるマルチエージェント型リサーチシステムにおいて、サブエージェントのWeb検索ツールが`{\"isError\": true, \"errorCategory\": \"Transient\", \"isRetryable\": true, \"description\": \"Upstream API returned 503\", \"attempted_action\": \"search_papers(query='CRISPR 2025')\"}`を返した。コーディネーターはどうすべきか。",
+    "choicesJa": [
+      "isError:trueである以上ワークフローは継続できないため、直ちに人間へエスカレーションする",
+      "クエリを書き換え、これを検証(バリデーション)の問題として扱う",
+      "結果を黙って破棄し、検索が要求されなかったかのように続行する",
+      "指数バックオフの遅延の後、同じ呼び出しをリトライする"
     ],
     "answer": 3,
     "explanation": "errorCategoryがTransientかつisRetryable:trueなので、指数バックオフでのリトライが正しい対応である。isError:trueだからといって即座に人間へエスカレーションするのは誤り（Permissionカテゴリの対応）。クエリを書き換えるのはValidationカテゴリへの対応であり今回は該当しない。結果を無視するのはサイレント抑制のアンチパターンである。",
@@ -396,6 +536,13 @@
       "Treat this the same as a Transient error since isError is true in both cases",
       "Correct the malformed input (e.g., reformat the ID) and call the tool again with the fixed value"
     ],
+    "questionJa": "ある構造化データ抽出パイプラインが、不正な形式の請求書IDで`lookup_invoice`というMCPツールを呼び出した。ツールは`errorCategory: \"Validation\"`、`isRetryable: false`を返す。正しいエージェントの挙動はどれか。",
+    "choicesJa": [
+      "諦める前に、同一の呼び出しを指数バックオフで3回リトライする",
+      "修正を試みることなく、直ちに人間のレビュアーへエスカレーションする",
+      "両方のケースでisErrorがtrueであるため、これをTransientエラーと同じものとして扱う",
+      "不正な入力を修正し（例：IDを正しい形式に整形する）、修正した値で再度ツールを呼び出す"
+    ],
     "answer": 3,
     "explanation": "Validationカテゴリはリトライ不可であり、入力を修正してから再試行するのが正しい。同じ入力でバックオフしながら繰り返すのはTransient向けの対応であり無意味である。人間へのエスカレーションはPermissionやBusinessカテゴリでの対応であり、単純な入力ミスでは過剰対応。isError:trueだけを見てカテゴリを無視するのは誤り。",
     "tags": [
@@ -415,6 +562,13 @@
       "Silently return an empty result to keep the pipeline green",
       "Reformat the request payload and resubmit automatically",
       "Inform the user of the policy state and escalate for a decision if action is required"
+    ],
+    "questionJa": "あるClaude Code CI/CDパイプラインで使われる課金ツールが、`errorCategory: \"Business\"`と説明「Account is frozen pending fraud review.」を返した。このカテゴリのタクソノミーに合致する対応はどれか。",
+    "choicesJa": [
+      "アカウントがすぐに凍結解除されるかもしれないため、指数バックオフでリトライする",
+      "パイプラインを green のままにするため、黙って空の結果を返す",
+      "リクエストのペイロードを整形し直し、自動的に再送する",
+      "ユーザーにポリシー状態を伝え、対応が必要な場合は人間の判断のためにエスカレーションする"
     ],
     "answer": 3,
     "explanation": "Businessカテゴリ（ポリシー違反や凍結アカウントなど）は利用者への通知およびエスカレーションが適切な対応である。バックオフでのリトライはTransient向けであり凍結状態は時間経過で解決しない。ペイロード修正はValidation向けの対応であり今回の原因ではない。サイレントに空の結果を返すのはアンチパターンであるサイレント抑制そのものである。",
@@ -436,6 +590,13 @@
       "Route the failure to a human who can refresh or reauthorize credentials",
       "Mark the deployment as complete with a note that permissions were skipped"
     ],
+    "questionJa": "ある開発者生産性向上エージェントが社内の`deploy_service`というMCPツールを呼び出す。その応答は`errorCategory: \"Permission\", description: \"OAuth token expired\", isRetryable: false`である。アーキテクチャ的に正しい対処はどれか。",
+    "choicesJa": [
+      "新しい試みなら成功するかもしれないため、直ちにリトライする",
+      "OAuthプロバイダーからより広いスコープを自動的に要求し、処理を続行する",
+      "認証情報を更新または再承認できる人間に、この失敗を回す",
+      "権限がスキップされた旨のメモを添えて、デプロイを完了扱いにする"
+    ],
     "answer": 2,
     "explanation": "Permissionカテゴリ（アクセス拒否や期限切れトークン）は人間の介入が必要であり、認証情報の更新を人間に委ねるのが正しい。即時リトライは無意味（トークンは自動更新されない）。エージェントが勝手にスコープを拡大要求するのはセキュリティ上不適切で最小権限の原則に反する。権限エラーを無視して完了扱いにするのは危険なサイレント抑制である。",
     "tags": [
@@ -455,6 +616,13 @@
       "A 200 with empty array should always be retried just like a timeout, since both indicate missing data",
       "The agent should treat the empty array as a Permission error that requires human escalation",
       "A 200 with empty array means the search ran and found nothing; a timeout means the search never ran, so 'no orders exist' cannot be assumed"
+    ],
+    "questionJa": "あるカスタマーサポートの解決エージェントにおいて、注文照会ツールの呼び出しがHTTP 200とボディ`[]`を返した。これをタイムアウトした呼び出しとどう区別すべきか。",
+    "choicesJa": [
+      "どちらの場合もエージェントは表示できるものを見つけられなかったのだから、同一のフォールバックメッセージを出すべきである",
+      "200で空配列の場合も、タイムアウトと同様に常にリトライすべきである。どちらもデータが存在しないことを示すからである",
+      "エージェントは空配列を、人間へのエスカレーションが必要なPermissionエラーとして扱うべきである",
+      "200で空配列は検索が実行され該当なしだったことを意味し、タイムアウトは検索がそもそも実行されなかったことを意味する。よって「注文が存在しない」とは断定できない"
     ],
     "answer": 3,
     "explanation": "HTTP 200＋空配列は検索が正常実行され該当なしという有効な結果であるのに対し、タイムアウトは検索自体が実行されていない失敗である。両者を同一視して同じフォールバックメッセージを出すのは誤りで、エージェントの応答は根本的に異なるべきである。空配列をタイムアウトと同様にリトライするのは不要な処理。空配列をPermissionエラー扱いするのは的外れである。",
@@ -476,6 +644,13 @@
       "It increases token usage compared to returning the real error message",
       "It causes the tool_use_id to no longer match, which breaks the tool_result binding"
     ],
+    "questionJa": "部分的な障害の間、あるカスタマーサポートエージェントの注文履歴ツールが一部のリクエストに対してHTTP 503を返し始めた。あるチームメンバーは、すべてのツールエラーを捕捉し、会話フローが壊れないようエージェントに`[]`を返すことを提案している。このアプローチの何が問題か。",
+    "choicesJa": [
+      "additionalPropertiesをtrueにすることでstrict modeのJSON Schemaに違反する",
+      "サイレント抑制である。照会が実際には実行されていないのに、エージェントは「'[]'」を「注文が見つかりません」として提示してしまう",
+      "実際のエラーメッセージを返す場合と比べてトークン使用量が増加する",
+      "tool_use_idが一致しなくなり、tool_resultの紐付けが壊れる"
+    ],
     "answer": 1,
     "explanation": "エラーを握りつぶして空配列にすり替えるのは名指しされたアンチパターン「サイレント抑制」であり、エージェントは実際には検索が失敗しているのに「注文なし」という誤った結論を顧客に伝えてしまう。strict modeやadditionalPropertiesとは無関係。トークン量の増減は本質的な問題ではない。tool_use_idの整合性にも影響しない。",
     "tags": [
@@ -491,6 +666,13 @@
     "difficulty": 1,
     "question": "Which of the following MCP tool error descriptions is an example of the 'generic error message' anti-pattern the exam warns against?",
     "choices": [
+      "{\"isError\": true, \"description\": \"Operation failed\"}",
+      "{\"isError\": true, \"errorCategory\": \"Transient\", \"description\": \"Payment gateway timed out after 30s\", \"isRetryable\": true}",
+      "{\"isError\": true, \"errorCategory\": \"Validation\", \"description\": \"customer_id must match pattern ^CUST-[0-9]{6}$\", \"isRetryable\": false}",
+      "{\"isError\": true, \"errorCategory\": \"Permission\", \"description\": \"API key lacks scope: refunds:write\", \"isRetryable\": false}"
+    ],
+    "questionJa": "次のMCPツールのエラー説明のうち、本試験が警告している「汎用エラーメッセージ」アンチパターンの例はどれか。",
+    "choicesJa": [
       "{\"isError\": true, \"description\": \"Operation failed\"}",
       "{\"isError\": true, \"errorCategory\": \"Transient\", \"description\": \"Payment gateway timed out after 30s\", \"isRetryable\": true}",
       "{\"isError\": true, \"errorCategory\": \"Validation\", \"description\": \"customer_id must match pattern ^CUST-[0-9]{6}$\", \"isRetryable\": false}",
@@ -515,6 +697,13 @@
       "Silently skip step 3 and return the other four steps' results as if nothing went wrong",
       "Retry step 3 indefinitely until the license issue resolves itself"
     ],
+    "questionJa": "あるマルチエージェント型リサーチシステムのコーディネーターが、5ステップから成るデータ収集ワークフローをサブエージェントに委譲した。5ステップ中3番目のステップが、リトライ不可のBusinessエラー（データセットのライセンス制限）で失敗した。サブエージェントからコーディネーターへの応答の設計として最善なのはどれか。",
+    "choicesJa": [
+      "ワークフロー全体を中断し、ステップ1、2、4、5を破棄して、ステップ3が失敗したことだけを報告する",
+      "完了済みステップのpartial_resultsと、ステップ3が何を試みてなぜ失敗したかの明確な説明を返す",
+      "ステップ3を黙ってスキップし、あたかも何も問題がなかったかのように残り4ステップの結果を返す",
+      "ライセンス問題が自然に解決するまで、ステップ3を無限にリトライする"
+    ],
     "answer": 1,
     "explanation": "partial_resultsを使って完了済みステップの結果と失敗の詳細を返すのが正しい設計であり、名指しされたアンチパターン「単一ステップの失敗でワークフロー全体を中断する」ことを避けられる。ステップ3以外を破棄して中断するのはまさにそのアンチパターン。失敗を隠して報告しないのはサイレント抑制。Businessカテゴリはリトライ不可なので無限リトライは無意味。",
     "tags": [
@@ -534,6 +723,13 @@
       "Report all 20 files as passing since 19 out of 20 individual lint checks succeeded",
       "Collect partial_results for the 19 successful files, retry the failed file with backoff, and flag its status separately",
       "Suppress the failed file's result entirely and report only the 19 files with no mention of the gap"
+    ],
+    "questionJa": "あるCI/CDパイプラインが、MCPのリンティングツールを使って20ファイルにわたる自動コード品質チェックのバッチを、`-p`によるヘッドレスモードのClaude Codeで実行する。1ファイルのリントツール呼び出しがTransientエラー（実行中にリンターサービスが再起動）で失敗し、他の19ファイルは成功した。最も信頼性の高いパイプライン設計はどれか。",
+    "choicesJa": [
+      "チームに結果が一切報告されないよう、パイプライン全体を直ちに失敗させる",
+      "20ファイル中19件のリントチェックが成功したので、20ファイルすべてを合格として報告する",
+      "成功した19ファイルのpartial_resultsを収集し、失敗したファイルをバックオフ付きでリトライしつつ、その状況を別途フラグする",
+      "失敗したファイルの結果を完全に抑制し、そのギャップに触れずに19ファイルのみを報告する"
     ],
     "answer": 2,
     "explanation": "Transientエラーはバックオフ付きリトライが適切であり、同時に成功した19ファイルの部分結果を保持して報告することで、単一障害でパイプライン全体を止めるアンチパターンを避けられる。全体を即座に失敗させるのは過剰反応。19件成功を根拠に20件全て合格とするのは失敗を無視した誤った報告。失敗ファイルを黙って除外するのはサイレント抑制である。",
@@ -555,6 +751,13 @@
       "It prevents the tool from ever being retried again for the remainder of the session",
       "It fabricates a plausible but false in-stock answer during the outage, so neither agent nor customer can tell it's wrong"
     ],
+    "questionJa": "あるClaude Code構成には、倉庫システムの障害中にHTTP 500エラーを返す`check_inventory`というMCPツールが含まれている。あるエンジニアは、ショッピングアシスタントが「動作し続ける」よう、すべての例外を捕捉して常に`{\"in_stock\": true}`を返すようツールラッパーを設定した。この設計の主なリスクは何か。",
+    "choicesJa": [
+      "tool_resultレベルでJSON Schemaのstrict-mode検証エラーを引き起こす",
+      "障害が続いている間、ツールのinput_schemaのトークン予算を超過する",
+      "セッションの残り時間、そのツールが二度とリトライされなくなる",
+      "障害中にもっともらしいが虚偽の在庫ありという回答を捏造してしまい、エージェントも顧客もそれが誤りだと分からない"
+    ],
     "answer": 3,
     "explanation": "障害中に常にtrueを返す設計は、エラーを隠して虚偽の情報を提示するサイレント抑制の典型例であり、エージェントも顧客も誤りに気づけないため実際の失敗を表面化するより悪い結果を招く。JSON Schemaのstrict mode検証やトークン予算とは無関係。リトライ可否の制御にも直接関係しない。",
     "tags": [
@@ -575,6 +778,13 @@
       "Permission -> escalate to a human",
       "Business -> retry indefinitely without informing anyone"
     ],
+    "questionJa": "本試験のタクソノミーにおけるエラーカテゴリと、その推奨されるエージェント応答を正しく対応させている組み合わせはどれか。",
+    "choicesJa": [
+      "Transient -> 入力を修正しリトライしない",
+      "Validation -> 指数バックオフでリトライ",
+      "Permission -> 人間にエスカレーションする",
+      "Business -> 誰にも知らせずに無限にリトライする"
+    ],
     "answer": 2,
     "explanation": "Permission（アクセス拒否や期限切れトークンなど）は人間へのエスカレーションが正しい対応である。Transientは指数バックオフでのリトライが正しく「入力修正」ではない。Validationは入力修正が正しく「バックオフ retry」ではない。Businessは通知・エスカレーションが必要であり、黙って無限リトライするのは誤り。",
     "tags": [
@@ -593,6 +803,13 @@
       "Discard partial_results and report the whole 10-page document as unextractable",
       "Keep the fetched pages 1-3, retry from page 4 with backoff, and only report a gap if retries are exhausted",
       "Report pages 1-3 as complete and silently mark pages 4 through 10 as 'no content found'"
+    ],
+    "questionJa": "ある構造化データ抽出エージェントのドキュメント取得ツール呼び出しが、10ページの契約書の4ページ目を取得中に30秒でタイムアウトした。ツールは`isError: true, errorCategory: \"Transient\", partial_results: {pages_fetched: [1,2,3]}, attempted_action: \"fetch_page(4)\"`を返す。この場合、エージェントは`partial_results`をどう扱うべきか。",
+    "choicesJa": [
+      "partial_resultsを完全に無視し、10ページすべての抽出を最初のページからやり直す",
+      "partial_resultsを破棄し、10ページ全体を抽出不能として報告する",
+      "取得済みの1〜3ページを保持したまま、4ページ目からバックオフ付きでリトライし、リトライを使い果たした場合にのみギャップを報告する",
+      "1〜3ページを完了として報告し、4〜10ページを黙って「内容が見つかりません」とする"
     ],
     "answer": 2,
     "explanation": "partial_resultsを活用し、既に取得済みの1〜3ページは保持したまま失敗した箇所からバックオフ付きで再試行し、それでも失敗する場合のみギャップを明示して報告するのが正しい。全ページを最初からやり直すのは非効率でpartial_resultsの意義を無視している。ドキュメント全体を抽出不能として破棄するのも過剰。ページ4-10を「内容なし」と偽るのはサイレント抑制である。",
@@ -614,6 +831,13 @@
       "Killing the entire workflow on a single step failure, because the coordinator will necessarily abort",
       "Empty vs failed confusion, because the tool returned HTTP 200 with an empty array"
     ],
+    "questionJa": "あるハブアンドスポーク型マルチエージェント・リサーチシステムで、検索サブエージェントのツール呼び出しが失敗し、サブエージェントはこれを`errorCategory`も`attempted_action`も、どのクエリやソースを検索していたかを示す情報も一切なく、単に`{\"isError\": true, \"description\": \"Search failed\"}`としてコーディネーターに転送した。コーディネーターはリトライすべきか、言い換えるべきか、諦めるべきか判断できない。これが最もよく示している、名指しされたエラーアンチパターンはどれか。",
+    "choicesJa": [
+      "サイレント抑制。失敗がコーディネーターから完全に隠されているため",
+      "コンテキスト不足。エラーにカテゴリ・試行したアクション・情報源などコーディネーターが適切な次の一歩を判断するのに十分な詳細が欠けているため",
+      "単一ステップの失敗でワークフロー全体を中断すること。コーディネーターが必然的に中断するため",
+      "empty vs failedの混同。ツールがHTTP 200と空配列を返したため"
+    ],
     "answer": 1,
     "explanation": "このエラーは実際には失敗を隠していない（isError: trueは明示されている）ため「サイレント抑制」ではなく、`errorCategory`・`attempted_action`・検索対象などの文脈情報が欠落しており、コーディネーターが次に取るべき行動（再試行・言い換え・断念）を判断できないという「コンテキスト不足」のアンチパターンに該当する。ワークフロー全体を中断するかどうかはこの設問の主眼ではなく、必ず中断するとは限らない。今回はエラー自体が明示されておりHTTP 200+空配列のケースでもないため、empty vs failedの混同ではない。",
     "tags": [
@@ -629,6 +853,13 @@
     "difficulty": 2,
     "question": "A developer productivity tool wraps a flaky third-party API. The team wants the MCP tool to tell Claude clearly when it is safe to automatically retry versus when Claude should change its approach. Which field in the structured error response directly answers 'is it safe to retry as-is'?",
     "choices": [
+      "attempted_action",
+      "isRetryable",
+      "description",
+      "partial_results"
+    ],
+    "questionJa": "ある開発者生産性向上ツールが、不安定なサードパーティAPIをラップしている。チームは、MCPツールがClaudeに対して、そのまま自動でリトライしてよいのか、それともアプローチを変えるべきかを明確に伝えられるようにしたいと考えている。構造化エラー応答の中で「そのままリトライしても安全か」に直接答えるフィールドはどれか。",
+    "choicesJa": [
       "attempted_action",
       "isRetryable",
       "description",
@@ -653,6 +884,13 @@
       "It lists the JSON Schema properties that were required by input_schema but were missing",
       "It defines the exponential backoff interval to wait between retries, in milliseconds"
     ],
+    "questionJa": "MCPツールの構造化エラー応答において、`attempted_action`フィールドの目的は何か。",
+    "choicesJa": [
+      "ツールが実際にどの操作を実行しようとしたかを記録し、失敗を診断するための文脈を提供する",
+      "呼び出し元のエージェントによってtool_resultが自動的にリトライされるべきかどうかを指定する",
+      "input_schemaで必須とされていたが欠けていたJSON Schemaのプロパティを列挙する",
+      "リトライ間に待機すべき指数バックオフの間隔をミリ秒単位で定義する"
+    ],
     "answer": 0,
     "explanation": "attempted_actionは、ツールが実際に何を実行しようとしたかを記録し、エージェントや人間のレビュアーが障害を診断する際の文脈情報を提供するためのフィールドである。リトライ可否を示すのはisRetryableの役割。必須プロパティの欠落はJSON Schemaバリデーションの話でありこのフィールドの目的ではない。バックオフ間隔を定義するものでもない。",
     "tags": [
@@ -671,6 +909,13 @@
       "Retry the identical call with exponential backoff, since a fresh attempt may bypass the approval limit",
       "Inform the customer of the policy limit and escalate the case for human approval of the excess amount, rather than attempting to process it unilaterally",
       "Silently cap the refund at $500 and tell the customer that is the full amount owed"
+    ],
+    "questionJa": "あるカスタマーサポートエージェントの返金照会MCPツールが`{\"isError\": true, \"errorCategory\": \"Business\", \"isRetryable\": false, \"description\": \"Refund exceeds the account's $500 monthly approval limit\", \"attempted_action\": \"issue_refund(amount=650, order_id='ORD-9931')\"}`を返した。アーキテクチャ的に正しいエージェントの次のステップは何か。",
+    "choicesJa": [
+      "返金を500ドル未満の2つの小さな取引に自動的に分割し、両方を直ちに処理する",
+      "新しい試みなら承認上限を回避できるかもしれないため、指数バックオフで同一の呼び出しをリトライする",
+      "顧客にポリシー上の上限を伝え、超過分について一方的に処理しようとするのではなく、人間による承認のためにケースをエスカレーションする",
+      "返金額を黙って500ドルに切り下げ、それが顧客に支払われるべき全額だと伝える"
     ],
     "answer": 2,
     "explanation": "Businessカテゴリ（承認上限超過というポリシー上の制約）に対する正しい対応は、状況を顧客に伝え、必要であれば人間による承認へエスカレーションすることである。上限を回避するために取引を分割して自動処理するのは、まさにポリシー違反を回避しようとする不適切な振る舞いである。承認上限は時間経過や再試行では解消されないため、バックオフによるリトライは無意味（Businessカテゴリはリトライ対象ではない）。返金額を勝手に上限まで切り下げて顧客に伝えるのは、実際の返金対象額を偽って伝えるサイレント抑制に近い不適切な対応である。",
@@ -692,6 +937,13 @@
       "Business; inform the requester of the policy violation and escalate if an override is needed",
       "Permission; assume the CI service account's credentials have expired"
     ],
+    "questionJa": "あるCI/CDパイプライン向けのMCPサーバーを構築しているチームが、ツール呼び出し自体は成功したものの要求されたアクションが社内のコンプライアンスポリシーに違反している場合（例：「変更ウィンドウ外での本番デプロイは不可」）の失敗を正しく分類したいと考えている。正しいerrorCategoryと対応の組み合わせはどれか。",
+    "choicesJa": [
+      "Transient。変更ウィンドウが開くまで指数バックオフでデプロイをリトライする",
+      "Validation。デプロイリクエストのペイロードを整形し直して再送する",
+      "Business。要求者にポリシー違反を伝え、オーバーライドが必要な場合はエスカレーションする",
+      "Permission。CIサービスアカウントの認証情報が期限切れになったと仮定する"
+    ],
     "answer": 2,
     "explanation": "コンプライアンスポリシー違反はBusinessカテゴリに該当し、要求者への通知および必要であれば人間へのエスカレーションが正しい対応である。バックオフでのリトライはTransient向けで、変更ウィンドウはリトライで解決する問題ではない。ペイロードの再フォーマットはValidation向けの対応で今回の原因とは無関係。認証情報の期限切れはPermissionカテゴリであり、ポリシー違反とは別の問題である。",
     "tags": [
@@ -712,6 +964,13 @@
       "The Host connects directly to each server without any Client abstraction layer",
       "The Host only connects to one server at a time and must disconnect before adding another"
     ],
+    "questionJa": "ある開発者が、データベースサーバー・ファイルシステムサーバー・チケット管理サーバーという3つの別々のMCPサーバーでClaude Codeを構成する新入社員に、MCPアーキテクチャを説明している。HostはそれぞれのServerとどのように関係するか。",
+    "choicesJa": [
+      "Hostは、3つすべてのServerにまたがって多重化される、単一の共有Client接続を維持する",
+      "Hostは各Serverごとに専用のClientを作成し、Serverごとに1対1の接続を持つ",
+      "HostはClientという抽象化層を一切介さずに各Serverへ直接接続する",
+      "Hostは一度に1つのServerにしか接続できず、別のServerを追加する前に切断しなければならない"
+    ],
     "answer": 1,
     "explanation": "正解はMCPアーキテクチャの基本構造で、Host（例: Claude Code）は各Serverに対して1:1のClientを作成して接続します。選択肢Aは1つのClientで複数サーバーを多重化するという誤った理解です。選択肢CはClientという抽象層の存在を無視しています。選択肢Dは複数サーバーへの同時接続が可能という事実に反します。",
     "tags": [
@@ -730,6 +989,13 @@
       "Streamable HTTP, because it supports SSE streaming which is required for all MCP servers",
       "Streamable HTTP, because stdio is deprecated in favor of remote transports",
       "stdio, because it is the only transport that supports JSON-RPC 2.0"
+    ],
+    "questionJa": "ある開発者生産性向上チームが、リモートアクセスの必要が一切なく、Claude Codeと完全に同一マシン上で動作するMCPサーバーをデプロイしようとしている。どのトランスポートを選ぶべきで、その理由は何か。",
+    "choicesJa": [
+      "stdio。ローカルプロセスとして動作し、ネットワークオーバーヘッドがないから",
+      "Streamable HTTP。すべてのMCPサーバーに必須とされるSSEストリーミングをサポートするから",
+      "Streamable HTTP。stdioはリモートトランスポートに取って代わられ非推奨になっているから",
+      "stdio。JSON-RPC 2.0をサポートする唯一のトランスポートだから"
     ],
     "answer": 0,
     "explanation": "正解はstdioで、ローカルプロセスとして動作しネットワークオーバーヘッドがないため、同一マシン上での利用に最適です。選択肢BはSSEが必須という誤った前提です。選択肢Cはstdioが非推奨という誤情報です。選択肢DはJSON-RPC 2.0は両方のトランスポートで使われるため誤りです。",
@@ -750,6 +1016,13 @@
       "Streamable HTTP, using HTTP POST with optional SSE streaming",
       "Neither transport supports remote or distributed servers"
     ],
+    "questionJa": "あるマルチエージェント型リサーチシステムが、複数の分散したコーディネーターインスタンスからアクセスされる、クラウドでホストされたMCPサーバーに接続する必要がある。この要件に適するトランスポートはどれか。",
+    "choicesJa": [
+      "stdio。ネットワークソケット経由でパイプすることでリモートサーバーに到達できるから",
+      "stdio。すべての本番デプロイで推奨されるトランスポートだから",
+      "Streamable HTTP。オプションのSSEストリーミングを伴うHTTP POSTを使うから",
+      "どちらのトランスポートもリモートまたは分散サーバーをサポートしない"
+    ],
     "answer": 2,
     "explanation": "正解はStreamable HTTPで、HTTP POSTとオプションのSSEストリーミングによりリモート・クラウド・分散環境向けに設計されています。選択肢Aはstdioがローカルプロセス通信専用である点を誤解しています。選択肢Bは逆で、stdioはローカル向けです。選択肢Dはリモート対応のトランスポートが存在しないという誤りです。",
     "tags": [
@@ -764,6 +1037,13 @@
     "difficulty": 1,
     "question": "During MCP session setup for a customer support agent's tool integration, what is the correct order of the JSON-RPC 2.0 initialization sequence?",
     "choices": [
+      "tools/list -> initialize -> notifications/initialized -> tools/call",
+      "initialize -> notifications/initialized -> tools/list -> tools/call",
+      "initialize -> tools/call -> notifications/initialized -> tools/list",
+      "notifications/initialized -> initialize -> tools/call -> tools/list"
+    ],
+    "questionJa": "あるカスタマーサポートエージェントのツール統合においてMCPセッションのセットアップを行う際、JSON-RPC 2.0の初期化シーケンスの正しい順序はどれか。",
+    "choicesJa": [
       "tools/list -> initialize -> notifications/initialized -> tools/call",
       "initialize -> notifications/initialized -> tools/list -> tools/call",
       "initialize -> tools/call -> notifications/initialized -> tools/list",
@@ -788,6 +1068,13 @@
       "sampling, since it lets the server request a completion from the client",
       "roots, since they define the filesystem boundaries the server can browse"
     ],
+    "questionJa": "ある構造化データ抽出パイプラインが、toolsとresourcesの両方を公開するMCPサーバーを使用している。エンジニアは、Claudeがどのドキュメントを取得するか決める前に、利用可能なドキュメントのカタログを閲覧できるようにしたいと考えている。このカタログ閲覧の挙動のためにサーバーが公開すべきサーバー側プリミティブはどれか。",
+    "choicesJa": [
+      "prompts。閲覧のための再利用可能な対話テンプレートを定義するものだから",
+      "resources。閲覧してから取得するために、uri・name・mimeTypeを持つ読み取り専用コンテンツを公開するものだから",
+      "sampling。サーバーがクライアントに補完を要求できるようにするものだから",
+      "roots。サーバーが閲覧できるファイルシステムの境界を定義するものだから"
+    ],
     "answer": 1,
     "explanation": "正解はresourcesで、uri・name・mimeTypeを持つ読み取り専用コンテンツのカタログを提供し、探索的なツール呼び出しを減らします。選択肢Aのpromptsはテンプレート用でカタログ閲覧目的ではありません。選択肢Cのsamplingはクライアント側プリミティブで用途が異なります。選択肢Dのrootsもクライアント側プリミティブでファイルシステム境界の定義用です。",
     "tags": [
@@ -806,6 +1093,13 @@
       "resources, read-only content the server exposes",
       "elicitation, where the server requests user input through the client",
       "prompts, interaction templates the server defines"
+    ],
+    "questionJa": "あるアーキテクトが設計文書のためにMCPプリミティブを分類している。次のうち、サーバー側プリミティブではなくクライアント側プリミティブはどれか。",
+    "choicesJa": [
+      "tools。サーバーが提供する実行可能な関数",
+      "resources。サーバーが公開する読み取り専用コンテンツ",
+      "elicitation。サーバーがクライアント経由でユーザー入力を要求するもの",
+      "prompts。サーバーが定義する対話テンプレート"
     ],
     "answer": 2,
     "explanation": "正解はelicitationで、サーバーがクライアント経由でユーザー入力を要求するクライアント側プリミティブです。tools・resources・promptsはすべてサーバー側プリミティブであり、選択肢A・B・Dはその点で誤りです。",
@@ -826,6 +1120,13 @@
       "MCP servers require a restart of the entire operating system to be shared across users",
       "`~/.claude.json` is a personal, non-version-controlled file, so it never propagates to teammates via git"
     ],
+    "questionJa": "あるチームの2人のエンジニアが、同じリポジトリに対してそれぞれClaude Codeを構成している。1人が`~/.claude.json`に新しいMCPサーバーのエントリを追加したが、最新のコミットをpullした後もチームメイトにはそれが見えず困惑している。根本原因は何か。",
+    "choicesJa": [
+      "MCPサーバー設定は段階的に追加できず、ファイル全体を再生成する必要がある",
+      "チームメイトが新しいサーバーを同期させるために手動で`tools/list`を実行する必要がある",
+      "MCPサーバーをユーザー間で共有するには、オペレーティングシステム全体の再起動が必要である",
+      "`~/.claude.json`は個人用のバージョン管理外のファイルであるため、gitを通じてチームメイトに伝播することは決してない"
+    ],
     "answer": 3,
     "explanation": "正解は`~/.claude.json`が個人用の設定ファイルであり、バージョン管理されないためgit経由でチームに共有されないことです。チーム共有すべき設定は`.mcp.json`に置く必要があります。選択肢Aはファイル全体の再生成が必要という誤情報です。選択肢Bはtools/listはプロトコル内部の動作でユーザーが手動実行するものではありません。選択肢CはOS再起動という無関係な要求です。",
     "tags": [
@@ -844,6 +1145,13 @@
       "In an environment variable exported in each developer's shell profile",
       "In a `.claude/settings.local.json` file so it stays consistent per machine",
       "In `.mcp.json` at the project root, since it is version-controlled and shared across the team"
+    ],
+    "questionJa": "あるチームは、リポジトリをクローンしたすべての開発者が手動セットアップなしに同じMCPサーバー群（Postgresサーバーと社内APIサーバー）を自動的に取得できるようにしたいと考えている。この設定はどこに置くべきか。",
+    "choicesJa": [
+      "マシン上のすべてのプロジェクトに適用されるため、`~/.claude.json`に置く",
+      "各開発者のシェルプロファイルでエクスポートされる環境変数に置く",
+      "マシンごとに一貫性を保つため、`.claude/settings.local.json`ファイルに置く",
+      "バージョン管理されチーム全体で共有されるため、プロジェクトルートの`.mcp.json`に置く"
     ],
     "answer": 3,
     "explanation": "正解は`.mcp.json`をプロジェクトルートに置くことで、これはバージョン管理されチーム標準として共有されます。選択肢Aの`~/.claude.json`は個人設定でありgit管理外です。選択肢Bはシェル環境変数任せで再現性がありません。選択肢Cの`settings.local.json`はマシンローカルかつgitignore対象で共有されません。",
@@ -864,6 +1172,13 @@
       "Store the password in a comment above the server entry so future maintainers can find it",
       "Use `${DB_PASSWORD}` in the `env` field so the value expands from an environment variable, never committing the secret itself"
     ],
+    "questionJa": "あるエンジニアが、パスワードを含む接続文字列を必要とするデータベースMCPサーバーの`.mcp.json`エントリを書いている。このシークレットを供給する正しい方法はどれか。",
+    "choicesJa": [
+      "簡単にするため、`.mcp.json`の`env`フィールドにパスワードを直接ハードコードする",
+      "パスワードをBase64エンコードして`args`に貼り付け、難読化する",
+      "将来のメンテナーが見つけられるよう、サーバーエントリの上にコメントとしてパスワードを保存する",
+      "`env`フィールドで`${DB_PASSWORD}`を使い、値が環境変数から展開されるようにし、シークレット自体を決してコミットしない"
+    ],
     "answer": 3,
     "explanation": "正解は`env`フィールドで`${VAR_NAME}`形式による環境変数展開を使い、シークレット自体は決してコミットしないことです。選択肢Aは平文パスワードの直接コミットで重大なセキュリティリスクです。選択肢Bはbase64エンコードは暗号化ではなく容易に復元可能なため誤りです。選択肢CはJSONにコメントは書けず、また秘密情報の露出にもなります。",
     "tags": [
@@ -882,6 +1197,13 @@
       "Yes, because MCP server env blocks must never reference external variables at all",
       "No, because `${SUPPORT_API_KEY}` is only a placeholder expanded at runtime from the environment; the actual secret is never written to the file",
       "Yes, because committing any `.mcp.json` file that references API keys is a violation regardless of whether `${VAR}` expansion is used"
+    ],
+    "questionJa": "あるセキュリティレビューで、チームの公開リポジトリにコミットされた`.mcp.json`ファイルが指摘された。そのファイルには`\"env\": {\"API_KEY\": \"${SUPPORT_API_KEY}\"}`が含まれている。これは違反か、その理由は何か。",
+    "choicesJa": [
+      "はい。`${VAR}`構文は常に解決済みのシークレット値をコミット済みファイルに漏洩させるから",
+      "はい。MCPサーバーのenvブロックは外部変数を一切参照してはならないから",
+      "いいえ。`${SUPPORT_API_KEY}`は実行時に環境から展開されるプレースホルダーに過ぎず、実際のシークレットがファイルに書き込まれることはないから",
+      "はい。`${VAR}`展開が使われているかどうかにかかわらず、APIキーを参照する`.mcp.json`ファイルをコミットすること自体が違反だから"
     ],
     "answer": 2,
     "explanation": "正解は`${VAR}`構文がプレースホルダーであり、実行時に環境変数から展開されるため、実際のシークレット値がファイルに書き込まれることはないという点です。選択肢Aはこの展開の仕組みを誤解しています。選択肢Bは外部変数参照自体を禁止するという誤った規則です。選択肢Dは`${VAR}`展開を使えばシークレット自体は書き込まれないため、APIキーを参照するだけで一律に違反とする主張は誤りです。",
@@ -902,6 +1224,13 @@
       "Increase the tool's `max_retries` so failed searches succeed faster",
       "Force `tool_choice` to the specific search tool so Claude cannot call anything else"
     ],
+    "questionJa": "ある構造化データ抽出エージェントが、何か有用な抽出を行う前に、どのようなドキュメント種別が存在するかを発見するためだけに、検索系ツールを何度も繰り返し呼び出している。このデータを提供するMCPサーバーはresourcesをサポートしている。この探索的なツール呼び出しを減らすためのアーキテクチャ上の変更はどれか。",
+    "choicesJa": [
+      "resourcesのカタログ（uri、name、mimeType）を公開し、Claudeが取得先を決める前にコンテンツを閲覧できるようにする",
+      "Claudeに検索回数を減らすよう教えるため、ツール説明文にfew-shot例を追加する",
+      "失敗した検索がより速く成功するよう、ツールの`max_retries`を増やす",
+      "Claudeが他に何も呼べなくなるよう、`tool_choice`を特定の検索ツールに強制する"
+    ],
     "answer": 0,
     "explanation": "正解はresourcesカタログを公開し、uri・name・mimeTypeによって事前にコンテンツを閲覧できるようにすることで、探索的なツール呼び出しを減らせます。選択肢Bは根本的なアーキテクチャの問題を解決しません。選択肢Cはリトライ回数の増加とは無関係です。選択肢Dは特定ツールへの強制であり、むしろ探索の柔軟性を失わせ問題を悪化させます。",
     "tags": [
@@ -920,6 +1249,13 @@
       "Read, which returns file contents given a path",
       "Bash, which executes shell commands",
       "Grep, which searches file content by pattern"
+    ],
+    "questionJa": "次のうち、ファイル名の一致ではなく、ファイル内のテキストパターンの一致によってコンテンツを見つけるために使われる、Claude Codeの組み込みツールはどれか。",
+    "choicesJa": [
+      "Glob。ファイル名パターンにマッチするもの",
+      "Read。パスを指定するとファイル内容を返すもの",
+      "Bash。シェルコマンドを実行するもの",
+      "Grep。パターンによってファイル内容を検索するもの"
     ],
     "answer": 3,
     "explanation": "正解はGrepで、ファイル内容のパターン検索を行うツールです。選択肢AのGlobはファイル名パターンのマッチング用で内容検索ではありません。選択肢Bのreadは既知のパスからファイル内容を返すツールで検索機能ではありません。選択肢CのBashはシェルコマンド実行用で内容パターン検索に特化したツールではありません。",
@@ -940,6 +1276,13 @@
       "Grep for relevant entry points, Read those files, then follow imports via further Grep/Read, iterating as needed",
       "Skip exploration entirely and use Edit directly based on the bug description alone"
     ],
+    "questionJa": "ある大規模な新しいコードベース向けにClaude Codeを構成している開発者が、認証フローのバグ修正を依頼した。効率的なコンテキスト利用のために、Claudeが従うべき探索パターンはどれか。",
+    "choicesJa": [
+      "変更を加える前に、リポジトリ内のすべてのファイルを事前に読み込んで完全なコンテキストを構築する",
+      "開始前にBashを使って`src/`ディレクトリ全体を1つのバッファに`cat`する",
+      "関連するエントリポイントをGrepで検索し、それらをReadし、importをたどってさらにGrep/Readを行い、必要に応じて繰り返す",
+      "探索を完全に省略し、バグの説明だけに基づいて直接Editを使う"
+    ],
     "answer": 2,
     "explanation": "正解はGrepでエントリポイントを検索し、それらをReadし、importを辿ってさらにGrep/Readを繰り返すパターンです。これはコンテキストを節約しつつ関連コードを特定します。選択肢Aと選択肢Bは「read-everything-upfront」というアンチパターンでコンテキストを浪費します。選択肢Dは調査なしでの編集であり誤った変更のリスクが高まります。",
     "tags": [
@@ -958,6 +1301,13 @@
       "Glob, which matches filename patterns",
       "Bash, which would need a custom `find` invocation instead of a dedicated tool",
       "Read, which returns the contents of a file once its path is already known"
+    ],
+    "questionJa": "ある開発者が、どのファイルを開くか決める前に、大規模なリポジトリ全体で名前が`*.config.ts`に一致するすべてのファイルを、ファイル内容を検索せずに見つけたいと考えている。ファイル名パターンのマッチングに特化して設計された、コンテンツ検索とは異なる組み込みのClaude Codeツールはどれか。",
+    "choicesJa": [
+      "Grep。パターンによってファイル内容を検索するもの",
+      "Glob。ファイル名パターンにマッチするもの",
+      "Bash。専用ツールの代わりにカスタムの`find`呼び出しが必要になるもの",
+      "Read。パスが既に分かっているファイルの内容を返すもの"
     ],
     "answer": 1,
     "explanation": "正解はGlobで、ファイル内容ではなくファイル名パターンのマッチングに特化した組み込みツールである。Grepはファイル内容をパターン検索するツールでありファイル名の一致には使わない。Bashで`find`を独自に呼び出すことも技術的には可能だが、専用ツールであるGlobを使う方が適切で標準的なアプローチである。Readは既知のパスからファイル内容を取得するツールであり、そもそもファイルを名前で探す機能を持たない。",
@@ -978,6 +1328,13 @@
       "Read the whole file, construct the modified content in memory, and Write it back",
       "Switch to Grep to locate and directly modify the matching lines"
     ],
+    "questionJa": "Claude Codeが設定の1行を変更するためにEditツールを使おうとしたが、対象の文字列がファイル内に5回出現するため操作が失敗した。正しいフォールバックのアプローチはどれか。",
+    "choicesJa": [
+      "偶然成功するまで、同じEdit呼び出しを繰り返しリトライする",
+      "組み込みのファイルツールの代わりに、Bashで`sed`を使って強制的に置換する",
+      "ファイル全体をReadし、修正済みの内容をメモリ上で構築し、Writeで書き戻す",
+      "Grepに切り替え、一致する行を直接検索して変更する"
+    ],
     "answer": 2,
     "explanation": "正解はファイル全体をReadし、修正済みの内容を構築してWriteで書き戻すフォールバックです。これはEditツールの一意マッチ制限に対する標準的な対処法です。選択肢Aは同じ失敗を繰り返すだけで解決になりません。選択肢Bはsedの使用が可能な場合もありますが、これは標準的に推奨されるフォールバックパターンではありません。選択肢DのGrepは検索専用ツールでありファイル内容の変更はできません。",
     "tags": [
@@ -996,6 +1353,13 @@
       "Leave the names as-is and set `tool_choice: \"any\"` so at least some tool is always called",
       "Add both tools to a 19th and 20th slot on the same single agent, since more tools give the model more options to pick from",
       "Delete `fetch_ticket_details` without further analysis, since having only one ticket-fetching tool always resolves ambiguity"
+    ],
+    "questionJa": "社内チケット管理システム向けのMCPサーバーは、`get_ticket`（IDで単一のチケットを取得する）と`fetch_ticket_details`（同じくIDで単一のチケットを取得するが、加えてコメント履歴も含む）の両方を定義している。Claudeは頻繁に誤った方を呼び出し、必要なコメント履歴を取り逃したり、逆に必要以上のデータを取得したりする。ツール命名の差別化原則に沿った、最も直接的な修正はどれか。",
+    "choicesJa": [
+      "違いが明確に伝わるようツールをリネームする（例：`get_ticket_summary`と`get_ticket_with_comments`）か、`include_comments`パラメータを持つ1つのツールに統合する",
+      "名前はそのままにし、少なくとも何らかのツールが常に呼ばれるよう`tool_choice: \"any\"`を設定する",
+      "ツールが多いほどモデルに選択肢が増えるという理由で、両方のツールを同じ単一エージェントの19番目・20番目のスロットに追加する",
+      "チケット取得ツールが1つだけになれば曖昧さは常に解消されるという理由で、さらなる分析なしに`fetch_ticket_details`を削除する"
     ],
     "answer": 0,
     "explanation": "正解は、`get_ticket`と`fetch_ticket_details`のような曖昧に重複する名前・説明を、差別化のためにリネームするか、パラメータで挙動を切り替えられる1つのツールに統合することである。`tool_choice: \"any\"`は何らかのツール呼び出しを強制するだけで、どちらが正しいツールかという曖昧さの解消にはならない。ツールを増やして同じエージェントに持たせるのはツール数上限の原則に反し、選択の複雑さをむしろ悪化させる。分析なしにどちらかを削除すると、コメント履歴が必要な場面で機能が失われる可能性があり不適切である。",
@@ -1016,6 +1380,13 @@
       "MCP servers do not need any initialization sequence when using stdio transport",
       "`notifications/initialized` is optional and can be skipped entirely for stdio-based servers"
     ],
+    "questionJa": "あるマルチエージェント型リサーチシステムのコーディネーターがMCPツールを呼び出す。サーバーが呼び出しの途中でクラッシュし、クライアントは`tools/call`の応答を一切受け取らない。コーディネーターが単純に`tools/list`を再送するだけでは復旧できず、代わりに`initialize`を最初からやり直さなければならない理由を正しく説明しているのはどれか。",
+    "choicesJa": [
+      "`tools/list`も`tools/call`も、接続が既に`initialize` -> `notifications/initialized`を完了していることに依存しており、クラッシュしたサーバーはその確立済みのセッション状態を失うため、ハンドシェイクを再度行う必要がある",
+      "`tools/list`はまだ行われていなければ暗黙的に`initialize`を実行するため、復旧は不要である",
+      "MCPサーバーはstdioトランスポートを使用する場合、初期化シーケンスを一切必要としない",
+      "`notifications/initialized`は任意であり、stdioベースのサーバーでは完全に省略できる"
+    ],
     "answer": 0,
     "explanation": "正解は`tools/list`も`tools/call`も、`initialize`→`notifications/initialized`が完了した後でなければ有効に機能せず、サーバーがクラッシュするとそのセッション状態が失われるため、再初期化が必要になるという点です。選択肢Bは`tools/list`が自動的にinitializeを行うという誤った仕様理解です。選択肢Cはstdioでも初期化シーケンスは必須であるため誤りです。選択肢Dは`notifications/initialized`がstdioで省略可能という誤った例外規定です。",
     "tags": [
@@ -1035,6 +1406,13 @@
       "A prompt, since prompts are meant for exposing static catalogs of data",
       "Neither; this should be handled entirely with sampling on the client side",
       "A resource, since it is read-only content best suited for browsing rather than an executable action"
+    ],
+    "questionJa": "あるアーキテクトが、社内ツール向けの新しい機能をMCPサーバーの`tool`（実行可能な関数）として実装すべきか、`resource`（読み取り専用コンテンツ）として実装すべきか検討している。その機能は、Claudeが製品SKUとそのメタデータの静的なリストを、何もアクションを実行せずに閲覧できるようにするだけのものである。どちらがより適しているか。",
+    "choicesJa": [
+      "tool。MCPにおいてtoolsは常にあらゆるデータアクセスに優先されるから",
+      "prompt。promptsは静的なデータカタログを公開するためのものだから",
+      "どちらでもない。これはクライアント側のsamplingで完全に処理すべきである",
+      "resource。実行アクションではなく閲覧に最も適した読み取り専用コンテンツだから"
     ],
     "answer": 3,
     "explanation": "正解はresourceで、実行アクションを伴わない読み取り専用コンテンツの閲覧に適しています。選択肢Aはtoolsが常にデータアクセスに優先されるという誤った一般化です。選択肢Bのpromptsは対話テンプレート用であり静的カタログの公開用途ではありません。選択肢CのsamplingはクライアントがサーバーにLLM補完を要求する仕組みで、静的データ閲覧とは無関係です。",

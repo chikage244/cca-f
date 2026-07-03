@@ -10,6 +10,13 @@
       "The context window only matters for billing, not for output quality or reliability",
       "Context window limits apply solely to the final response, not to the accumulated conversation history"
     ],
+    "questionJa": "開発者生産性チームが、数十のファイルとツール呼び出しを処理する長時間のClaude Codeセッションを設計している。有限コンテキストウィンドウに関するコスト・信頼性の制約を正しく説明しているのはどれか。",
+    "choicesJa": [
+      "コンテキストウィンドウに消費されるのはユーザーが書いたメッセージのみであり、ツール結果は別途保存され無料である",
+      "システムプロンプト・メッセージ・ツール結果のすべてがトークンを消費し、会話が長くなるほどウィンドウが埋まって劣化する",
+      "コンテキストウィンドウは課金にのみ関係し、出力品質や信頼性には関係しない",
+      "コンテキストウィンドウの制限は最終応答にのみ適用され、累積された会話履歴には適用されない"
+    ],
     "answer": 1,
     "explanation": "正解は、システムプロンプト・メッセージ・ツール結果すべてがトークンを消費し、会話が長くなるほど劣化するという有限コンテキストウィンドウの基本原則を述べている。選択肢0はツール結果が無料という誤り、選択肢2は品質劣化を無視した誤り、選択肢3は累積履歴も同様に消費されるため誤り。",
     "tags": [
@@ -28,6 +35,13 @@
       "Append a key-findings summary only at the very end, right before the final answer",
       "Randomize the order of subagent findings so no single section is consistently deprioritized",
       "Increase the max_tokens parameter so the model has more room to consider the middle content"
+    ],
+    "questionJa": "マルチエージェント型のリサーチシステムにおいて、コーディネーターがユーザーの質問に答える前に、サブエージェントの調査結果を長いトランスクリプトにまとめている。そのトランスクリプトの中間に埋もれた情報がモデルに軽視されるリスクを減らすために、コーディネーターは何をすべきか。",
+    "choicesJa": [
+      "トランスクリプトの冒頭に主要な調査結果の要約を置き、重要な事実を冒頭と末尾の両方でブックエンドする",
+      "主要な調査結果の要約を最終回答の直前、つまり末尾にのみ追加する",
+      "特定のセクションが常に軽視されないよう、サブエージェントの調査結果の順序をランダム化する",
+      "max_tokensパラメータを増やして、モデルが中間コンテンツを検討する余地を増やす"
     ],
     "answer": 0,
     "explanation": "正解は「lost in the middle」現象への対策として、冒頭に要点サマリーを置き、重要情報を先頭と末尾でブックエンドする方法である。選択肢1は末尾のみで冒頭の弱点を補えない。選択肢2はランダム化しても中間部分の処理信頼性低下は解消しない。選択肢3のmax_tokensは出力長の制御でありlost-in-the-middle問題とは無関係。",
@@ -48,6 +62,13 @@
       "Maintain a persistent case-facts block with exact order ID, amount, and dates, marked with a do-not-summarize instruction",
       "Ask the customer to repeat the exact amount and date each time the agent needs them"
     ],
+    "questionJa": "顧客サポートの解決エージェントが、請求に関する紛争についての長い会話を処理している。会話の途中で、progressive summarization（段階的要約）により以前のツール結果が圧縮され、「$149.99」が「約$150」に、注文日が「1月中旬」になってしまった。これが最終的な返金アクションに影響しないようにするための最良の設計上の修正は何か。",
+    "choicesJa": [
+      "何も圧縮されないよう、セッション全体で要約を完全に無効化する",
+      "モデルの温度（temperature）を上げて、コンテキストから正確な数値を再構成させる",
+      "注文ID・金額・日付などの正確な情報を保持する永続的なcase-facts block（事実ブロック）を維持し、要約対象外であることを明示する指示を付ける",
+      "エージェントが必要とするたびに、顧客に正確な金額と日付を繰り返し伝えてもらう"
+    ],
     "answer": 2,
     "explanation": "正解は、注文ID・金額・日付などを保持する永続的なcase facts blockを設け、要約対象から除外する指示を付けることで数値の劣化を防ぐパターンである。選択肢0は非現実的でパフォーマンスやコストに悪影響。選択肢1のtemperatureは数値の正確な再現とは無関係。選択肢3は顧客体験を損ない、根本的な設計問題を解決しない。",
     "tags": [
@@ -67,6 +88,13 @@
       "Return only field names without values, and let the model request values individually",
       "Trim the tool output to return only the 5 essential fields relevant to the task"
     ],
+    "questionJa": "構造化データ抽出パイプラインにおいて、あるツール呼び出しが40のフィールドを含む注文レコード全体を取得するが、現在のタスクに関連するのは5フィールド（注文ID・ステータス・合計金額・顧客メール・発送日）のみである。モデルに返すツール結果として推奨されるアプローチはどれか。",
+    "choicesJa": [
+      "モデルに最大限の柔軟性を持たせるため、40フィールドすべてを返す",
+      "40フィールドを返すが、1つの要約された文字列に圧縮する",
+      "フィールド名のみを値なしで返し、モデルに個別に値をリクエストさせる",
+      "ツール出力をトリミングし、タスクに必須な5フィールドのみを返す"
+    ],
     "answer": 3,
     "explanation": "正解は、関連する5フィールドのみを返すトリミングによりコンテキスト消費を抑える手法である。選択肢0は不要なトークンを浪費し、lost-in-the-middleのリスクも高める。選択肢1の要約は数値の劣化リスクを持ち込む。選択肢2は値なしでは実質的に使えず、往復呼び出しが増えて非効率。",
     "tags": [
@@ -84,6 +112,13 @@
       "Survives: CLAUDE.md (re-read from disk), MEMORY.md, and recent messages; Lost: earlier tool results and exact figures from early context",
       "Survives: nothing except the system prompt; Lost: all prior configuration and memory files",
       "Survives: only the most recent tool_use block; Lost: all text messages regardless of recency"
+    ],
+    "questionJa": "Claude Codeのユーザーが、長いリファクタリングセッションの途中で `/compact` を実行した。compaction（圧縮）で通常生き残るものと失われるものの組み合わせを正しく説明しているのはどれか。",
+    "choicesJa": [
+      "生き残る: 初期ターンのツール結果の正確な内容／失われる: CLAUDE.mdとMEMORY.md",
+      "生き残る: CLAUDE.md（ディスクから再読み込み）、MEMORY.md、直近のメッセージ／失われる: 初期のツール結果と初期コンテキストの正確な数値",
+      "生き残る: システムプロンプト以外は何も残らない／失われる: それまでのすべての設定とメモリファイル",
+      "生き残る: 直近のtool_useブロックのみ／失われる: 新しさに関係なくすべてのテキストメッセージ"
     ],
     "answer": 1,
     "explanation": "正解は、CLAUDE.mdはディスクから再読み込みされ、MEMORY.mdや直近のメッセージも残るが、初期のツール結果や正確な数値は失われるという/compactの挙動を正しく説明している。選択肢0は生存/消失が逆。選択肢2はCLAUDE.mdやMEMORY.mdが残る事実を無視している。選択肢3はテキストメッセージも直近分は残るため誤り。",
@@ -104,6 +139,13 @@
       "This indicates context degradation from an overloaded window; proactively run /compact before natural degradation occurs, rather than waiting for automatic compaction",
       "This means CLAUDE.md was not loaded at session start; the fix is to restart the session from scratch"
     ],
+    "questionJa": "大規模なコードベース移行を行う数時間にわたるClaude Codeセッションの最中、アシスタントがこのリポジトリ固有の事実ではなく一般的なベストプラクティスのような回答をし始め、既に以前確認済みの事項について再度質問し始めた。最も可能性の高い原因と、推奨される事前対応（プロアクティブな修正）は何か。",
+    "choicesJa": [
+      "これは通常のモデルのばらつきであり、より高いeffort設定のモデルに切り替えれば解決する",
+      "これはツールの説明が曖昧であることを意味し、修正策はツールをより少数の、より説明の行き届いたものに統合することである",
+      "これは過負荷になったウィンドウによるコンテキスト劣化を示しており、自然な劣化が起きるのを待って自動compactionに任せるのではなく、事前に/compactを実行すべきである",
+      "これはセッション開始時にCLAUDE.mdが読み込まれなかったことを意味し、修正策はセッションを最初からやり直すことである"
+    ],
     "answer": 2,
     "explanation": "正解は、長時間セッションでの典型的なコンテキスト劣化の兆候（一般論への逃避、既知事項の再確認）であり、自然な劣化を待つ自動compactionより先回りしてproactiveに/compactを実行する方が優れているという原則に基づく。選択肢0は根本原因を無視した対症療法。選択肢1はツール設計の問題であり本症状の原因ではない。選択肢3はCLAUDE.mdの問題ではなく、セッション再起動は過剰な対応。",
     "tags": [
@@ -122,6 +164,13 @@
       "Because scratchpad files are automatically injected into MEMORY.md during compaction",
       "Because /compact only affects the system prompt, never the working directory or file contents",
       "Because scratchpad files written to disk survive compaction and can be re-read on demand, unlike in-context tool results"
+    ],
+    "questionJa": "CI/CDの自動化パイプラインが、複数のスケジュールジョブにまたがって数時間にわたりClaude Codeを非対話的に実行し、compaction（圧縮）イベントをまたいで中間的な調査結果を保持するためにスクラッチパッドのMarkdownファイルに依存している。このスクラッチパッド戦略が/compactをまたぐ状態保持にうまく機能するのはなぜか。",
+    "choicesJa": [
+      "/compactは、スクラッチパッドファイルを除く作業ディレクトリ内のすべてのファイルを自動的に削除するため",
+      "スクラッチパッドファイルはcompaction中にMEMORY.mdへ自動的に注入されるため",
+      "/compactはシステムプロンプトにのみ影響し、作業ディレクトリやファイル内容には決して影響しないため",
+      "ディスクに書き込まれたスクラッチパッドファイルはコンテキスト内のツール結果とは異なりcompactionの影響を受けずに残り、必要に応じて再読み込みできるため"
     ],
     "answer": 3,
     "explanation": "正解は、スクラッチパッドファイルはディスク上に永続化されるため/compactの影響を受けず、必要なときに再読み込みできるという設計原則である。選択肢0はcompactがファイルを削除するという誤った前提。選択肢1はMEMORY.mdへの自動統合という事実に基づかない主張。選択肢2はcompactの影響範囲の説明として不正確かつ論点がずれている。",
@@ -142,6 +191,13 @@
       "Use /compact immediately after each file read to keep the window small",
       "Ask the user to manually summarize the codebase structure before starting"
     ],
+    "questionJa": "開発者が、メインのClaude Codeセッションに大規模で未知のコードベース（50以上のファイル）を探索させたいが、途中のファイル読み込みすべてでメインコンテキストを汚染したくない。推奨されるパターンは何か。",
+    "choicesJa": [
+      "後で見落としがないよう、メインセッションで50以上のファイルすべてを直接読み込む",
+      "探索をExploreサブエージェントに委任し、サブエージェントがファイルを読み込んで、メインコンテキストには簡潔な要約のみを返す",
+      "ウィンドウを小さく保つため、ファイルを読み込むたびに即座に/compactを使う",
+      "開始前にユーザーに手動でコードベース構造を要約してもらう"
+    ],
     "answer": 1,
     "explanation": "正解は、Explore subagentに探索を委任し、詳細な読み込みはサブエージェントのコンテキストに隔離した上で、メインコンテキストには簡潔な要約のみを返すパターンである。選択肢0はメインコンテキストを浪費し、lost-in-the-middleのリスクも高める。選択肢2は読み込みのたびにcompactするのは非効率かつ非現実的な運用。選択肢3は自動化の目的に反し、ユーザーへの負担を増やす。",
     "tags": [
@@ -161,6 +217,13 @@
       "The assistant's answers shift toward generic 'typical patterns' instead of the specific code it actually found, and assumptions start replacing verification",
       "The assistant proposes a plan and waits for approval before editing files"
     ],
+    "questionJa": "長時間のClaude Codeセッションにおいて、健全に機能しているセッションの兆候ではなく、明示的にコンテキスト劣化の兆候として挙げられているのは次のうちどれか。",
+    "choicesJa": [
+      "アシスタントが、セッション内で以前確認した正確な行番号やファイルパスを引き続き引用し続ける",
+      "アシスタントが、大規模な複数ファイルにまたがる変更を実装する前に確認の質問をする",
+      "アシスタントの回答が、実際に見つけた具体的なコードではなく一般的な「典型的なパターン」へとシフトし、仮定が検証に取って代わり始める",
+      "アシスタントが計画を提示し、ファイルを編集する前に承認を待つ"
+    ],
     "answer": 2,
     "explanation": "正解は、コンテキスト劣化の兆候として挙げられる「一般的パターンへの逃避」「検証済み事項の忘却」「仮定が検証に置き換わる」という現象である。選択肢0は健全なセッションの特徴。選択肢1と3はplan modeやinterview patternとして推奨される良い振る舞いであり劣化の兆候ではない。",
     "tags": [
@@ -178,6 +241,13 @@
       "Strategy A is preferred because automatic compaction always preserves more exact figures than a manually triggered one",
       "Both strategies are equivalent since /compact behavior is identical regardless of when it is triggered",
       "Strategy A is preferred because it guarantees CLAUDE.md and MEMORY.md are never reloaded, saving tokens"
+    ],
+    "questionJa": "あるチームが、長時間のClaude Code CI/CDジョブに向けた2つのcompaction戦略について議論している。(A) コンテキストウィンドウが予測不能に満杯になったときに自動compactionを発動させる、(B) ウィンドウが満杯になる前に計画されたチェックポイントで明示的に/compactを呼び出す。推奨される選択を正しく裏付けているのはどれか。",
+    "choicesJa": [
+      "戦略Bが望ましい。自然な劣化が起こる前に事前にcompactする方が、予測不能な自動compactionに頼るより優れているため",
+      "戦略Aが望ましい。自動compactionは手動で発動させたものより常に正確な数値をより多く保持するため",
+      "/compactの挙動は発動タイミングにかかわらず同一なので、両戦略は同等である",
+      "戦略Aが望ましい。CLAUDE.mdとMEMORY.mdが再読み込みされないことを保証し、トークンを節約できるため"
     ],
     "answer": 0,
     "explanation": "正解は、予測可能なタイミングで先回りして/compactを実行する方が、ウィンドウが埋まってから発動する不規則な自動compactionより優れているという原則である。選択肢1は自動と手動でcompactの精度が異なるという誤った前提。選択肢2はタイミングによる劣化度合いの違いを無視している。選択肢3はCLAUDE.md再読み込みを避けることが目的だという誤った理解で、実際には再読み込みされること自体は望ましい。",
@@ -198,6 +268,13 @@
       "Switch the tool_choice parameter to 'any' so the model is forced to call a tool for every question",
       "Trim tool output to only the fields needed, and store must-keep figures like exact amounts in a persistent case-facts block excluded from summarization"
     ],
+    "questionJa": "ある顧客サポートエージェントの会話ログでは、初期のツール結果に40の注文フィールドが列挙されていたが、30ターン後（/compactが発生した後）にエージェントが正確な当初の購入金額を参照する必要が生じたときには、その数値は失われていた。この特定の失敗を防ぐために、コンテキスト管理の観点から最も有効な技術の組み合わせはどれか。",
+    "choicesJa": [
+      "正確な数値が見つからない場合、モデルが学習データから数値を思い出す能力に頼る",
+      "エージェントが顧客に再度尋ねる機会を増やせるよう、max_turnsを増やす",
+      "モデルがすべての質問に対してツールを呼び出すよう強制されるよう、tool_choiceパラメータを'any'に切り替える",
+      "ツール出力を必要なフィールドのみにトリミングし、正確な金額のような必須の数値は要約対象から除外した永続的なcase-facts blockに保存する"
+    ],
     "answer": 3,
     "explanation": "正解は、ツール出力を必要なフィールドのみにトリミングしつつ、正確な金額のような必須情報はdo-not-summarize指定のcase facts blockに保持するという二つの手法の組み合わせである。選択肢0はモデルが学習データから顧客固有の金額を推測することはできず誤り。選択肢1のmax_turnsは関係のないCLI設定。選択肢2のtool_choiceはツール呼び出し強制の話でコンテキスト保持とは無関係。",
     "tags": [
@@ -217,6 +294,13 @@
       "Skills persist in full forever once injected, regardless of compaction, so degradation must be caused by something else entirely",
       "Skills are stored in MEMORY.md automatically, so they always survive compaction identically to auto memory"
     ],
+    "questionJa": "長時間のリサーチタスク向けのClaude Code設定において、あるスキルのレンダリングされた本文が、セッション初期に1つのメッセージとして会話に注入された。複数回の/compactサイクルの後、開発者はそのスキルの元々の指示がもはや強く行動に影響していないことに気づいた。このコンテキスト管理モデルはこの状況について何を説明しているか。",
+    "choicesJa": [
+      "スキルはすべてのターンでディスクから自動的に再読み込みされるため、こうしたことは決して起こらないはずであり、これはバグを示している",
+      "compactionは直近使用された最大5個のスキルのみを再アタッチする（各5,000トークン、合計25,000トークン上限）ため、古いスキルの影響はcompaction後に薄れることがある",
+      "スキルは一度注入されると、compactionにかかわらず永久に完全な形で保持されるため、劣化はまったく別の原因によるものに違いない",
+      "スキルは自動的にMEMORY.mdに保存されるため、auto memoryとまったく同様に常にcompactionを生き延びる"
+    ],
     "answer": 1,
     "explanation": "正解は、compactionが直近使用された最大5個のスキルのみを再アタッチし（各5,000トークン、合計25,000トークン上限）、それ以外は再アタッチされないため古いスキルの影響が薄れるという仕様である。選択肢0は毎ターン再読み込みされるという誤った前提。選択肢2はスキルが永続するという誤り。選択肢3はMEMORY.mdへの自動格納という事実に基づかない主張。",
     "tags": [
@@ -235,6 +319,13 @@
       "Have the subagent return its full raw transcript so the coordinator can decide what to keep",
       "Have the coordinator periodically run /compact on the subagent's session to keep it lean",
       "Disable summarization for the subagent entirely so nothing is ever lost"
+    ],
+    "questionJa": "あるマルチエージェント型リサーチシステムのコーディネーターが、深い文献レビューをサブエージェントに委任し、サブエージェントは数十の文書を読む。コーディネーターは、(a) サブエージェントの重要な数値的な調査結果がprogressive summarizationによって失われること、(b) すべての文書の詳細で自身のコンテキストが溢れること、の両方を避けたい。この両方の目標を満たす最良の組み合わせ設計はどれか。",
+    "choicesJa": [
+      "サブエージェントにExploreスタイルの委任を通じて簡潔な要約を返させ、正確な数値・出典については要約対象外と明示した構造化されたfacts blockを持たせ、さらにコーディネーターが受け取る内容の冒頭に主要な調査結果の要約を置く",
+      "サブエージェントにその完全な生のトランスクリプトを返させ、コーディネーターが何を残すか決める",
+      "コーディネーターがサブエージェントのセッションに対して定期的に/compactを実行し、軽量に保つ",
+      "サブエージェントの要約を完全に無効化し、何も失われないようにする"
     ],
     "answer": 0,
     "explanation": "正解は、Explore的な委任により簡潔な要約のみを返しつつ、正確な数値や出典は要約対象外のfacts blockで保持し、さらに受け取る内容の冒頭にkey-findingsサマリーを置くことで、lost-in-the-middleと数値劣化の両方に対処する複合設計である。選択肢1はコンテキスト肥大化を招き本来の目的に反する。選択肢2はコーディネーターがサブエージェントのセッションを直接compactするという想定自体が誤り（サブエージェントは独立したコンテキストを持つ）。選択肢3は非現実的でコスト・性能上の問題を無視している。",
@@ -256,6 +347,13 @@
       "\"$149.99\" being compressed to \"approximately $150\", losing the exact figure needed for a refund calculation",
       "A stack trace being expanded with additional debug detail after each summarization pass"
     ],
+    "questionJa": "コンテキスト管理設計においてよく引用される、progressive summarizationによって引き起こされる数値・詳細の損失の正確な例はどれか。",
+    "choicesJa": [
+      "「$149.99」がすべての要約パスを通じて正確に「$149.99」のまま保持される",
+      "顧客の正確な注文IDが冗長性のため要約されるすべてのターンにわたって複製される",
+      "「$149.99」が「約$150」に圧縮され、返金計算に必要な正確な数値が失われる",
+      "スタックトレースが要約パスのたびに追加のデバッグ詳細で拡張される"
+    ],
     "answer": 2,
     "explanation": "正解は、進行的要約によって正確な金額「$149.99」が「約$150」のような曖昧な表現に劣化する典型例である。選択肢0は要約による劣化がないという誤り。選択肢1は要約が詳細を保持・複製するという誤った説明。選択肢3は要約が詳細を追加するという逆の主張であり誤り。",
     "tags": [
@@ -273,6 +371,13 @@
       "0.9 is inherently trustworthy because the model generated it from the same extraction call, so no separate calibration step is needed",
       "Escalation should rely on the model restating in text how confident it feels, since numeric confidence fields are redundant once the model can explain itself",
       "Any confidence score above 0.5 can be treated as equally reliable, since the exact numeric value only matters for scores below 0.5"
+    ],
+    "questionJa": "ある構造化データ抽出パイプラインが、抽出されたすべてのフィールドに信頼度スコアを付与している。例: {\"value\": \"2024-03-15\", \"confidence\": 0.9}。チームは、これらのスコアを自動エスカレーション閾値を動かすのに十分信頼できるものにしたいと考えている。この設計を信頼できるものにするために0.9というスコアについて何が真である必要があり、エスカレーションの判断はどのように行うべきか。",
+    "choicesJa": [
+      "0.9は、ラベル付き検証データセットに対してそのフィールドが約90%の確率で正しいことを意味するよう較正されている必要があり、エスカレーションはその較正済みスコアに対する決定論的な閾値を用いて行うべきで、モデルの自己申告の確信度のみに頼ってはならない",
+      "0.9は同じ抽出呼び出しからモデル自身が生成したものなので本質的に信頼でき、別途の較正ステップは不要である",
+      "数値の確信度フィールドはモデルが自ら説明できる以上冗長なので、エスカレーションはモデルがどれほど自信があるかをテキストで言い直すことに頼るべきである",
+      "0.5を超える確信度スコアはすべて等しく信頼できるとみなしてよい。正確な数値が問題になるのは0.5未満のスコアの場合のみだからである"
     ],
     "answer": 0,
     "explanation": "正解は、信頼度スコア0.9はラベル付き検証データセットに対して実際に約90%の精度と一致するようキャリブレーションされていなければ「意味をなさない」という原則、かつエスカレーションはモデルの自己申告ではなく決定的な閾値ロジックで行うべきという原則を正しく述べている。選択肢1はキャリブレーション不要という誤り(自己生成スコアは検証なしに信頼できない)。選択肢2はLLMの自己申告確信度に頼る誤ったパターン(自己申告は較正が不十分)。選択肢3はスコアの数値精度を軽視しており、較正の必要性そのものを否定する誤り。",
@@ -292,6 +397,13 @@
       "The customer explicitly asks to speak with a human representative",
       "The conversation has grown to more than 20 turns",
       "The agent's self-reported confidence score for its last answer is 0.4"
+    ],
+    "questionJa": "Claude上に構築された顧客サポートエージェントが、請求に関する紛争を処理している。次のうち、人間のエージェントへの即時エスカレーションを引き起こすべきものはどれか。",
+    "choicesJa": [
+      "会話全体を通して顧客のメッセージが強くネガティブな感情を示している",
+      "顧客が明示的に人間の担当者と話したいと要求している",
+      "会話が20ターンを超えている",
+      "エージェント自身が最後の回答に対して自己申告した確信度スコアが0.4である"
     ],
     "answer": 1,
     "explanation": "正解は「顧客が明示的に人間対応を要求した」ことで、これは即時エスカレーションの正当なトリガーの一つです。感情の強さだけでは複雑さを意味しないため誤りです。会話の長さ自体はエスカレーション基準にはなりません。エージェントの自己申告の確信度は較正されていないことが多く、信頼できる根拠にはなりません。",
@@ -313,6 +425,13 @@
       "Escalate because any all-caps message is treated as a policy exception",
       "Resolve the issue directly since it is a simple, well-documented billing error despite the tone"
     ],
+    "questionJa": "ある顧客サポートの解決エージェントにおいて、顧客が注文履歴に明確に記録されているシンプルな12ドルの二重請求について非常に怒っている（全て大文字、感嘆符多数）。エージェントの正しい次のアクションは何か。",
+    "choicesJa": [
+      "顧客の感情の強さが深刻度の高い問題を示しているため、即座にエスカレーションする",
+      "顧客に、先に進める前に口調を落ち着かせるよう求める",
+      "全て大文字のメッセージはすべてポリシー例外として扱われるため、エスカレーションする",
+      "口調にかかわらず、単純で十分に記録された請求エラーであるため、直接解決する"
+    ],
     "answer": 3,
     "explanation": "正解は、感情が強くても問題自体は単純な請求エラーであり、そのままエージェントが解決すべきという点です。感情の強さだけでエスカレーションするのはsentiment≠complexityの原則に反する誤りです。顧客に口調を改めるよう求めるのは適切な業務対応ではありません。全て大文字だからといって自動的にポリシー例外として扱う根拠はありません。",
     "tags": [
@@ -332,6 +451,13 @@
       "Resolve it directly since the customer's calm tone indicates low complexity",
       "Tell the customer their data is already EU-only to keep the conversation short",
       "Escalate only if the customer becomes upset about the delay"
+    ],
+    "questionJa": "冷静で丁寧な顧客が、マルチリージョンSLA条項に紐づくデータレジデンシー要件のため、自分のデータをEU内にのみ保存できるかどうか尋ねている。エージェントは現在のインフラがその保証をサポートしているか確信が持てない。エージェントは何をすべきか。",
+    "choicesJa": [
+      "顧客が冷静であっても、これは単純な解決を超えたポリシー上の複雑さを伴うため、人間にエスカレーションする",
+      "顧客の冷静な口調は複雑さが低いことを示しているため、直接解決する",
+      "会話を短く済ませるため、顧客のデータはすでにEU内のみで保存されていると伝える",
+      "顧客が遅延に対して不満を示した場合にのみエスカレーションする"
     ],
     "answer": 0,
     "explanation": "正解は、顧客の口調が穏やかでも、データレジデンシーやSLAのようなポリシー上の複雑な例外はエスカレーション対象であるという点です。穏やかな口調＝単純な問題という判断は誤りで、sentimentとcomplexityは独立した軸です。確認できない事実を断定的に伝えるのは不適切な対応です。エスカレーションの要否は顧客の感情次第ではなく問題の性質次第です。",
@@ -353,6 +479,13 @@
       "A genuine gap exists in the documented policy for this situation",
       "The conversation has run long, regardless of whether progress is being made"
     ],
+    "questionJa": "次のうち、それ単独では顧客サポートの会話を人間のエージェントにエスカレーションする正当な理由に明示的に該当しないものはどれか。",
+    "choicesJa": [
+      "顧客が明示的に人間と話したいと要求している",
+      "複数の合理的な解決の試みの後も進展がない",
+      "この状況に関する文書化されたポリシーに本当の抜け穴が存在する",
+      "進展の有無にかかわらず、会話が長引いている"
+    ],
     "answer": 3,
     "explanation": "正解は会話の長さそのものであり、これは進捗の有無に関係なくエスカレーションの根拠にはならないとされています。明示的な人間対応の要求、合理的な試行後も進展がない場合、ポリシーの欠落はいずれも正当なエスカレーショントリガーです。したがってこれら3つは誤答となります。",
     "tags": [
@@ -372,6 +505,13 @@
       "Ask the customer for disambiguating information such as their email or the last 4 digits of their phone number",
       "Merge both accounts to avoid asking the customer extra questions",
       "Escalate the case immediately without attempting to resolve the ambiguity"
+    ],
+    "questionJa": "サポートセッション中、エージェントが顧客レコードを検索したところ、同じ姓名と類似の注文履歴を持つが異なるメールアドレスの2つのアカウントが見つかった。エージェントはアカウントAが正しいものだとかなり確信している。エージェントは何をすべきか。",
+    "choicesJa": [
+      "統計的に最も可能性が高い一致であるため、アカウントAで進める",
+      "顧客にメールアドレスや電話番号の下4桁など、判別可能な情報を尋ねる",
+      "顧客に追加の質問をせずに済むよう、両方のアカウントを統合する",
+      "曖昧さを解消しようとせずに、直ちにケースをエスカレーションする"
     ],
     "answer": 1,
     "explanation": "正解は、曖昧な顧客照合が発生した場合はメールアドレスや電話番号下4桁などの判別情報を顧客に確認することです。最も可能性が高いという理由だけでアカウントを選ぶのは、誤った顧客データにアクセスするリスクがあるため禁止されている典型的なアンチパターンです。無断でアカウントを統合するのは危険な操作です。曖昧さは解消可能な問題であり、必ずしも即時エスカレーションを要するわけではありません。",
@@ -393,6 +533,13 @@
       "Ask the customer to provide a unique identifier (e.g., email or phone last-4) before proceeding",
       "Escalate to a human immediately since multiple profiles exist"
     ],
+    "questionJa": "あるサポートエージェントが、リクエストにある名前と一致する3つの顧客プロファイルを見つけた。そのうち1つは顧客が言及した金額と一致する注文があるが、いずれのプロファイルも顧客が提示した一意の識別子によって確認されていない。エージェントの内部類似度スコアは最良の一致で0.92である。正しいアクションは何か。",
+    "choicesJa": [
+      "0.92のスコアは高い内部確信度の基準をクリアしているため、そのスコアの一致で進める",
+      "注文金額の一致は強い裏付け証拠であるため、その注文金額が一致するプロファイルを選ぶ",
+      "先に進める前に、顧客に一意の識別子（例: メールアドレスや電話番号の下4桁）の提示を求める",
+      "複数のプロファイルが存在する以上、直ちに人間にエスカレーションする"
+    ],
     "answer": 2,
     "explanation": "正解は、一意の識別子で確認できていない以上、たとえ内部スコアや注文金額の一致があっても顧客に判別情報を求めるべきという点です。内部の類似度スコアが高くても「最も可能性が高い」候補を選ぶことは禁止されているアンチパターンです。注文金額の一致は補強材料程度で確証にはなりません。曖昧さは追加情報の要求で解消できるため、即座にエスカレーションする必要はありません。",
     "tags": [
@@ -412,6 +559,13 @@
       "A raw dump of the entire conversation transcript so the human can read through it",
       "A structured summary: customer ID, issue type, actions already taken, relevant amounts, and a recommended next action",
       "Only the last message the customer sent, since that reflects their current concern"
+    ],
+    "questionJa": "あるエージェントが請求に関する紛争を人間のエージェントに引き継ぐことを決めた。このチームの人間エージェントはキューで作業しており、ケースがキューに入った時点では会話の全トランスクリプトにアクセスできない。使えるものにするために、構造化された引き継ぎペイロードには何を含めるべきか。",
+    "choicesJa": [
+      "顧客IDと、必要であれば会話を再実行するためのリンクのみ",
+      "人間が読み通せるよう、会話トランスクリプト全体の生データ",
+      "顧客ID・問題の種類・既に取られた対応・関連する金額・推奨される次のアクションを含む構造化された要約",
+      "顧客の現在の懸念を反映しているため、顧客が送った最後のメッセージのみ"
     ],
     "answer": 2,
     "explanation": "正解は、顧客ID・問題の種類・これまでの対応内容・関連する金額・推奨アクションを含む構造化サマリーを渡すことです。人間のエージェントは通常トランスクリプトを閲覧できないため、リンクだけでは不十分です。生のトランスクリプト全文は人間側では見られない前提であり要件を満たしません。最後のメッセージだけでは経緯や実施済みの対応が分からず不十分です。",
@@ -433,6 +587,13 @@
       "Refund amounts and any approval limits relevant to the case",
       "The customer's full previous purchase history going back multiple years"
     ],
+    "questionJa": "顧客サポートエージェントのために適切に設計されたエスカレーション引き継ぎでは、受け取った人間のエージェントがケースの金銭的なリスクを理解できるよう、通常どの情報が含まれるか。",
+    "choicesJa": [
+      "顧客のIPアドレスとブラウザのユーザーエージェント文字列",
+      "失敗した試行も含め、エージェントが内部で行ったすべてのツール呼び出しの一覧",
+      "返金額と、このケースに関連する承認限度額",
+      "数年分に及ぶ顧客の全購入履歴"
+    ],
     "answer": 2,
     "explanation": "正解は、返金額や承認限度額といった金銭的な露出を明示する情報です。これにより人間のエージェントが迅速に判断できます。IPアドレスやユーザーエージェントは通常このハンドオフに不要です。内部の全ツール呼び出しログ（失敗も含む）は詳細すぎて人間向けの要約には適しません。数年分の購入履歴全体は過剰で、要点を絞ったサマリーの目的に反します。",
     "tags": [
@@ -452,6 +613,13 @@
       "Either design is equally acceptable as long as the threshold is documented somewhere",
       "Design A, but only if the model is explicitly instructed to 'be honest about uncertainty'",
       "Design B, because deterministic threshold logic in code is reproducible and auditable, unlike LLM self-assessment"
+    ],
+    "questionJa": "ある構造化データ抽出パイプラインが、確信度の低い抽出フィールドをいつ人間によるレビューにかけるべきか決める必要がある。チームは2つの設計案について議論している: (A) LLMに自由記述テキストで確信があるかどうかを述べさせる、(B) コードで設定した固定の閾値と数値の確信度スコアを比較する。正しいアプローチとその理由はどれか。",
+    "choicesJa": [
+      "設計Aである。モデルは自身の推論プロセスに直接的な洞察を持っているため",
+      "閾値がどこかに文書化されている限り、どちらの設計も同様に許容できる",
+      "設計Aである。ただしモデルが明示的に「不確実性について正直であるように」と指示されている場合に限る",
+      "設計Bである。コードによる決定論的な閾値ロジックは、LLMの自己評価とは異なり再現性と監査可能性があるため"
     ],
     "answer": 3,
     "explanation": "正解は、コード側で固定された閾値と数値スコアを比較する決定論的なロジック（Design B）です。これは再現性と監査可能性を持ちます。モデル自身の内省に基づく自己申告（Design A）は較正されておらず信頼性に欠けるため誤りです。閾値を文書化するだけでは自己申告の信頼性の低さという根本課題を解決しません。「正直に」と指示しても自己申告確信度の不確実性は解消されません。",
@@ -473,6 +641,13 @@
       "`confidence`, `data_as_of`, `source_published`, `retrieved_on`, since temporal fields resolve all failure ambiguity",
       "Just `stop_reason` and `stop_details.category`, since those already fully describe any tool failure"
     ],
+    "questionJa": "あるマルチエージェント型リサーチシステムの検索サブエージェントが、コーディネーターに対して `{\"failure_type\": \"timeout\"}` のみで詳細情報なしにツール失敗を報告した。コーディネーターは、どのサービスが失敗したのか、どのクエリが試みられたのか、リトライする価値があるのか、既に部分的なデータが収集されていたのかを判断できない。これを実行可能にするために、適切に構造化されたエラーコンテキストにはどのフィールドの組が含まれているべきだったか。",
+    "choicesJa": [
+      "`failure_type`、`service`、`attempted_query`、`timeout_duration_ms`、`partial_results`、`alternative_approaches`、`is_retryable`、`retry_after_ms`",
+      "失敗がどれほど深刻であったかを伝える、より長く感情的に強調された自然言語による説明のみ",
+      "`confidence`、`data_as_of`、`source_published`、`retrieved_on`。時系列フィールドが失敗に関するあらゆる曖昧さを解消するため",
+      "`stop_reason` と `stop_details.category` のみ。これらだけであらゆるツール失敗を完全に説明できるため"
+    ],
     "answer": 0,
     "explanation": "構造化されたエラーコンテキストには、`failure_type`・`service`・`attempted_query`・`timeout_duration_ms`・`partial_results`・`alternative_approaches`・`is_retryable`・`retry_after_ms`といったフィールドを含めることで、コーディネーターがどのサービスで何を試みて、再試行すべきか、部分的なデータが既にあるかを判断できるようになる。感情的に強調するだけの自然言語説明は機械的に扱えず判断材料にならない。`data_as_of`等の時系列フィールドは情報の鮮度管理のためのものでツール失敗の文脈情報とは目的が異なる。`stop_reason`/`stop_details`はエージェントループの停止理由を示すAPIレベルの概念であり、個々のツール呼び出し失敗の詳細を記述するものではない。",
     "tags": [
@@ -492,6 +667,13 @@
       "The extraction model needs a higher temperature setting to improve calibration",
       "The confidence scores are poorly calibrated, since a 0.9 score should correspond to roughly 90% accuracy on labeled data",
       "This is expected behavior since confidence scores are inherently approximate and cannot be validated"
+    ],
+    "questionJa": "ある構造化データ抽出システムが、各フィールドを {\"value\": ..., \"confidence\": 0.9} という形式で出力している。QA監査の際、チームは検証セット全体で確信度0.9のフィールドをすべてサンプリングしたところ、実際に正しかったのはそのうち55%だけだった。これは何を示しているか。",
+    "choicesJa": [
+      "確信度スコアは0.9が文字通りの確率ではなく序列的なランキングを表すだけでよいので、問題ない",
+      "抽出モデルは較正を改善するためにより高いtemperature設定が必要である",
+      "確信度スコアの較正が不十分である。0.9というスコアは、ラベル付きデータに対しておおよそ90%の正解率に対応しているべきだからである",
+      "確信度スコアは本質的に近似値であり検証できないため、これは想定内の挙動である"
     ],
     "answer": 2,
     "explanation": "正解は、確信度スコアが較正されていないという指摘です。0.9というスコアはラベル付きデータで約90%の正解率に対応するべきであり、55%しかない場合はスコアが「意味をなさない」状態です。単なる順位付けとして扱うのは較正要件の趣旨に反します。temperature設定は較正の問題を直接解決するものではありません。較正が検証不可能だとする主張も誤りで、まさにこの検証によって較正不良が発見されています。",
@@ -513,6 +695,13 @@
       "Increase `--max-turns` so the session never needs to compact in the first place",
       "Repeat the finding verbatim in every subsequent message so it stays near the 'end' of context at all times"
     ],
+    "questionJa": "大規模なコードベース移行を行う数時間にわたるClaude Codeセッションにおいて、メインコンテキストが数十のファイル探索結果で埋まりつつある。重要な発見（例: 「認証ロジックはsrc/auth/ではなくsrc/core/auth.tsにある」）が、いずれ発生する`/compact`を生き延び、会話履歴が失われた後でも再読み込みできるようにするには、どのような戦略が推奨されるか。",
+    "choicesJa": [
+      "MEMORY.mdは何もしなくても常にすべての発見を自動的に捉えるので、auto-memoryのみに頼る",
+      "重要な発見をディスク上のスクラッチパッド用Markdownファイルとして永続化する。会話履歴とは独立してcompactionを生き延び、後で明示的に再読み込みできるため",
+      "セッションがそもそもcompactを必要としないよう、`--max-turns`を増やす",
+      "常にコンテキストの「末尾」付近に留まるよう、以降のすべてのメッセージでその発見をそのまま繰り返す"
+    ],
     "answer": 1,
     "explanation": "重要な発見をスクラッチパッド用のMarkdownファイルとしてディスクに永続化しておく戦略が推奨される。これにより、`/compact`によって会話履歴が失われた後でも、ファイルを明示的に再読み込みすることで発見内容を復元できる。auto-memoryは便利だが全ての発見を自動的かつ確実に捕捉する保証はなく、それだけに頼るのは危険である。`--max-turns`を増やしてもコンテキストウィンドウの限界そのものは変わらず、圧縮を避けられるわけではない。発見内容を毎回のメッセージで繰り返すのは非現実的で非効率な運用である。",
     "tags": [
@@ -532,6 +721,13 @@
       "There is no flaw; a well-calibrated 0.93 score is mathematically equivalent to human-confirmed identity and can always be trusted for any action",
       "The flaw is that similarity scores can only be calibrated for numeric fields, never for identity-matching use cases",
       "The flaw is that 0.90 is too low a cutoff; calibration would only justify skipping confirmation above 0.99"
+    ],
+    "questionJa": "あるサポートエージェントが、内部類似度スコア0.93の候補顧客一致を見つけた。過去の較正監査から、このスコアが信頼できること（0.93は実際にラベル付きデータでおよそ93%の正確さに対応すること）がチームには分かっている。あるエンジニアは、スコアが十分に較正されているのだから、エージェントは0.90を超えたら顧客に何も尋ねずに自動的に進めるべきだと主張している。この推論の欠陥は何か。",
+    "choicesJa": [
+      "十分に較正された類似度スコアであっても、そのスコアでの一致のうち約7%は誤りであることを意味する。本人確認に関わるアクションについては、較正の質にかかわらず、確率的な確信度のみに基づいて行動するのではなく、顧客に判別用の識別子を求めるのが正しい実務である",
+      "欠陥はない。十分に較正された0.93のスコアは、人間による確認と数学的に同等であり、あらゆるアクションで常に信頼できる",
+      "欠陥は、類似度スコアが数値フィールドに対してのみ較正可能であり、本人確認のユースケースには決して較正できないという点にある",
+      "欠陥は0.90というカットオフが低すぎることにある。較正によって確認を省略できるのは0.99を超える場合のみである"
     ],
     "answer": 0,
     "explanation": "確信度スコアが較正されていること自体は、そのスコアが約93%の正答率に対応するという統計的性質を保証するに過ぎず、残り約7%のケースでは誤りである可能性を意味する。本人確認のような取り返しのつかないアクションに関わる場面では、較正の良し悪しにかかわらず、顧客にメールアドレスや電話番号下4桁などの判別情報を確認するのが正しい実務である。較正されたスコアが人間による確認と数学的に同等という主張は誤り。類似度スコアが数値フィールドにしか較正できないという主張も誤り。カットオフの数値そのものが問題の本質ではなく、確率的な確信度だけで本人確認を省略すべきでないという点が論点である。",
@@ -553,6 +749,13 @@
       "This means the customer is being deliberately difficult; the agent should end the conversation immediately",
       "This means the model's temperature setting is too high and must be lowered mid-conversation"
     ],
+    "questionJa": "ある顧客サポートエージェントが、2時間以上にわたる異例に長い複数の問題を含む会話を処理している。トランスクリプトを確認したスーパーバイザーは、エージェントが以前調べた特定のポリシー文書を引用する代わりに「通常、返金ポリシーはXのように機能する」という説明を始め、既に伝えられた注文番号を再度尋ね始めていることに気づいた。これは最も何の兆候である可能性が高く、スーパーバイザーは何をすべきか。",
+    "choicesJa": [
+      "これは会話終盤の通常の挙動であり、懸念する必要はない。何もする必要はない",
+      "これは長時間セッションにおけるコンテキスト劣化（仮定が検証に取って代わる、忘れられた発見）の兆候であり、さらなる劣化を待つのではなく、プロアクティブな要約またはcase-facts blockを備えた新規セッションを導入すべきである",
+      "これは顧客が意図的に厄介な態度を取っていることを意味し、エージェントは直ちに会話を終了すべきである",
+      "これはモデルのtemperature設定が高すぎることを意味し、会話の途中で下げなければならない"
+    ],
     "answer": 1,
     "explanation": "根拠となる具体的な検索結果ではなく『通常はこうなっている』という一般論に頼り出したり、既に伝えられた注文番号を再度尋ねたりするのは、長時間セッションにおけるコンテキスト劣化の兆候（検証済みの発見が忘れられ、検証の代わりに一般的パターンによる推測が使われる）である。これを放置せず、プロアクティブな要約の導入やケース事実ブロックを備えた新規セッションへの切り替えを検討すべきである。これを問題なしと片付けるのは劣化の兆候を見逃すことになる。顧客の態度の問題とすり替えるのは的外れ。temperature設定の調整は会話履歴の劣化とは無関係である。",
     "tags": [
@@ -573,6 +776,13 @@
       "Ignore the request for a human since the customer's tone is calm, indicating low complexity",
       "Ask the customer to rate their confidence in the bot's abilities before deciding whether to escalate"
     ],
+    "questionJa": "あるサポートエージェントが、冷静な顧客から返品ポリシーに関する日常的な質問を受けている最中に、顧客が「あと、本物の人につないでもらえますか。ボットとやり取りしたくないので」と付け加えた。エージェントは既に良い進展を遂げており、技術的には返品ポリシーの質問に自分で答えることができる。正しい次のアクションは何か。",
+    "choicesJa": [
+      "エージェントは既に進展しており、リクエストも単純なので、返品ポリシーの質問の解決を続ける",
+      "根底にある質問の単純さにかかわらず、顧客が明示的に人間を要求したため、人間にエスカレーションする",
+      "顧客の口調が冷静で複雑さが低いことを示しているため、人間を求めるリクエストを無視する",
+      "エスカレーションすべきか決める前に、顧客にボットの能力についての確信度を評価してもらう"
+    ],
     "answer": 1,
     "explanation": "正解は、顧客が明示的に人間対応を要求した以上、問題の単純さに関係なくエスカレーションすべきという点です。進捗があることや質問が単純であることは、明示的な人間対応要求という優先されるトリガーを覆す理由にはなりません。穏やかな口調だからといって明示的な要求を無視するのは誤りです。顧客に確信度を尋ねるという行為自体がこの状況の要件とは無関係です。",
     "tags": [
@@ -588,6 +798,13 @@
     "difficulty": 1,
     "question": "In a multi-agent research system, a search subagent's tool call times out. Which structured error context field should carry the number of milliseconds the tool waited before giving up?",
     "choices": [
+      "attempted_query",
+      "failure_type",
+      "timeout_duration_ms",
+      "retry_after_ms"
+    ],
+    "questionJa": "あるマルチエージェント型リサーチシステムにおいて、検索サブエージェントのツール呼び出しがタイムアウトした。ツールが諦めるまでに待機したミリ秒数を保持すべき構造化エラーコンテキストのフィールドはどれか。",
+    "choicesJa": [
       "attempted_query",
       "failure_type",
       "timeout_duration_ms",
@@ -612,6 +829,13 @@
       "attempted_query",
       "is_retryable"
     ],
+    "questionJa": "ある開発者生産性ツールのデータ取得サブエージェントが、下流のサービスに対する処理で失敗した。コーディネーターは、自動的な復旧を試みるべきか、それとも人間を関与させる必要があるかを知りたい。この問いに答えるために特別に設計されているフィールドはどれか。",
+    "choicesJa": [
+      "service",
+      "partial_results",
+      "attempted_query",
+      "is_retryable"
+    ],
     "answer": 3,
     "explanation": "is_retryable は、この失敗が自動リトライで解決可能かどうかをコーディネーターに伝えるための専用フラグです。service は失敗したサービス名、partial_results は途中まで得られた結果、attempted_query は試行したクエリ内容であり、再試行可否の判断材料にはなりません。",
     "tags": [
@@ -630,6 +854,13 @@
       "Abort the entire multi-step workflow to avoid wasting further calls",
       "Perform local retries with exponential backoff before considering escalation",
       "Silently return an empty result so the pipeline can continue uninterrupted"
+    ],
+    "questionJa": "ある構造化データ抽出パイプラインにおいて、文書取得サブエージェントが内部APIから一時的な503エラーを受け取った。推奨されるサブエージェントのエラー復旧パターンに従うと、コーディネーターに何かをエスカレーションする前に、サブエージェントはまず何をすべきか。",
+    "choicesJa": [
+      "それ以上のアクションを取らず、生の503を直ちにコーディネーターへ伝播する",
+      "それ以上の呼び出しを無駄にしないよう、マルチステップのワークフロー全体を中断する",
+      "エスカレーションを検討する前に、指数バックオフを伴うローカルなリトライを実行する",
+      "パイプラインが中断されずに続行できるよう、黙って空の結果を返す"
     ],
     "answer": 2,
     "explanation": "一時的な障害(503など)に対しては、まずサブエージェントがローカルでバックオフ付きリトライを行うのが推奨パターンです。即座にコーディネーターへ伝播したり、ワークフロー全体を中断したり、空の結果を黙って返すのは、リトライの機会を捨てるか問題を隠蔽するアンチパターンです。",
@@ -650,6 +881,13 @@
       "A generic \"Operation failed\" message to keep the payload small",
       "Details of the attempts made, any partial results obtained, and whether it is retryable"
     ],
+    "questionJa": "あるCI/CD自動化サブエージェントが、不安定なデプロイステータスAPIに対してバックオフを伴い3回リトライしたが、依然として失敗した。推奨される復旧パターンに従うと、サブエージェントはコーディネーターに何を送信すべきか。",
+    "choicesJa": [
+      "リトライを使い果たしたのだから、そのステップはレポートから外して何も送らない",
+      "コーディネーターが独自に判断できるよう、そのステップが失敗したことを示すブール値のみ",
+      "ペイロードを小さく保つため、汎用的な「操作が失敗しました」というメッセージのみ",
+      "試行の詳細、得られた部分的な結果、そしてリトライ可能かどうか"
+    ],
     "answer": 3,
     "explanation": "ローカルリトライで解決できない場合、サブエージェントは試行の詳細・部分的な結果・再試行可能性を含めてコーディネーターに伝播すべきです。ステップを黙って落とす、真偽値だけ返す、汎用的な失敗メッセージだけを返す、はいずれも情報不足でコーディネーターが適切な判断をできなくなるアンチパターンです。",
     "tags": [
@@ -668,6 +906,13 @@
       "Each agent re-derives all prior results from scratch on restart to guarantee consistency",
       "Each agent exports its state to a known path, and the coordinator maintains a manifest so the run can resume from the last completed step",
       "Only the coordinator's final output is persisted, since intermediate subagent state is not needed"
+    ],
+    "questionJa": "長時間実行されるマルチエージェント型リサーチパイプラインにおいて、実行途中のプロセスクラッシュが完全な再起動を強制しないよう、クラッシュ復旧を設計している。これを正しく実装している設計はどれか。",
+    "choicesJa": [
+      "コーディネーターは、最速のアクセスのためにすべてのエージェント状態をインメモリの会話履歴にのみ保持する",
+      "各エージェントは、一貫性を保証するために再起動時にすべての以前の結果をゼロから再導出する",
+      "各エージェントが既知のパスに状態をエクスポートし、コーディネーターがマニフェストを維持することで、最後に完了したステップから実行を再開できる",
+      "中間のサブエージェント状態は不要なので、コーディネーターの最終出力のみを永続化する"
     ],
     "answer": 2,
     "explanation": "各エージェントが既知のパスへ状態をエクスポートし、コーディネーターがマニフェストで進捗を管理することで、クラッシュ後も最後に完了したステップから再開できます。メモリ内履歴のみに頼る、毎回ゼロから再計算する、最終出力のみ保存するという案は、いずれもクラッシュ時に途中状態を失い再実行コストが大きくなります。",
@@ -688,6 +933,13 @@
       "The coordinator's system prompt for the next turn",
       "A random temp file whose location is discovered by grepping logs after a crash"
     ],
+    "questionJa": "マルチエージェント型ワークフローにおけるクラッシュ復旧パターンにおいて、各エージェントは通常どこにエクスポート可能な状態を書き込むか。",
+    "choicesJa": [
+      "コーディネーターのマニフェストで追跡される、/tmp/workflow/agent-X-state.jsonのような既知のファイルシステムパス",
+      "エージェント自身のプロセスにスコープされた環境変数",
+      "次のターンのためのコーディネーターのシステムプロンプト",
+      "クラッシュ後にログをgrepすることで発見される、場所が分からないランダムな一時ファイル"
+    ],
     "answer": 0,
     "explanation": "推奨パターンでは、各エージェントが /tmp/workflow/agent-X-state.json のような既知のパスに状態を書き出し、コーディネーターがマニフェストでそれらを追跡します。環境変数やシステムプロンプトへの格納、あるいはクラッシュ後にログを検索して見つけるという方法は、再現性・信頼性に欠けるため推奨されません。",
     "tags": [
@@ -706,6 +958,13 @@
       "50% high-risk, 25% medium-risk, 10% low-risk",
       "20% high-risk, 10% medium-risk, 5% low-risk",
       "5% high-risk, 10% medium-risk, 20% low-risk"
+    ],
+    "questionJa": "ある構造化データ抽出システムが、抽出されたフィールドを最終化する前に人間によるレビューに回している。レコードは高リスク・中リスク・低リスクに分類される。層別ランダムサンプリングのガイダンスに従うと、それぞれの層に適用すべきサンプリング率は何か。",
+    "choicesJa": [
+      "高リスク10%、中リスク20%、低リスク5%",
+      "高リスク50%、中リスク25%、低リスク10%",
+      "高リスク20%、中リスク10%、低リスク5%",
+      "高リスク5%、中リスク10%、低リスク20%"
     ],
     "answer": 2,
     "explanation": "推奨される層別サンプリングでは、高リスク20%、中リスク10%、低リスク5%とリスクが高いほどレビュー比率を高くします。他の選択肢は比率の割り当てが逆転していたり、値そのものが指定と異なっているため誤りです。",
@@ -726,6 +985,13 @@
       "It's insufficient only because overall accuracy doesn't include confidence scores, which should be added instead",
       "It's insufficient because aggregate accuracy should be replaced entirely by field-level confidence scores rather than any breakdown by document type"
     ],
+    "questionJa": "ある構造化データ抽出システムが、10万件の混在した文書（印刷フォーム、手書きメモ、外国語のスキャン）を処理している。レビューのサンプリング深度とQAの優先順位を決めるために、チームは現在全体の精度のみを追跡している。なぜこれでは不十分であり、何が解決策か。",
+    "choicesJa": [
+      "97%という全体精度はすでにあらゆる合理的な本番環境の閾値を超えているので問題ない",
+      "全体の高い数値が、手書きメモのような特定の文書タイプでのはるかに低い精度を覆い隠す可能性があるため不十分である。文書タイプとフィールドごとに精度を分解すべきである",
+      "全体精度に確信度スコアが含まれていないという理由でのみ不十分であり、代わりにそれを追加すべきである",
+      "全体精度は、文書タイプ別の内訳ではなく、フィールドレベルの確信度スコアに完全に置き換えられるべきという理由で不十分である"
+    ],
     "answer": 1,
     "explanation": "97%のような全体精度は、手書き文書で45%しか正解していないといった弱点を隠してしまうため、文書タイプとフィールド単位での内訳を確認する必要があります。全体精度が高いから問題ないという判断や、信頼度スコアだけを追加する、内訳ではなくフィールド信頼度だけに置き換えるという案は、集約指標が個別カテゴリの深刻な弱点を隠す問題を解決しません。",
     "tags": [
@@ -744,6 +1010,13 @@
       "Treat handwritten notes as a distinct high-risk stratum given its measured 45% accuracy, and sample it at a materially higher rate (e.g., the ~20% high-risk tier) than the well-performing typed-form stratum",
       "Stop measuring accuracy by document type once the sampling rate is set, since the breakdown's only purpose was to pick an initial rate",
       "Apply a 100% review rate to all document types uniformly going forward, since any known weak subgroup invalidates sampling entirely"
+    ],
+    "questionJa": "文書タイプ別に精度を分解した結果、あるチームは手書きメモのスコアがわずか45%である一方、タイプされたフォームは98%であることを発見した。そこで、すべての文書タイプに一律の率を使うのではなく、「手書きメモ」というサブグループ特有の層別人間レビューのサンプリング率を設定したいと考えている。層別サンプリングとアグリゲート精度マスキングの両方のガイダンスと整合する形で、このサブグループのレビュー率を設定する最も擁護可能な方法はどれか。",
+    "choicesJa": [
+      "層別サンプリングは顧客対応上のリスクカテゴリによってのみ変わり、測定された精度によっては変わらないため、タイプされたフォームに使われているのと同じ一律5%の低リスクサンプリング率を適用する",
+      "実測精度45%を踏まえて手書きメモを別個の高リスク層として扱い、成績の良いタイプされたフォームの層よりも大幅に高い率（例えば高リスク層の目安である約20%）でサンプリングする",
+      "内訳測定の唯一の目的は初期の率を選ぶことだったので、サンプリング率が決まった時点で文書タイプ別の精度測定をやめる",
+      "既知の弱いサブグループがあるとサンプリングそのものが無効になるので、今後すべての文書タイプに一律100%のレビュー率を適用する"
     ],
     "answer": 1,
     "explanation": "文書タイプ別の精度内訳（アグリゲート精度マスキングの是正策）で手書きメモが45%という低い精度が判明した以上、それを高リスク層として扱い、層別サンプリングの原則に従ってより高い割合（例えば高リスク層の目安である約20%）でレビューするのが筋が通っている。顧客対応上のリスク区分だけで機械的に判断し実測精度を無視するのは、まさに集約精度マスキングを再導入することになる。サンプリング率を決めた後に内訳の追跡をやめるのは、精度が変動した場合に気づけなくなる。全ての文書タイプを一律100%レビューするのは層別サンプリングの目的（リスクに応じた資源配分）を放棄しており非効率である。",
@@ -765,6 +1038,13 @@
       "claim, timeout_duration_ms, partial_results, failure_type",
       "claim, alternative_approaches, service, attempted_query"
     ],
+    "questionJa": "あるリサーチ統合システムのprovenance（出所）追跡設計において、主張をその裏付けとなる証拠に正しく対応付けるフィールドの組はどれか。",
+    "choicesJa": [
+      "claim、confidence、retry_after_ms、is_retryable",
+      "claim、evidence、source_url、document_name、publication_date、source_type",
+      "claim、timeout_duration_ms、partial_results、failure_type",
+      "claim、alternative_approaches、service、attempted_query"
+    ],
     "answer": 1,
     "explanation": "provenance(出所)追跡では、claim・evidence・source_url・document_name・publication_date・source_type のセットが、主張とその根拠を対応付ける正しい構成です。他の選択肢はエラーコンテキストやリトライ関連のフィールドを混在させており、provenance の目的とは無関係です。",
     "tags": [
@@ -783,6 +1063,13 @@
       "Silently pick the figure from the source with the more recent publication_date",
       "Silently pick the figure from the source judged more authoritative and omit the other",
       "Average the two figures to produce a single reconciled number"
+    ],
+    "questionJa": "マルチエージェント型のリサーチレポートを統合している最中、2つの信頼できる情報源が同じ統計値について矛盾する数値を示している。最終的な統合においてこれを扱う正しい方法は何か。",
+    "choicesJa": [
+      "矛盾に注釈を付け、両方の数値をそれぞれの出典とともに示し、読者や下流の処理に判断を委ねる",
+      "publication_dateがより新しい方の出典の数値を黙って選ぶ",
+      "より権威があると判断した方の出典の数値を黙って選び、もう一方は省く",
+      "2つの数値を平均して、1つの調整済みの数値を出す"
     ],
     "answer": 0,
     "explanation": "情報源が矛盾する場合は、両方の値をそれぞれの出典とともに明示し、判断は読者や下流の処理に委ねるのが正しい方法です。公開日が新しい方を黙って選ぶ、より権威があると判断した方を黙って選ぶ、平均を取るといった対応は、いずれか一方(または両方)の情報を隠したり歪めたりする「無断で片方を選ぶ」アンチパターンです。",
@@ -803,6 +1090,13 @@
       "Discard the older figure automatically since source_published age alone determines which is authoritative",
       "Merge both figures into a single averaged estimate labeled with today's retrieved_on date"
     ],
+    "questionJa": "あるマルチエージェント型リサーチシステムが、情報源A（昨年発表）から市場規模の数値を、情報源B（先週発表、今日取得）から矛盾する数値を取得した。コーディネーターは読者を誤解させることなくこれを統合したい。正しいフィールドと扱い方の組み合わせはどれか。",
+    "choicesJa": [
+      "各数値に data_as_of、source_published、retrieved_on を付与し、片方を黙って選ぶのではなく、出典ごとの帰属を明示して両方の数値を提示する",
+      "最も新しく信頼できるタイムスタンプであるため、両方の数値に retrieved_on のみを付与する",
+      "source_published の新しさだけでどちらが権威あるかが決まるため、古い方の数値を自動的に破棄する",
+      "今日の retrieved_on の日付でラベル付けした、1つの平均化された推定値に両方の数値を統合する"
+    ],
     "answer": 0,
     "explanation": "各値に data_as_of・source_published・retrieved_on を付与して時期の混同を防ぎつつ、矛盾する数値は片方を無断で選ばず両方を出典付きで提示するのが正しい対応です。retrieved_on のみを付ける、公開日の新しさだけで自動的に古い方を破棄する、平均化して一つの数値にまとめる、はいずれも時系列情報の欠落や矛盾の隠蔽につながります。",
     "tags": [
@@ -821,6 +1115,13 @@
       "isError, errorCategory, isRetryable",
       "claim, evidence, document_name",
       "data_as_of, source_published, retrieved_on"
+    ],
+    "questionJa": "リサーチ統合が異なる時点で取得したデータを組み合わせる際の「期間の混同」を防ぐために特別に設計されているフィールドの組はどれか。",
+    "choicesJa": [
+      "failure_type、service、attempted_query",
+      "isError、errorCategory、isRetryable",
+      "claim、evidence、document_name",
+      "data_as_of、source_published、retrieved_on"
     ],
     "answer": 3,
     "explanation": "data_as_of・source_published・retrieved_on の三つの時間軸フィールドは、データの対象時点・公開時点・取得時点を区別し、期間の取り違えを防ぐために設計されています。他の選択肢はエラーコンテキストやツールのエラー応答、provenanceのclaim-source構造など、時系列管理とは別の目的のフィールドです。",
@@ -841,6 +1142,13 @@
       "Omit the single-source data point entirely since it cannot be corroborated",
       "Merge the contested claim into a single averaged statement to avoid confusing the reader with a dispute"
     ],
+    "questionJa": "あるリサーチのコーディネーターが、確立された事実、2つの情報源が食い違う議論のある主張、単一情報源のデータポイントが混在する統合レポートを最終化しようとしている。統合品質を保つために、コーディネーターはこれをどのように表現すべきか。",
+    "choicesJa": [
+      "確度のレベル（確立済み／議論あり／単一情報源）を明示的に区別し、対立点は並列表示するなど、それぞれの内容の種類に応じて表現する",
+      "レポートが滑らかで一貫して読めるよう、すべての主張を同じ自信に満ちた言い回しで提示する",
+      "裏付けが取れないため、単一情報源のデータポイントは完全に省く",
+      "読者が対立で混乱しないよう、議論のある主張を1つの平均化された記述にまとめる"
+    ],
     "answer": 0,
     "explanation": "合成品質を保つには、確度レベル(確立済み/議論あり/単一情報源)を明示し、内容の性質に応じた表現(対立点は並列表示など)でレンダリングする必要があります。すべてを同じ自信満々の表現で統一する、単一情報源のデータを省く、対立する主張を平均化して一つにまとめる、はいずれも重要な不確実性やニュアンスを読者から隠してしまいます。",
     "tags": [
@@ -859,6 +1167,13 @@
       "Render revenue as a table, events in chronological prose, and specs as lists, matching structure to content type",
       "Convert all three into a single large table since tables are the most information-dense format",
       "Render everything as bullet lists since lists are the safest default for structured synthesis output"
+    ],
+    "questionJa": "あるリサーチ統合サブエージェントが、四半期の収益データ、企業の出来事の時系列、2つの製品間の技術仕様比較という3種類のコンテンツを1つのレポートにまとめて提示する必要がある。コンテンツタイプ別レンダリングのガイダンスに従うと、正しいアプローチはどれか。",
+    "choicesJa": [
+      "レポート全体で一貫した文体を保つため、3つのセクションすべてを同じ自由形式の文章として表現する",
+      "収益は表として、出来事は時系列の文章として、仕様は箇条書きとして、コンテンツの種類に構造を合わせてレンダリングする",
+      "表が最も情報密度の高い形式であるため、3つすべてを1つの大きな表に変換する",
+      "箇条書きが構造化された統合出力に対して最も安全なデフォルトであるため、すべてを箇条書きとしてレンダリングする"
     ],
     "answer": 1,
     "explanation": "合成品質のガイドラインでは、財務データは表、出来事は時系列の文章、仕様は箇条書きというように、内容の種類に応じた表現形式を使うべきとされています。すべてを同じ文章体にする、すべてを一つの表にまとめる、すべてを箇条書きにするという画一的な対応は、それぞれの内容の性質に合わず可読性や正確な伝達を損ないます。",

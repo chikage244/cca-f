@@ -10,6 +10,13 @@
       "Whether the response is longer than the previous turn's response",
       "Whether more than three tool calls have already been made in the conversation"
     ],
+    "questionJa": "エージェントループのパターン(ツール付きでプロンプトを送信し、stop_reasonを確認し、ツールを実行し、tool_resultを返して繰り返す)を用いてカスタマーサポートエージェントを構築しています。ループを次のターンへ継続するかどうかを何によって判断すべきですか。",
+    "choicesJa": [
+      "モデルのテキスト出力に「確認します」や「もう少し情報が必要です」といった文言が含まれているかどうか",
+      "レスポンスと共に返されるstop_reasonフィールドの値",
+      "レスポンスが前のターンのレスポンスより長いかどうか",
+      "会話内で既に3回を超えるツール呼び出しが行われているかどうか"
+    ],
     "answer": 1,
     "explanation": "エージェントループはstop_reasonフィールドの値によって次の動作を決定するのが正しい設計である。stop_reasonがtool_useならツールを実行して継続し、end_turnなら終了する。テキスト内容の文言解析(選択肢0)は自然言語パースのアンチパターン。応答の長さ(選択肢2)は無関係な基準。固定回数での打ち切り(選択肢3)は恣意的な反復上限のアンチパターンであり、主要な停止判断には使えない。",
     "tags": [
@@ -28,6 +35,13 @@
       "Terminate the loop since tool_use indicates the model wants to stop",
       "Discard the response and resend the original prompt unchanged",
       "Execute the requested tool(s) and return tool_result blocks in the next message"
+    ],
+    "questionJa": "マルチエージェントのリサーチシステムで、コーディネーターがClaudeにリクエストを送信し、stop_reasonが'tool_use'のレスポンスを受け取りました。次に取るべき正しいアクションは何ですか。",
+    "choicesJa": [
+      "レスポンステキストを最終回答としてユーザーに提示する",
+      "tool_useはモデルが停止したいことを示すため、ループを終了する",
+      "レスポンスを破棄し、元のプロンプトをそのまま再送する",
+      "要求されたツールを実行し、次のメッセージでtool_resultブロックを返す"
     ],
     "answer": 3,
     "explanation": "stop_reasonがtool_useの場合は、モデルがツール実行を要求していることを意味するため、該当ツールを実行してtool_resultをtool_use_idと共に返し、ループを継続するのが正しい。最終回答として提示する(選択肢0)のはend_turnの場合の挙動。ループを終了する(選択肢1)は誤り、tool_useは継続シグナルである。プロンプトを再送する(選択肢2)は無意味な操作。",
@@ -48,6 +62,13 @@
       "Raise an error, since pause_turn indicates the request exceeded the context window",
       "Apply exponential backoff and retry the exact same request from scratch"
     ],
+    "questionJa": "開発生産性向上ツールが、長時間実行されるリサーチタスクでweb_searchツールを有効にしてClaudeを呼び出しています。途中でstop_reasonが'pause_turn'のレスポンスが返ってきました。呼び出し側のコードはこれをどう処理すべきですか。",
+    "choicesJa": [
+      "サーバーサイドのツールループが継続できるよう、レスポンスを変更せずにそのままAPIへ送り返す",
+      "'end_turn'と同一視し、現在のテキストをユーザーに表示する",
+      "pause_turnはリクエストがコンテキストウィンドウを超過したことを示すため、エラーを発生させる",
+      "指数バックオフを適用し、まったく同じリクエストを最初からやり直す"
+    ],
     "answer": 0,
     "explanation": "pause_turnはweb_searchのようなサーバーサイドツールの反復処理が一時停止した状態を示し、そのままレスポンスをAPIに送り返すことでループが継続される。end_turnと同一視して表示する(選択肢1)のは誤りで、まだ完了していない。コンテキストウィンドウ超過(選択肢2)はmodel_context_window_exceededの説明であり別のstop_reason。同一リクエストを最初からやり直す(選択肢3)のは不要かつ非効率。",
     "tags": [
@@ -67,6 +88,13 @@
       "The response was truncated before completion; the pipeline should detect this and issue a continuation or retry with a higher limit",
       "The conversation has exceeded the model's total context window and must be restarted from scratch"
     ],
+    "questionJa": "構造化データ抽出パイプラインが厳格なmax_tokens設定を使用しています。APIはstop_reason 'max_tokens'とともに、途中までしか形成されていないJSONオブジェクトをcontentに返しました。正しい解釈と対応は何ですか。",
+    "choicesJa": [
+      "max_tokensは単なるソフトなアドバイザリ上限にすぎないため、内容はそのまま解析して問題ない",
+      "リクエストが安全性ポリシーに違反したため、拒否としてログに記録すべきである",
+      "レスポンスは完了前に打ち切られたものであり、パイプラインはこれを検知して継続要求を行うか、上限を引き上げて再試行すべきである",
+      "会話がモデルの合計コンテキストウィンドウを超過したため、最初からやり直す必要がある"
+    ],
     "answer": 2,
     "explanation": "max_tokensは出力が上限に達して途中で打ち切られたことを示すため、パイプラインは不完全な出力として扱い、継続要求や上限引き上げでの再試行を行うべきである。ソフトなアドバイザリで完全な内容とみなす(選択肢0)のは誤り、実際に切り詰められている。安全性による拒否(選択肢1)はrefusalの説明であり異なる。コンテキストウィンドウ超過(選択肢3)はmodel_context_window_exceededの説明で、max_tokensとは別の状況。",
     "tags": [
@@ -85,6 +113,13 @@
       "Log the refusal (including category if present), end the loop, and surface the explanation to a human rather than auto-retrying",
       "Ignore stop_details entirely and simply resend the identical request up to the iteration cap",
       "Treat it the same as tool_use and look for a tool_use block to execute"
+    ],
+    "questionJa": "Claude Codeを非対話的に実行するCI/CD自動化スクリプトが、stop_reason 'refusal'とstop_detailsオブジェクトを含むレスポンスを受け取りました。スクリプトはどうすべきですか。",
+    "choicesJa": [
+      "stop_details.explanation文字列を正規表現で解析し、同一プロンプトを再試行すべきかどうかを判断する",
+      "拒否内容(該当する場合はcategoryを含む)を記録し、ループを終了して、自動再試行はせず説明を人間に提示する",
+      "stop_detailsを完全に無視し、反復上限に達するまで同一のリクエストをそのまま再送する",
+      "tool_useと同様に扱い、実行すべきtool_useブロックを探す"
     ],
     "answer": 1,
     "explanation": "refusalは安全性判断によるモデルの拒否であり、ループはそこで終了し、stop_detailsのcategoryやexplanationを記録した上で人間にエスカレーションするのが正しい対応である。explanationは人間可読用でありプログラム的なパース対象ではないため、regexで解析して再試行判断に使う(選択肢0)のは誤り。stop_detailsを無視して同一リクエストを再送する(選択肢2)は安全性の意図を無視した危険な対応。tool_useと同様に扱う(選択肢3)は誤り、refusalにtool_useブロックは含まれない。",
@@ -106,6 +141,13 @@
       "The number of retries remaining before the request is permanently blocked",
       "A general safety classification such as 'cyber', 'bio', or null, alongside a human-readable explanation"
     ],
+    "questionJa": "Claude APIにおいて、stop_reasonが'refusal'のときstop_details内の'category'フィールドは何を示しますか。",
+    "choicesJa": [
+      "Claudeが呼び出しを拒否した特定のツール名",
+      "拒否を引き起こしたHTTPエラーコード",
+      "リクエストが完全にブロックされるまでの残りリトライ回数",
+      "'cyber'、'bio'、またはnullといった大まかな安全分類と、人間向けの説明文"
+    ],
     "answer": 3,
     "explanation": "stop_detailsのcategoryはrefusalの大まかな安全分類('cyber'、'bio'、またはnull)を表し、explanationは人間向けの説明文である。特定のツール名を示す(選択肢0)というのは誤り、refusalはツール呼び出しの問題ではなく安全性判断。HTTPエラーコード(選択肢1)ではない。残りリトライ回数(選択肢2)という概念もstop_detailsには存在しない。",
     "tags": [
@@ -125,6 +167,13 @@
       "The pipeline is missing a required tool definition, which suppresses stop_details",
       "stop_details only appears when using the Message Batches API, never in synchronous calls"
     ],
+    "questionJa": "旧バージョンのモデルでClaude Code CIパイプラインを構築しているチームが、拒否レスポンスにstop_reason: 'refusal'は含まれるものの、stop_detailsオブジェクトが一度も入力されていないことに気づきました。最も可能性が高い説明は何ですか。",
+    "choicesJa": [
+      "stop_detailsはベータヘッダーであり、リクエストごとに機能フラグで明示的に有効化する必要がある",
+      "refusal時のstop_detailsはOpus 4.7以降のモデルでのみ提供され、それより前のモデルではstop_detailsを伴わずにrefusalが返される",
+      "パイプラインに必要なツール定義が欠けているため、stop_detailsが抑制されている",
+      "stop_detailsはMessage Batches APIを使用したときにのみ現れ、同期呼び出しでは現れない"
+    ],
     "answer": 1,
     "explanation": "refusal時のstop_detailsはOpus 4.7以降のモデルでのみ提供される機能であり、それ以前のモデルではstop_reasonがrefusalであってもstop_detailsが伴わない、あるいはnullとなる。ベータヘッダーで有効化する必要がある(選択肢0)という記述は誤り、モデルバージョンに依存する仕様である。ツール定義の欠落が原因(選択肢2)というのは無関係。Message Batches API限定(選択肢3)という主張も誤りで、同期呼び出しでも条件を満たせば提供される。",
     "tags": [
@@ -140,6 +189,13 @@
     "difficulty": 2,
     "question": "A structured extraction agent occasionally sends very long documents that exceed the model's context window mid-response. Which stop_reason specifically signals this situation, as distinct from output truncation due to token limits?",
     "choices": [
+      "model_context_window_exceeded",
+      "max_tokens",
+      "pause_turn",
+      "stop_sequence"
+    ],
+    "questionJa": "構造化抽出エージェントが、応答の途中でモデルのコンテキストウィンドウを超える非常に長いドキュメントを送信することがあります。トークン上限による出力の打ち切りとは明確に区別して、この状況を示すstop_reasonはどれですか。",
+    "choicesJa": [
       "model_context_window_exceeded",
       "max_tokens",
       "pause_turn",
@@ -164,6 +220,13 @@
       "stop_reason 'stop_sequence'; the caller should recognize the custom string was matched and handle accordingly (e.g., stripping it or finalizing output)",
       "stop_reason 'refusal'; the request should be escalated as a safety issue"
     ],
+    "questionJa": "エンジニアがレポート生成エージェントに対してカスタムの停止文字列'END_OF_REPORT'を設定しました。モデルがその一致する文字列を出力した後、APIはstop_reasonに何を返し、呼び出し側はどうすべきですか。",
+    "choicesJa": [
+      "stop_reasonは'end_turn'であり、特別な処理をせず自然な完了として扱う",
+      "stop_reasonは'tool_use'であり、呼び出し側は先に進む前にツールを実行しなければならない",
+      "stop_reasonは'stop_sequence'であり、呼び出し側はカスタム文字列が一致したことを認識し、それに応じて処理する(例えば取り除く、または出力を確定させるなど)必要がある",
+      "stop_reasonは'refusal'であり、安全性の問題としてエスカレーションすべきである"
+    ],
     "answer": 2,
     "explanation": "カスタムの停止文字列に一致した場合、stop_reasonは'stop_sequence'として返され、呼び出し側はどの文字列が一致したかを確認して適切に処理する必要がある。end_turnと同一視する(選択肢0)のは誤り、別の明確なstop_reasonが存在する。tool_use(選択肢1)は無関係。refusal(選択肢3)も安全性判断とは無関係な状況。",
     "tags": [
@@ -182,6 +245,13 @@
       "It conflates text content with the structured stop_reason field, which is the only reliable signal for loop control; this text-parsing approach is a known anti-pattern",
       "It should instead check whether the response contains at least one tool_use block before stopping",
       "It should be replaced with a fixed cap of exactly 5 iterations regardless of stop_reason"
+    ],
+    "questionJa": "ある若手エンジニアが、カスタマーサポートエージェントのループ終了処理を次のように実装しました。「レスポンステキストに疑問符も『もっと情報が必要です』のようなフレーズも含まれていなければ、会話は解決済みとみなしてループを止める」。この設計の問題点は何ですか。",
+    "choicesJa": [
+      "自然言語のパターンは本番のエージェントにおいて信頼できる終了シグナルなので問題ない",
+      "テキスト内容と、ループ制御における唯一の信頼できるシグナルである構造化されたstop_reasonフィールドを混同しており、このテキスト解析によるアプローチは既知のアンチパターンである",
+      "代わりに、停止する前にレスポンスに少なくとも1つのtool_useブロックが含まれているかを確認すべきである",
+      "stop_reasonに関係なく、ちょうど5回で打ち切る固定の反復上限に置き換えるべきである"
     ],
     "answer": 1,
     "explanation": "テキスト内容を解析してループ終了を判断するのは、公式に非推奨とされるアンチパターンであり、正しくは構造化されたstop_reasonフィールドのみをループ制御の判断材料とすべきである。自然言語パターンは信頼できる(選択肢0)というのは誤り。tool_useブロックの有無を見る(選択肢2)は部分的に関連するが、根本的な問題であるテキスト解析への依存を修正していない。固定回数上限(選択肢3)も別のアンチパターンであり正しい修正ではない。",
@@ -202,6 +272,13 @@
       "Use stop_reason as the primary termination signal, and keep an iteration cap only as a defensive backstop against runaway loops, not as the main control",
       "Replace the iteration cap with a check for whether the last tool_result contains an error"
     ],
+    "questionJa": "あるチームが、タスクが明らかにさらなるステップを必要としている場合でも、ちょうど5回のツール呼び出しの後に確実に停止してしまうエージェントループをデバッグしています。コードレビューの結果、主たる停止機構としてハードコードされた'if iteration_count >= 5: break'が使われていることが判明しました。推奨されるアーキテクチャは何ですか。",
+    "choicesJa": [
+      "暴走コストを防ぐため、ハードコードされた上限を主たる機構として維持する",
+      "反復回数の上限を完全に取り除き、安全策なしでモデルの判断のみに全面的に頼る",
+      "stop_reasonを主たる終了シグナルとして使用し、反復回数の上限は主制御としてではなく、暴走ループに対する保険(バックストップ)としてのみ維持する",
+      "反復回数の上限を、直前のtool_resultにエラーが含まれているかどうかのチェックに置き換える"
+    ],
     "answer": 2,
     "explanation": "正しい設計は、stop_reasonを主たる終了判断とし、反復回数の上限はあくまで暴走防止のための保険(バックストップ)として保持することである。恣意的な反復上限を主要な停止機構として使う(選択肢0)ことがまさにアンチパターン。上限を完全に撤廃する(選択肢1)のはリスク管理を欠く。tool_resultのエラー有無だけを見る(選択肢3)はstop_reasonという正規のシグナルを無視した代替案であり不十分。",
     "tags": [
@@ -220,6 +297,13 @@
       "It incorrectly treats mixed text+tool_use responses as completion, prematurely ending the loop while pending tool calls are never executed",
       "It causes a stop_sequence mismatch error because text and tool_use cannot coexist in one response",
       "It has no practical effect since Claude never returns text alongside tool_use blocks"
+    ],
+    "questionJa": "マルチエージェントのリサーチタスク中に、Claudeの単一のレスポンスに、進捗をまとめたテキストブロックと、さらなる検索のための2つのtool_useブロックが含まれ、stop_reasonは'tool_use'でした。ある開発者のコードは、stop_reasonを確認する前に'if response.text: mark_task_complete()'をチェックしています。これはどのような不具合を引き起こしますか。",
+    "choicesJa": [
+      "問題ない。テキストブロックが存在すれば、stop_reasonに関わらず常にタスクは完了したことを意味する",
+      "テキストとtool_useが混在するレスポンスを誤って完了とみなし、保留中のツール呼び出しが一度も実行されないままループが早期に終了してしまう",
+      "1つのレスポンスにテキストとtool_useが共存できないため、stop_sequenceの不一致エラーが発生する",
+      "Claudeがtool_useブロックと共にテキストを返すことは決してないため、実質的な影響はない"
     ],
     "answer": 1,
     "explanation": "単一のレスポンスにテキストブロックと複数のtool_useブロックが同時に含まれることは仕様上あり得るため、テキストの存在だけでタスク完了とみなすのはアンチパターンである。この場合、保留中のツール呼び出しが実行されないまま処理が終わってしまう。テキストの存在が常に完了を意味する(選択肢0)というのは誤った前提。text+tool_useの共存でエラーになる(選択肢2)というのは誤り、両者は共存可能。Claudeがテキストとtool_useを同時に返さない(選択肢3)という主張も誤り。",
@@ -241,6 +325,13 @@
       "The original user prompt text embedded inside the tool_result content",
       "The tool_use_id field set to exactly 'toolu_01A2', matching the original tool_use block's id"
     ],
+    "questionJa": "カスタマーサポートエージェントのツール呼び出しフローで、Claudeのレスポンスにid 'toolu_01A2'を持つtool_useブロックが含まれています。呼び出し元アプリケーションが結果を返す際、元のリクエストと結果を正しく対応付けるために、どのフィールドを含める必要がありますか。",
+    "choicesJa": [
+      "tool_resultブロック用に新しく生成したランダムなUUID",
+      "idを一切付けず、ツール名だけを単純な文字列として繰り返したもの",
+      "元のユーザープロンプトのテキストをtool_resultのcontent内に埋め込んだもの",
+      "元のtool_useブロックのidと完全に一致する、正確に'toolu_01A2'に設定されたtool_use_idフィールド"
+    ],
     "answer": 3,
     "explanation": "tool_resultブロックは、対応するtool_useブロックのidと完全に一致するtool_use_idを持たなければならず、これによって正しいペアリングが保証される。新しいランダムなUUIDを生成する(選択肢0)のは誤りで一致しなくなる。ツール名だけを繰り返す(選択肢1)のはidの役割を果たさない。元のユーザープロンプトを埋め込む(選択肢2)のは無関係でペアリングの要件を満たさない。",
     "tags": [
@@ -260,6 +351,13 @@
       "Send three separate follow-up messages, one per tool_result, in sequence",
       "Return only the tool_result for the first tool_use block and ignore the other two",
       "Merge all three tool outputs into one tool_result block sharing a single tool_use_id"
+    ],
+    "questionJa": "Claudeからのあるレスポンスに、1つのターンの中で3つの独立したtool_useブロック(例:注文の照会、在庫の確認、割引コードの検証)が含まれています。呼び出し元アプリケーションはAPIへの次のメッセージをどのように構成すべきですか。",
+    "choicesJa": [
+      "対応する3つのtool_resultブロックすべてを、それぞれ自身のtool_use_idを参照させた上で、1つのメッセージにまとめて返す",
+      "tool_resultごとに1つずつ、3つの別々のフォローアップメッセージを順番に送信する",
+      "最初のtool_useブロックに対するtool_resultだけを返し、残りの2つは無視する",
+      "3つのツール出力すべてを、1つのtool_use_idを共有する1つのtool_resultブロックにまとめる"
     ],
     "answer": 0,
     "explanation": "単一のターンで複数のtool_useブロックが返された場合、呼び出し側は1つのメッセージの中にそれぞれ対応するtool_use_idを持つ複数のtool_resultブロックをまとめて返すのが正しい。3つの別々のメッセージに分ける(選択肢1)のは仕様に反する。1つだけ返し他を無視する(選択肢2)のは未処理のツール呼び出しを残すため誤り。複数の出力を1つのtool_use_idにまとめる(選択肢3)のはid対応の一意性を壊すため誤り。",
@@ -281,6 +379,13 @@
       "Set \"is_error\": true on the tool_result along with descriptive content explaining the failure",
       "Change the tool_use_id to a special reserved value indicating an error occurred"
     ],
+    "questionJa": "Claude Codeエージェント内で、決済確認APIへのツール呼び出しがタイムアウトしました。アプリケーションはtool_resultをClaudeに返します。Claudeがこれを踏まえて次の行動を判断できるよう、失敗を正しく伝えるためにそのtool_resultに何を設定すべきですか。",
+    "choicesJa": [
+      "特別なことは何もせず、成功時のtool_resultと同じ形で、空文字列を返す",
+      "tool_resultを完全に省略し、直ちにend_turnシグナルを送信する",
+      "tool_resultに\"is_error\": trueを設定し、失敗内容を説明するcontentを付与する",
+      "tool_use_idをエラー発生を示す特別な予約値に変更する"
+    ],
     "answer": 2,
     "explanation": "ツール呼び出しが失敗した場合は、tool_result内で\"is_error\": trueを設定し、失敗の内容を説明するcontentを付与することで、Claudeがその情報を踏まえて次の行動を判断できるようにするのが正しい。成功時と同じ形で空文字列を返す(選択肢0)のは失敗を隠蔽してしまう。tool_result自体を省略する(選択肢1)のはid対応が崩れ矛盾を生む。tool_use_idを特殊な予約値に変更する(選択肢3)のは仕様に反し、元のツール呼び出しとの対応が取れなくなる。",
     "tags": [
@@ -300,6 +405,13 @@
       "The second tool_use block will silently be treated as an implicit end_turn",
       "This only matters when using the Message Batches API, not in synchronous single-turn requests"
     ],
+    "questionJa": "あるCI/CD自動化スクリプトがClaudeのレスポンスを処理する際、stop_reason 'tool_use'とともに2つのtool_useブロックを確認したにもかかわらず、最初のツールだけを実行して単一のtool_resultのみを送り返し、次のモデルターンを待ちます。これはどのような問題を引き起こしますか。",
+    "choicesJa": [
+      "前のターンで発行されたすべてのtool_useブロックには対応するtool_resultが必要であり、会話を正しく進めるにはそれが揃っていなければならないため、APIが次のリクエストを拒否するか、Claudeが混乱した応答をする",
+      "問題ない。Claudeは2つ目のtool_useブロックに対する欠落したtool_resultを自動的に推測してくれる",
+      "2つ目のtool_useブロックは暗黙のend_turnとして黙って扱われる",
+      "これはMessage Batches APIを使用する場合にのみ問題になり、同期的な単一ターンのリクエストでは問題にならない"
+    ],
     "answer": 0,
     "explanation": "前のターンで発行されたすべてのtool_useブロックには対応するtool_resultが必要であり、一部だけ返すと会話の整合性が崩れ、APIがリクエストを拒否するか、Claudeが混乱した応答をする原因になる。Claudeが自動的に欠落分を推測する(選択肢1)ことはない。暗黙のend_turnとして扱われる(選択肢2)という主張も誤り。Batches APIに限った問題(選択肢3)ではなく、同期呼び出しでも同様に問題になる。",
     "tags": [
@@ -315,6 +427,13 @@
     "difficulty": 1,
     "question": "Which stop_reason value indicates that Claude has finished its turn normally and produced a complete response ready to present to the user, with no further tool execution needed?",
     "choices": [
+      "end_turn",
+      "pause_turn",
+      "tool_use",
+      "max_tokens"
+    ],
+    "questionJa": "Claudeがターンを正常に完了し、追加のツール実行を必要とせず、ユーザーに提示できる完全なレスポンスを生成したことを示すstop_reasonの値はどれですか。",
+    "choicesJa": [
       "end_turn",
       "pause_turn",
       "tool_use",
@@ -339,6 +458,13 @@
       "The application used an arbitrary hard iteration cap as the primary stopping mechanism instead of letting stop_reason drive termination, cutting off the subagent before it naturally reached end_turn based on task completion",
       "The coordinator failed to pass parent_tool_use_id, causing the subagent to lose context"
     ],
+    "questionJa": "マルチエージェントのコーディネーターがリサーチ用のサブエージェントにサブタスクを委任し、stop_reasonが'end_turn'であるものの、内容が部分的な回答しか含んでいないレスポンスを受け取りました。これは、アプリケーションコードが「サブエージェントあたり最大3回のツール呼び出し、例外なし」を強制し、サブエージェント自身のtool_useループを内部で途中で打ち切ったためです。ここでの根本的な設計上の欠陥は何ですか。",
+    "choicesJa": [
+      "end_turnはサブエージェントのレスポンスには決して現れないはずなので、このレスポンス自体が無効である",
+      "サブエージェントのtool_use_idがtool_resultと一致しておらず、ループが破損した可能性が高い",
+      "アプリケーションが、stop_reasonにループの終了を委ねる代わりに、恣意的な固定の反復上限を主たる停止機構として使用し、タスク完了に基づいて自然にend_turnへ到達する前にサブエージェントを打ち切ってしまった",
+      "コーディネーターがparent_tool_use_idを渡し忘れたため、サブエージェントがコンテキストを失った"
+    ],
     "answer": 2,
     "explanation": "この根本原因は、サブエージェントのループを「最大3回のツール呼び出しで例外なく打ち切る」という恣意的な固定上限で制御し、本来stop_reasonに基づいて自然に完了するはずの処理を強制的に中断してしまったことである。end_turnがサブエージェントに現れないという主張(選択肢0)は誤り。tool_use_idの不一致(選択肢1)は今回のシナリオの記述とは無関係。parent_tool_use_idの欠落(選択肢3)はトレーシングの問題であり、この打ち切りの原因ではない。",
     "tags": [
@@ -358,6 +484,13 @@
       "A tool_result pairing bug caused by a missing is_error flag",
       "An unavoidable consequence of the model_context_window_exceeded stop_reason",
       "A text-parsing termination anti-pattern: the loop should have branched strictly on stop_reason rather than inferring completion from the sentence's wording"
+    ],
+    "questionJa": "Claude上に構築された開発生産性アシスタントが、時折、表示テキストでは「このまま確定させますね」と述べているにもかかわらず、実際にはさらに1回の検証呼び出しを要求する末尾のtool_useブロックがあるためstop_reasonが実際には'tool_use'であるレスポンスを返すことがあります。アプリケーションの制御ループはテキストだけを読み取り、完了したものとして扱っています。この不具合の種類を最もよく表しているのはどれですか。",
+    "choicesJa": [
+      "自然言語の言い回しはモデルの意図を正確に反映しているため、正当な設計上の選択である",
+      "is_errorフラグの欠落によって生じたtool_resultの対応付けの不具合である",
+      "model_context_window_exceededというstop_reasonによる避けられない結果である",
+      "テキスト解析による終了判定のアンチパターンであり、本来は文の言い回しから完了を推測するのではなく、stop_reasonのみに基づいて厳密に分岐すべきである"
     ],
     "answer": 3,
     "explanation": "この不具合は、応答テキストの文言から完了を推測してしまうテキスト解析型終了判定のアンチパターンであり、正しくはstop_reasonのみに基づいて分岐すべきである。テキストの言い回しが意図を正確に反映しているので正当(選択肢0)という判断は誤り、モデルは実際にはまだツール呼び出しを要求している。is_errorフラグの欠落(選択肢1)は今回のシナリオとは無関係。model_context_window_exceeded(選択肢2)はこの状況とは無関係な別のstop_reason。",
@@ -379,6 +512,13 @@
       "Return a single message with two tool_result blocks: one for toolu_9x with is_error true and a description of the failure, and one for toolu_9y with its successful output",
       "Combine both outcomes into one tool_result block using toolu_9x as the shared id, noting the error in the text"
     ],
+    "questionJa": "構造化データ抽出エージェントが、'validate_schema'用のtool_useブロック(id 'toolu_9x')と、'fetch_reference_data'用の2つ目のtool_useブロック(id 'toolu_9y')を含み、stop_reasonが'tool_use'であるレスポンスを処理しています。'validate_schema'の呼び出しは、フィールドの形式不正により失敗しました。アプリケーションはAPIへの次のメッセージをどのように構成すべきですか。",
+    "choicesJa": [
+      "失敗した呼び出しに対するtool_resultは一切返さず、成功したfetch_reference_dataの結果だけを返し、Claudeが失敗を推測してくれることを期待する",
+      "並行して実行されたツール呼び出しの1つが失敗したため、ワークフロー全体を直ちに中断する",
+      "1つのメッセージ内に2つのtool_resultブロックを返す。toolu_9xにはis_error trueと失敗内容の説明を、toolu_9yにはその成功時の出力を設定する",
+      "toolu_9xを共有idとして使い、両方の結果を1つのtool_resultブロックにまとめ、テキスト内でエラーに言及する"
+    ],
     "answer": 2,
     "explanation": "複数のtool_useブロックがある場合、それぞれに対応するtool_resultを1つのメッセージ内で返す必要があり、失敗したものにはis_error trueと失敗内容の説明を、成功したものには通常の出力を設定するのが正しい。失敗分の結果を省略する(選択肢0)のは対応関係を崩し、Claudeが正しく推論できなくなる。一つの失敗でワークフロー全体を中断する(選択肢1)のは部分結果を活かさないアンチパターン。2つの結果を1つのidにまとめる(選択肢3)のはtool_use_idの一意な対応関係を破壊する誤り。",
     "tags": [
@@ -398,6 +538,13 @@
       "All-to-all: every subagent can message every other subagent directly to speed up handoffs",
       "Ring topology: each subagent passes its output to the next subagent in a fixed cycle",
       "Mesh with a shared blackboard: subagents read and write to a common memory store without coordinator involvement"
+    ],
+    "questionJa": "あるチームが、コーディネーターと5つの専門サブエージェント(Web検索、コード解析、データ統合、引用チェック、レポート作成)を持つマルチエージェントのリサーチシステムを設計しています。試験ガイダンスが推奨するアーキテクチャパターンに合致するトポロジーはどれですか。",
+    "choicesJa": [
+      "ハブアンドスポーク:サブエージェントはコーディネーターとのみ通信し、コーディネーターがサブエージェント間の通信をすべて仲介する",
+      "オールツーオール:すべてのサブエージェントが、引き継ぎを高速化するために互いに直接メッセージを送り合える",
+      "リングトポロジー:各サブエージェントが、固定された循環順序で次のサブエージェントへ出力を渡す",
+      "共有ブラックボードを伴うメッシュ:コーディネーターを介さず、サブエージェントが共通のメモリストアを読み書きする"
     ],
     "answer": 0,
     "explanation": "推奨されるのはhub-and-spoke構成で、コーディネーターが唯一のハブとなりサブエージェント間通信を全て仲介します。all-to-allはサブエージェント同士が直接通信するアンチパターンです。ringやblackboard共有メモリも、コーディネーターを介さない通信経路を作るため、責任分界とエラーハンドリングが曖昧になり不適切です。",
@@ -419,6 +566,13 @@
       "Report its finding back to the coordinator, which decides whether to update the shipping subagent's task",
       "Send a direct message to the shipping subagent asking it to include the new detail"
     ],
+    "questionJa": "ハブアンドスポーク型のカスタマーサポートエージェントアーキテクチャにおいて、コーディネーターが1件のチケットに対してbillingサブエージェントとshippingサブエージェントをディスパッチしたとします。billingサブエージェントが先に完了し、その顧客に配送の問題もあることを発見しました。billingサブエージェントは何をすべきですか。",
+    "choicesJa": [
+      "billingサブエージェントの担当範囲外なので、配送の問題は黙って無視する",
+      "自ら新しいサブエージェントを生成し、配送の問題を並行して処理させる",
+      "発見事項をコーディネーターに報告し、shippingサブエージェントのタスクを更新するかどうかはコーディネーターに判断させる",
+      "shippingサブエージェントに直接メッセージを送り、新しい詳細情報を含めるよう依頼する"
+    ],
     "answer": 2,
     "explanation": "コーディネーターの責務は全サブエージェント間通信のルーティングと集約であるため、billingサブエージェントは発見事項をコーディネーターに報告し、コーディネーターが次の委任を判断すべきです。サブエージェント同士の直接連絡はhub-and-spokeの原則に反します。無視するのは有用な発見を捨てることになり不適切、自律的な新規サブエージェント生成もコーディネーターの権限を越えています。",
     "tags": [
@@ -438,6 +592,13 @@
       "The coordinator failed to explicitly pass required context (order ID, amount, policy) since subagents do not inherit conversation history",
       "The subagent model is too weak to perform verification tasks reliably",
       "The subagent should have used a PreToolUse hook to fetch the missing data automatically"
+    ],
+    "questionJa": "返金処理ワークフローのコーディネーターが「verificationサブエージェント」に対し、『この顧客の本人確認を行い、返金が有効であることを確認してください』というプロンプトを送って委任しました。このサブエージェントは注文ID・返金額・顧客の過去のメッセージにアクセスできず、誤った検証結果を出してしまいました。根本原因は何ですか。",
+    "choicesJa": [
+      "返金ポリシー自体が曖昧であり、書き直す必要がある",
+      "サブエージェントは会話履歴を継承しないため、コーディネーターが注文ID・金額・ポリシーなど必要な文脈を明示的に渡さなかったこと",
+      "サブエージェントのモデルが検証タスクを確実にこなすには能力不足である",
+      "サブエージェントがPreToolUseフックを使って不足データを自動取得すべきだった"
     ],
     "answer": 1,
     "explanation": "サブエージェントはコーディネーターの会話履歴を一切継承しないため、注文ID・金額・ポリシーなど必要な情報はプロンプトに明示的に渡す必要があります。本問の根本原因はこの文脈分離を無視した委任にあります。モデルの能力不足やポリシーの曖昧さは無関係で、PreToolUseフックはツール実行を制御する仕組みであり欠落コンテキストの補完手段ではありません。",
@@ -459,6 +620,13 @@
       "Subagents receive only what is explicitly included in the prompt the coordinator constructs for them",
       "Subagents inherit the last five messages of the coordinator's history by default"
     ],
+    "questionJa": "Task/Agentツールで起動されるサブエージェントのコンテキスト継承について、正しく説明しているのはどれですか。",
+    "choicesJa": [
+      "サブエージェントはコーディネーターの会話履歴全体と割り当てられたプロンプトの両方を自動的に受け取る",
+      "サブエージェントはコーディネーターとライブで常時同期されたコンテキストウィンドウを共有する",
+      "サブエージェントは、コーディネーターが構築したプロンプトに明示的に含まれる内容のみを受け取る",
+      "サブエージエントはデフォルトでコーディネーターの履歴の直近5件のメッセージを継承する"
+    ],
     "answer": 2,
     "explanation": "サブエージェントは独立したコンテキストで起動され、コーディネーターの会話履歴を自動的に引き継ぐことはありません。必要な情報はすべて明示的にプロンプトへ含める必要があります。全履歴継承、ライブ同期、直近5件の自動継承といった選択肢はいずれも実際の仕組みと異なります。",
     "tags": [
@@ -478,6 +646,13 @@
       "It wastes tokens and time by running the full pipeline instead of dynamically selecting only relevant subagents for the task at hand",
       "It causes subagents to inherit stale conversation history from each other",
       "It prevents the coordinator from aggregating results correctly"
+    ],
+    "questionJa": "ある開発者生産性向上ツールは、1行のタイポ修正であっても、あらゆるコードレビュー依頼に対して常に利用可能な6つのサブエージェント（docs、tests、lint、security、performance、dependency-audit）すべてを呼び出しています。この設計の主な欠点は何ですか。",
+    "choicesJa": [
+      "1エージェントあたりツール数上限4〜5個の原則に違反している",
+      "タスクに関連するサブエージェントのみを動的に選択するのではなく、常に全パイプラインを実行するため、トークンと時間を浪費する",
+      "サブエージェント同士が互いに古い会話履歴を継承してしまう",
+      "コーディネーターが結果を正しく集約できなくなる"
     ],
     "answer": 1,
     "explanation": "動的サブエージェント選択の原則では、タスクに関連するサブエージェントのみを起動すべきで、常に全パイプラインを実行するのはトークンと時間の浪費です。4-5ツール上限の原則はエージェントが持つツール数についての話であり、この設問の状況とは別問題です。サブエージェントはそもそも履歴を継承しないため無関係、また集約自体は妨げられません。",
@@ -499,6 +674,13 @@
       "A single subagent cannot be trusted with any research task regardless of scope",
       "The task should have been sent to all subagents in parallel regardless of relevance"
     ],
+    "questionJa": "あるマルチエージェント調査システムが「2026年のクリエイティブ産業を形作るトレンド」を調査するよう依頼されました。コーディネーターはこのタスクを、「ビジュアルアート・デザインのトレンド」に限定した単一のサブエージェントへと分解しました。この分解の最も可能性が高い問題点は何ですか。",
+    "choicesJa": [
+      "分解範囲が狭すぎて、音楽・映画・ゲーム・文学など他のクリエイティブ産業の側面を見落としている",
+      "コーディネーターは分解を一切行わず、サブエージェントなしで直接回答すべきだった",
+      "単一のサブエージェントは、スコープに関わらずいかなる調査タスクも任せられない",
+      "タスクは関連性に関わらず全サブエージェントに並列で送るべきだった"
+    ],
     "answer": 0,
     "explanation": "『creative industries』は視覚芸術以外にも音楽・映画・ゲーム・文学など多様な領域を含むため、視覚芸術のみへの限定は分解範囲が狭すぎるアンチパターンです。直接回答や単一サブエージェント全否定は極端すぎ、また無関係な全サブエージェント並列起動も動的選択の原則に反するため不適切です。",
     "tags": [
@@ -518,6 +700,13 @@
       "Restart the entire pipeline from scratch with all new subagents to avoid bias from round 1",
       "Accept the round-1 synthesis as final since three subagents already ran and re-running is wasteful",
       "Have the coordinator evaluate the gap and delegate a targeted round-2 task to a new or existing subagent focused on competitor activity"
+    ],
+    "questionJa": "コーディネーターが「Q3の顧客解約を分析する」というタスクを、価格分析・サポートチケットの感情分析・製品利用状況分析という3つのサブエージェントに分解しました。ラウンド1の後、統合結果からは、あるチケットで言及されていた大きな解約要因である競合の動向を、どのサブエージェントも調査していなかったことが判明しました。次に取るべき最善のステップは何ですか。",
+    "choicesJa": [
+      "感情分析サブエージェントに、コーディネーターを介さず自らの判断で担当範囲を拡大するよう依頼する",
+      "ラウンド1の偏りを避けるため、全く新しいサブエージェントでパイプライン全体を最初からやり直す",
+      "すでに3つのサブエージェントが実行済みで再実行は無駄なので、ラウンド1の統合結果を最終版として受け入れる",
+      "コーディネーターがギャップを評価し、競合動向に焦点を当てた的を絞ったラウンド2タスクを新規または既存のサブエージェントに委任する"
     ],
     "answer": 3,
     "explanation": "反復的改善のパターンでは、コーディネーターがラウンド1の結果を評価してギャップ（競合動向の欠落）を特定し、それを埋めるための的を絞ったラウンド2タスクを委任すべきです。ギャップを無視して受け入れるのは分解範囲の狭さを放置することになり不適切、サブエージェントが独断で範囲を広げるのはhub-and-spokeの原則違反、全面的なやり直しは不要なコストです。",
@@ -539,6 +728,13 @@
       "Set `--max-turns 3` so the harness automatically parallelizes three subagent calls",
       "Emit all three Task/Agent tool_use blocks within a single coordinator response"
     ],
+    "questionJa": "Claude Agent SDK / Claude Codeにおいて、コーディネーターが3つの独立したサブエージェントタスクを、逐次実行ではなく並列実行させるにはどうすればよいですか。",
+    "choicesJa": [
+      "単一のTask呼び出しで`fork_session`パラメータを使い、作業を自動的に3倍にする",
+      "コーディネーターの各ターンで1つずつ、合計3つの個別のTask/Agent tool_use呼び出しを発行し、それぞれの完了を待つ",
+      "`--max-turns 3`を設定し、ハーネスに3つのサブエージェント呼び出しを自動的に並列化させる",
+      "3つのTask/Agent tool_useブロックすべてを、コーディネーターの単一の応答内で発行する"
+    ],
     "answer": 3,
     "explanation": "並列サブエージェント実行を実現するには、単一のコーディネーター応答内で複数のTask/Agent tool_use呼び出しを同時に発行する必要があります。ターンをまたいで1つずつ呼び出すのは逐次実行になってしまいます。fork_sessionは分岐したセッションを独立させる仕組みであり並列実行の手段ではなく、--max-turnsはターン数上限の設定であって並列化とは無関係です。",
     "tags": [
@@ -558,6 +754,13 @@
       "Each subagent's token consumption is isolated within its own context; the coordinator only receives the final summarized result, not the full exploration transcript",
       "Subagents do not consume tokens at all since they run under separate API accounts",
       "The concern is valid, so all five subagents must be merged into one to avoid excess token usage"
+    ],
+    "questionJa": "コーディネーターが5つのサブエージェントをディスパッチし、それぞれが大規模コードベースの異なる領域を探索しながら独立に30〜50個のファイルを読み込む、というマイグレーションタスクがあります。ある開発者は、これによりコーディネーター自身のコンテキストウィンドウが膨れ上がるのではないかと懸念しています。この懸念がおおむね杞憂である理由を最もよく説明しているのはどれですか。",
+    "choicesJa": [
+      "サブエージェントはコーディネーターのコンテキストウィンドウを共有するが、各サブエージェント完了後にClaudeが自動的に圧縮する",
+      "各サブエージェントのトークン消費はそのサブエージェント自身の独立したコンテキスト内に隔離されており、コーディネーターは探索の全過程ではなく最終的な要約結果のみを受け取る",
+      "サブエージェントは別々のAPIアカウントで実行されるため、トークンを一切消費しない",
+      "懸念は正当なので、過剰なトークン使用を避けるため5つのサブエージェントを1つに統合しなければならない"
     ],
     "answer": 1,
     "explanation": "サブエージェントのトークン消費は各サブエージェント自身の独立したコンテキストに隔離されており、コーディネーターは探索の全過程ではなく要約された結果のみを受け取ります。これによりコーディネーターの限られたコンテキストウィンドウを浪費せずに大規模な並行探索が可能になります。コンテキストが共有されて自動圧縮される、トークンを消費しない、統合が必須という説明はいずれも誤りです。",
@@ -579,6 +782,13 @@
       "Each extracted fact paired with source metadata such as source document name, publication date, and evidence text, so the synthesis subagent can attribute and reconcile conflicts explicitly",
       "Only the raw PDF text blobs passed through unmodified, letting the synthesis subagent re-parse everything from scratch"
     ],
+    "questionJa": "ある構造化データ抽出パイプラインでは、コーディネーターが3つの異なるPDFから事実を抽出するために3つのサブエージェントをファンアウトし、その後、統合サブエージェントが結果を1つのレポートにまとめます。3つの元文書のうち2つが、同じ指標について矛盾する数値を報告しています。統合サブエージェントに渡す構造化コンテキストはどのような形にすべきですか。",
+    "choicesJa": [
+      "各抽出事実に値だけをタグ付けし、コーディネーターが煩雑さを避けるためより新しいPDFの数値を黙って選ぶ",
+      "3つのサブエージェント間の多数決で選ばれた単一の統合値とし、少数意見の結果は破棄する",
+      "各抽出事実に、出典ドキュメント名・発行日・根拠テキストなどのソースメタデータを添付し、統合サブエージェントが矛盾を明示的に帰属づけ・解決できるようにする",
+      "生のPDFテキストの塊をそのまま未加工で渡し、統合サブエージェントに最初からすべて再解析させる"
+    ],
     "answer": 2,
     "explanation": "構造化されたコンテキスト受け渡しでは、コンテンツとメタデータ（source_url相当のドキュメント名、公開日、根拠テキストなど）を分離して渡し、出典を明示することで矛盾を統合エージェントが明示的に判断できるようにすべきです。コーディネーターが黙って新しい方を選ぶ、多数決で少数意見を破棄するのはどちらも矛盾情報を隠蔽するアンチパターンです。生テキストのみを渡すのはメタデータによる属性保持を放棄しており非効率です。",
     "tags": [
@@ -598,6 +808,13 @@
       "The end customer, who should be shown the raw error message to decide",
       "The coordinator, since handling subagent errors is one of its core responsibilities alongside decomposition, delegation, routing, and aggregation",
       "No one; the workflow should silently continue as if the subagent had returned an empty result"
+    ],
+    "questionJa": "ハブアンドスポーク型のカスタマーサポートシステムにおいて、「配送状況」サブエージェントが、基盤となる配送業者の追跡APIが不正な形式のレスポンスを返したために回復不能なエラーを起こしました。コーディネーターの責務に従うと、次に何をするか（再試行、スキップ、ケース全体のエスカレーションなど）を決定する責任者は誰ですか。",
+    "choicesJa": [
+      "エラーについて最も直接的な知識を持つサブエージェント自身",
+      "生のエラーメッセージを見せられて判断すべき最終顧客",
+      "コーディネーター。サブエージェントのエラー処理は、分解・委任・ルーティング・集約と並ぶコーディネーターの中核的責務の一つであるため",
+      "誰も対応しない。サブエージェントが空の結果を返したかのようにワークフローを黙って続行すべきである"
     ],
     "answer": 2,
     "explanation": "コーディネーターの責務にはサブエージェントのエラー処理が明示的に含まれており、タスク分解・委任・通信ルーティング・結果集約と並ぶ中核的役割です。サブエージェント自身が独断で次の対応を決めるのはhub-and-spoke原則から外れ、生のエラーを顧客に見せるのは不適切な情報開示であり、エラーを無視して空の結果のように扱うのは結果の隠蔽というアンチパターンです。",
@@ -619,6 +836,13 @@
       "Only monitoring token usage and cost, leaving task logic entirely to subagents",
       "Decomposing tasks, delegating to subagents, routing inter-subagent communication, aggregating results, and handling subagent errors"
     ],
+    "questionJa": "ハブアンドスポーク型マルチエージェントシステムにおけるコーディネーターの主な責務を最もよく説明しているのはどれですか。",
+    "choicesJa": [
+      "サブエージェントは生データの取得のみを行い、最終出力のテキストはすべてコーディネーター自身が書く",
+      "遅延を最小化するため、委任せずにすべてのツール呼び出しを自分自身で直接実行する",
+      "トークン使用量とコストの監視のみを行い、タスクのロジックはすべてサブエージェントに任せる",
+      "タスクの分解、サブエージェントへの委任、サブエージェント間通信のルーティング、結果の集約、そしてサブエージェントのエラー処理"
+    ],
     "answer": 3,
     "explanation": "コーディネーターの責務は、タスクの分解、サブエージェントへの委任、サブエージェント間通信のルーティング、結果の集約、そしてサブエージェントのエラー処理です。最終出力を全て自分で書く、全ツール呼び出しを自分で実行する、コスト監視のみに専念するといった選択肢はいずれもコーディネーターの本来の役割を狭めすぎています。",
     "tags": [
@@ -637,6 +861,13 @@
       "The coordinator should discard both results and terminate the workflow immediately",
       "The coordinator should evaluate the synthesis quality, identify the gap or contradiction, and re-delegate a targeted task to resolve it",
       "The final report should present both contradictory claims without any coordinator involvement, leaving resolution entirely to the end user with no annotation"
+    ],
+    "questionJa": "マルチエージェント調査タスク中に、あるサブエージェントの出力が曖昧で、別のサブエージェントの発見内容と矛盾していました。コーディネーターの責務に従うと、次に何が起こるべきですか。",
+    "choicesJa": [
+      "2つのサブエージェントが合意に達するまで直接メッセージをやり取りできるようにする",
+      "コーディネーターは両方の結果を破棄し、直ちにワークフローを終了する",
+      "コーディネーターは統合結果の品質を評価し、ギャップや矛盾を特定した上で、それを解決するための的を絞ったタスクを再委任する",
+      "コーディネーターの関与なしに、矛盾する2つの主張を注釈も付けずに最終レポートに提示し、解決は完全にエンドユーザーに委ねる"
     ],
     "answer": 2,
     "explanation": "コーディネーターは統合結果の品質を評価し、矛盾やギャップを特定した上で的を絞った再委任を行う責務があります。サブエージェント同士が直接やり取りするのはhub-and-spokeの原則違反、結果を全て破棄して終了するのは過剰反応、注釈なしに矛盾を放置するのは情報の出所管理を怠ることになり不適切です。",
@@ -658,6 +889,13 @@
       "Skip subagents entirely and have the coordinator make the edit directly, since dynamic selection only applies to research tasks",
       "Invoke only the frontend subagent (and possibly auth if login-flow logic is touched), skipping the other unrelated subagents"
     ],
+    "questionJa": "大規模コードベースのマイグレーションを行うClaude Code構成では、受け取ったタスクごとに、利用可能な10種類の専門サブエージェント（frontend、backend、database、auth、billing、notifications、search、analytics、infra、docs）のうちどれを呼び出すかを、コーディネーターが動的に決定します。「ログインページのボタンラベルのタイポを修正する」というタスクに対して、動的サブエージェント選択の正しい適用はどれですか。",
+    "choicesJa": [
+      "何も見落とさないよう、10個のサブエージェントすべてを単一の応答内で並列に呼び出す",
+      "まずdocsサブエージェントを呼び出して他にどのサブエージェントが関連するかを判断させ、その後残りを逐次呼び出す",
+      "動的選択は研究タスクにのみ適用されるため、サブエージェントを一切使わずコーディネーターが直接編集する",
+      "frontendサブエージェント（ログインフローのロジックに触れる場合は必要に応じてauthも）のみを呼び出し、他の無関係なサブエージェントはスキップする"
+    ],
     "answer": 3,
     "explanation": "動的サブエージェント選択の原則は、タスクに関連するサブエージェントのみを呼び出すことです。ログインボタンのラベル修正であればfrontend（必要なら関連するauth）だけで十分であり、10個全てを並列起動するのは無関係サブエージェントへの浪費です。docsサブエージェントを事前ルーターとして使うのは不要な間接性を加えるだけで的外れ、また動的選択は研究タスクに限らず一般的な原則です。",
     "tags": [
@@ -677,6 +915,13 @@
       "Both subagents must be given `fork_session: true` explicitly to enable concurrency",
       "The subagents must share the coordinator's conversation history so they can coordinate timing",
       "The pipeline must set `--output-format stream-json` to allow concurrent execution"
+    ],
+    "questionJa": "CI/CD自動化パイプラインを構築している開発者が、パイプラインの所要時間を短縮するため、独立した2つのTaskツール呼び出し（ユニットテストの実行用とセキュリティスキャン用）を同時に実行させたいと考えています。不可欠な実装上のポイントはどれですか。",
+    "choicesJa": [
+      "2つのTask tool_useブロックはどちらも同一のアシスタント応答（ターン）内に含まれていなければならない",
+      "並行性を有効にするため、両方のサブエージェントに明示的に`fork_session: true`を指定しなければならない",
+      "サブエージェントはタイミングを調整できるよう、コーディネーターの会話履歴を共有しなければならない",
+      "並行実行を可能にするため、パイプラインで`--output-format stream-json`を設定しなければならない"
     ],
     "answer": 0,
     "explanation": "並列実行を実現する本質は、複数のTask/Agent tool_use呼び出しを同一の応答内にまとめて発行することです。fork_sessionは分岐セッションのための機能であり並列実行そのものの必須条件ではなく、サブエージェントは本来会話履歴を共有しない設計です。stream-json出力形式はCLIの出力形式設定であり並列実行とは無関係です。",
@@ -698,6 +943,13 @@
       "It prevents the coordinator from ever invoking more than one subagent per aggregation step",
       "It uses more tokens than a structured JSON representation would, which is the only downside"
     ],
+    "questionJa": "ある構造化データ抽出システムのコーディネーターが、各サブエージェントの出力を、「文書Aによると売上は12%増加。文書Bによると売上は15%増加（概算）」のような、単なる連結されたプレーンテキストの塊としてのみ下流の統合エージェントに渡し、構造化されたフィールドは一切添付していません。推奨される構造化コンテキストパターンと比較して、この受け渡し方式の主なリスクは何ですか。",
+    "choicesJa": [
+      "矛盾する数値をプログラム的に解決するために必要な、機械的に検証可能な出典帰属情報（文書名、発行日、正確な根拠テキスト）が失われる",
+      "どちらも文中で出典名に言及しているため、構造化された受け渡しと機能的に全く同一である",
+      "コーディネーターが1回の集約ステップで2つ以上のサブエージェントを呼び出すことを妨げる",
+      "構造化されたJSON表現よりも多くのトークンを消費することが唯一の欠点である"
+    ],
     "answer": 0,
     "explanation": "構造化コンテキスト受け渡しの目的は、source_url相当のドキュメント名・公開日・根拠テキストなどのメタデータをコンテンツと分離して保持し、属性追跡や矛盾の解決をプログラム的に行えるようにすることです。プレーンテキストの羅列ではこれらのメタデータがプログラムで扱いにくく、出所管理が失われます。トークン消費量の違いは本質的な問題ではなく、両者が機能的に同等という主張も誤りで、並列呼び出し回数とは無関係です。",
     "tags": [
@@ -717,6 +969,13 @@
       "Anti-pattern: flat all-to-all topology where subagents talk directly; correct pattern: hub-and-spoke routed through a coordinator",
       "Anti-pattern: coordinator aggregating results; correct pattern: subagents self-aggregating without a coordinator",
       "Anti-pattern: dynamic subagent selection; correct pattern: always invoking the full subagent roster"
+    ],
+    "questionJa": "マルチエージェントアーキテクチャで議論される、サブエージェントのトポロジーに関するアンチパターンを正しく特定している組み合わせはどれですか。",
+    "choicesJa": [
+      "アンチパターン：ハブアンドスポーク／正しいパターン：低遅延のための全対全メッシュ",
+      "アンチパターン：サブエージェントが直接やり取りするフラットな全対全トポロジー／正しいパターン：コーディネーターを介したハブアンドスポーク",
+      "アンチパターン：コーディネーターによる結果の集約／正しいパターン：コーディネーターなしでサブエージェントが自ら集約する",
+      "アンチパターン：動的サブエージェント選択／正しいパターン：常に全サブエージェントのフルラインナップを呼び出す"
     ],
     "answer": 1,
     "explanation": "推奨されるのはhub-and-spoke構成であり、サブエージェントが直接会話するflatなall-to-allトポロジーはアンチパターンとされています。選択肢1はこれを逆に記述しており誤りです。コーディネーターによる結果集約はまさに推奨される責務であり、動的サブエージェント選択も推奨パターンなので、これらをアンチパターンとする記述は誤りです。",
@@ -738,6 +997,13 @@
       "The coordinator should have treated the narrow regional scope as a gap and delegated a targeted round-2 task covering other regions before finalizing",
       "The coordinator should have re-run the exact same subagent prompt a second time, since repetition alone fixes scope gaps"
     ],
+    "questionJa": "あるマルチエージェント調査システムのコーディネーターが、ラウンド1を「市場規模」サブエージェントと「規制環境」サブエージェントに委任しました。ラウンド1の結果は一見完全で一貫性があるように見えましたが、コーディネーターは、本来グローバル向けのレポートであるにもかかわらず、規制サブエージェントが米国の規制しかカバーしていないことに気づきました。それでもコーディネーターは時間を節約するため直ちにレポートを最終化しました。反復的改善の観点から何が問題だったのでしょうか。",
+    "choicesJa": [
+      "何も問題はない。反復的改善は結果が矛盾する場合にのみ適用され、単に範囲が不完全なだけの場合には適用されない",
+      "コーディネーターはラウンド1の委任を完全に省略し、規制のセクションを自ら書くべきだった",
+      "コーディネーターは狭い地域範囲をギャップとして扱い、最終化する前に他地域をカバーする的を絞ったラウンド2タスクを委任すべきだった",
+      "コーディネーターは、繰り返しだけで範囲のギャップが解消されるので、全く同じサブエージェントのプロンプトをもう一度実行すべきだった"
+    ],
     "answer": 2,
     "explanation": "反復的改善では、コーディネーターがラウンド1の結果を評価してギャップ（この場合は地域範囲の狭さ）を特定し、他地域をカバーする的を絞ったラウンド2タスクを委任してから最終化すべきです。範囲の欠落を『矛盾がないから問題ない』とするのは誤り、コーディネーター自身が専門領域を書くのは分解の意味を失わせ、同一プロンプトの単純な再実行はスコープの問題を解決しません。",
     "tags": [
@@ -757,6 +1023,13 @@
       "`parent_tool_use_id`, which only labels which subagent produced which output for tracing purposes",
       "Raising `--max-turns` so the same subagent has enough turns to try both strategies sequentially in one context",
       "Giving the subagent access to the coordinator's full conversation history so it can compare both strategies itself"
+    ],
+    "questionJa": "billingサブエージェントが、同じ大規模な取引履歴データセットに対して、比例配分方式と定額方式という2つの異なる返金計算戦略を、どちらの探索的分岐の中間推論もお互いやコーディネーターの主コンテキストを汚染することなく検討する必要があります。まさにこの状況のために設計された仕組みはどれですか。",
+    "choicesJa": [
+      "`fork_session`。共有のベースラインから独立した分岐を作成し、相互汚染なしに異なるアプローチを探索できるようにする",
+      "`parent_tool_use_id`。どのサブエージェントがどの出力を生成したかをトレース目的でラベル付けするだけのもの",
+      "`--max-turns`を上げること。同じサブエージェントが1つのコンテキスト内で両方の戦略を逐次試す十分なターン数を持てるようにする",
+      "サブエージェントにコーディネーターの会話履歴全体へのアクセスを与え、自ら両方の戦略を比較できるようにする"
     ],
     "answer": 0,
     "explanation": "`fork_session`は共有のベースラインから独立した分岐を作り、複数の異なるアプローチを互いに汚染することなく並行して探索するための仕組みです。`parent_tool_use_id`は出力の帰属を追跡するためのものであり分岐実行の機構ではありません。`--max-turns`は単にターン数上限の設定で、同一コンテキスト内で戦略を切り替えれば推論が混ざり合うリスクが残ります。会話履歴全体へのアクセス付与も汚染防止にはならず、むしろコンテキスト分離の原則に反します。",
@@ -778,6 +1051,13 @@
       "The `.mcp.json` server configuration file",
       "The `PreToolUse` hook configuration"
     ],
+    "questionJa": "Claude Agent SDKにおいて、サブエージェントの役割（`description`、`prompt`、許可される`tools`を含む）を定義し、コーディネーターが適切に選択・委任できるようにするために使われる構成要素はどれですか。",
+    "choicesJa": [
+      "各APIレスポンスで返される`stop_reason`フィールド",
+      "`AgentDefinition`構造",
+      "`.mcp.json`サーバー設定ファイル",
+      "`PreToolUse`フック設定"
+    ],
     "answer": 1,
     "explanation": "`AgentDefinition`はサブエージェントの`description`、`prompt`、使用可能な`tools`一覧を定義する構造であり、コーディネーターが適切なサブエージェントを選択・委任するための基盤となります。`stop_reason`はエージェントループの停止判断に使うフィールド、`.mcp.json`はMCPサーバー設定ファイル、`PreToolUse`フックはツール実行前の制御機構であり、いずれもサブエージェント定義そのものではありません。",
     "tags": [
@@ -797,6 +1077,13 @@
       "Lower the temperature so the model follows instructions more literally",
       "Add a few-shot example showing the correct verification-then-refund order",
       "Add a PreToolUse hook that blocks process_refund unless verification has already occurred in the session, returning permissionDecision deny otherwise"
+    ],
+    "questionJa": "あるカスタマーサポートエージェントには、『process_refundを呼び出す前に、必ずget_customerを呼び出して本人確認を行うこと』というシステムプロンプトの指示があります。本番環境では、事前のget_customer呼び出しなしにprocess_refundが実行されているトレースが時折見られます。最も確実な修正方法は何ですか。",
+    "choicesJa": [
+      "システムプロンプトの先頭に太字で指示を書き直し、各ツール呼び出しの前に繰り返しリマインダーを追加する",
+      "モデルがより文字通りに指示に従うよう、温度パラメータを下げる",
+      "確認してから返金するという正しい順序を示すfew-shot例を追加する",
+      "検証がそのセッション内で既に行われていない限りprocess_refundをブロックし、permissionDecision denyを返すPreToolUseフックを追加する"
     ],
     "answer": 3,
     "explanation": "正解はPreToolUseフックによるprocess_refundのブロックです。プロンプト指示は確率的な効果しか持たず、金融・安全上重要なルールには決定論的な強制が必要というのがこの分野の代表例です。選択肢0（太字での指示強調）は依然としてプロンプトベースであり100%の保証にはなりません。選択肢1（温度調整）はツール呼び出し順序を保証する仕組みではなく、出力のランダム性を下げるだけです。選択肢2（few-shot例）も指示の一種にすぎず、モデルが誤って無視すれば強制力を持ちません。",
@@ -818,6 +1105,13 @@
       "Any non-zero exit code is treated as 'ask' regardless of value",
       "Exit codes are ignored; only stdout JSON determines the decision"
     ],
+    "questionJa": "Claude Codeのフックシステムにおいて、「command」タイプのフックの終了コード契約を正しく説明しているのはどれですか。",
+    "choicesJa": [
+      "終了コード0はアクションをブロックし、終了コード2は進行を許可する",
+      "終了コード2はアクションをブロック（deny）し、終了コード0は通過を許可する",
+      "0以外の終了コードはすべて値に関わらず「ask」として扱われる",
+      "終了コードは無視され、標準出力のJSONのみが判断を決定する"
+    ],
     "answer": 1,
     "explanation": "command型フックではexit 0が許可（pass）、exit 2がブロック（deny）という契約が定められています。選択肢0はこれを逆にしており誤りです。選択肢2は具体的な仕様（exit 2固有の意味）を無視した誤った一般化です。選択肢3はstdoutのJSON出力もpermissionDecisionとして利用され得ますが、exit codeも独立して意味を持つため誤りです。",
     "tags": [
@@ -833,6 +1127,13 @@
     "difficulty": 2,
     "question": "A Claude Code configuration team wants a hook that can hold a full multi-turn conversation with its own tools to decide whether a risky Bash command should run, rather than a single yes/no judgment. Which hook type should they configure?",
     "choices": [
+      "prompt",
+      "http",
+      "mcp_tool",
+      "agent"
+    ],
+    "questionJa": "Claude Codeの設定チームが、リスクの高いBashコマンドを実行してよいかどうかを、単純なyes/no判定ではなく、自身のツールを使ったマルチターンの会話を通じて判断できるフックを用意したいと考えている。どのフックタイプを設定すべきか。",
+    "choicesJa": [
       "prompt",
       "http",
       "mcp_tool",
@@ -858,6 +1159,13 @@
       "PostToolUse",
       "SessionEnd"
     ],
+    "questionJa": "2026年のフックシステムは6グループにまたがる28種類のイベントに拡張された。この一覧の中で、メインセッションの停止とは区別され、サブエージェント（Task/Agent）の呼び出しが完了したときに発火すると説明されているイベントはどれか。",
+    "choicesJa": [
+      "SubagentStop",
+      "Stop",
+      "PostToolUse",
+      "SessionEnd"
+    ],
     "answer": 0,
     "explanation": "SubagentStopはサブエージェント（Task/Agent呼び出し）の完了時に発火するイベントで、メインセッションの終了を示すStopとは区別されます。Stopはメインセッションの停止に対応するイベントです。PostToolUseは個々のツール呼び出し後に発火するもので、サブエージェント完了とは別概念です。SessionEndはセッション全体の終了時に発火し、サブエージェント単位のイベントではありません。",
     "tags": [
@@ -873,6 +1181,13 @@
     "difficulty": 2,
     "question": "A developer productivity team wants a hook that runs before any tool call so it can enforce a business rule deterministically, and wants the hook's output to explicitly tell the harness whether to allow, deny, or prompt the user. Which JSON field in the hook's output carries that decision?",
     "choices": [
+      "additionalContext",
+      "hookEventName",
+      "permissionDecision",
+      "isRetryable"
+    ],
+    "questionJa": "開発者生産性チームが、あらゆるツール呼び出しの前に実行され、ビジネスルールを決定論的に強制できるフックを用意したいと考えている。さらに、そのフックの出力でハーネスに対して許可・拒否・ユーザーへの確認のいずれかを明示的に伝えたい。その判断を運ぶJSONフィールドはどれか。",
+    "choicesJa": [
       "additionalContext",
       "hookEventName",
       "permissionDecision",
@@ -898,6 +1213,13 @@
       "A stricter input_schema with additionalProperties: false on the tool definition",
       "A PostToolUse hook that scrubs and normalizes the tool result before it reaches Claude's context"
     ],
+    "questionJa": "構造化データ抽出パイプラインが、顧客のSSNと形式がバラバラな内部タイムスタンプを含む生のAPIレスポンスを返すツールを呼び出している。チームは、ツールの実装自体は変更せずに、Claudeが生のSSNを決して目にせず、タイムスタンプは常にISO 8601形式に正規化された状態で見えるようにしたい。追加すべき仕組みはどれか。",
+    "choicesJa": [
+      "ツール呼び出し前に入力引数を書き換えるPreToolUseフック",
+      "ユーザーの最初のリクエストをフィルタするUserPromptSubmitフック",
+      "ツール定義にadditionalProperties: falseを指定した、より厳格なinput_schema",
+      "Claudeに届く前にツール結果をスクラブして正規化するPostToolUseフック"
+    ],
     "answer": 3,
     "explanation": "PostToolUseフックはツール実行結果がClaudeに渡される前にインターセプトでき、機密データのスクラビングやタイムスタンプの正規化といった後処理に最適です。PreToolUseは呼び出し前の入力に介入するものであり、返ってくる結果の中身は変えられません。UserPromptSubmitはユーザーの初期プロンプトに対するフックであり、ツール結果とは無関係です。input_schemaの強化は入力バリデーションの話であり、ツールが返す出力内容のスクラブや正規化とは無関係です。",
     "tags": [
@@ -917,6 +1239,13 @@
       "In .claude/settings.local.json so it stays machine-local",
       "In a separate .claude/rules/deploy.md file with paths frontmatter",
       "In the hooks frontmatter field inside the SKILL.md file itself"
+    ],
+    "questionJa": "チームが「deploy」スキル用のSKILL.mdを作成しており、このスキルがアクティブなときに限り検証用フックを自動実行し、プロジェクトの他の部分のフック挙動には影響を与えたくないと考えている。このフックはどこに宣言すべきか。",
+    "choicesJa": [
+      "グローバルな~/.claude/settings.jsonのみ",
+      "マシンローカルにとどめるため.claude/settings.local.json",
+      "pathsフロントマターを持つ別ファイル.claude/rules/deploy.md",
+      "SKILL.mdファイル自体のhooksフロントマターフィールド"
     ],
     "answer": 3,
     "explanation": "SKILL.mdのフロントマターにあるhooksフィールドを使うことで、そのスキルに固有のフックをスコープすることができます。グローバルなsettings.jsonに置くとプロジェクト全体に影響してしまい、このスキルだけに限定できません。settings.local.jsonはマシンローカルな設定用であり、スキル単位のフックスコープの仕組みではありません。.claude/rules/はコンテキスト注入用のルールファイルであり、フック定義の仕組みではありません。",
@@ -938,6 +1267,13 @@
       "~/.claude/settings.json",
       "managed policy settings only"
     ],
+    "questionJa": "プロジェクトのすべての開発者に適用され、チーム全員が同じ基準を共有できるようバージョン管理にコミットすべき、MCPサーバーおよび権限設定はどこに保存すべきか。",
+    "choicesJa": [
+      ".claude/settings.local.json",
+      ".claude/settings.json",
+      "~/.claude/settings.json",
+      "managed policy設定のみ"
+    ],
     "answer": 1,
     "explanation": ".claude/settings.jsonはプロジェクトスコープでバージョン管理される設定ファイルであり、チーム全員が共有すべき標準設定を置く場所として正しいです。settings.local.jsonはマシンローカルでgitignoreされるため個人設定用であり共有には不向きです。~/.claude/settings.jsonはユーザースコープであり、そのユーザーの全プロジェクトに影響するためプロジェクト固有の共有設定には適しません。managed policyは組織管理者が強制するポリシー用であり、プロジェクトチームが自由に編集する場所ではありません。",
     "tags": [
@@ -957,6 +1293,13 @@
       ".claude/settings.json",
       "~/.claude/settings.json",
       "the managed policy file"
+    ],
+    "questionJa": "ある開発者が、例えばデバッグ中に動作の遅いlintフックを無効化するなど、プロジェクトで共有されているフック設定を自分のノートPC上だけで上書きしたいが、その変更が誤ってコミットされチーム全体に適用されるリスクは絶対に避けたいと考えている。編集すべき設定ファイルはどれか。",
+    "choicesJa": [
+      ".claude/settings.local.json",
+      ".claude/settings.json",
+      "~/.claude/settings.json",
+      "managed policyファイル"
     ],
     "answer": 0,
     "explanation": ".claude/settings.local.jsonはgitignore対象のマシンローカル設定であり、個人環境だけに影響してチームには反映されないため、この要件に正しく合致します。.claude/settings.jsonはプロジェクト共有かつバージョン管理される設定であり、コミットされるとチーム全体に影響してしまいます。~/.claude/settings.jsonはユーザースコープでそのユーザーの全プロジェクトに影響するため、このプロジェクト限定の一時変更には粒度が合いません。managed policyは組織管理者用であり開発者個人が編集する対象ではありません。",
@@ -978,6 +1321,13 @@
       "Managed policy scope",
       "Local scope (.claude/settings.local.json)"
     ],
+    "questionJa": "組織管理者が、個々のプロジェクトや開発者が自分のsettings.local.jsonを編集しても、データ損失防止（DLP）用フックを無効化したり上書きしたりできないことを保証したいと考えている。このDLPフックはどの設定スコープで定義すべきか。",
+    "choicesJa": [
+      "プロジェクトスコープ（.claude/settings.json）",
+      "ユーザースコープ（~/.claude/settings.json）",
+      "Managed policyスコープ",
+      "ローカルスコープ（.claude/settings.local.json）"
+    ],
     "answer": 2,
     "explanation": "managed policyは組織管理者が強制するスコープであり、プロジェクトやユーザー、ローカル設定によって上書きされないため、この要件に合致します。プロジェクトスコープの設定はチーム内の誰でも編集可能でありDLPの強制力としては不十分です。ユーザースコープは個々の開発者が自由に変更できるため強制力がありません。ローカルスコープは最も緩く、個人が自由に上書きできるためこの目的には全く適しません。",
     "tags": [
@@ -997,6 +1347,13 @@
       "Instruct the subagent's prompt: 'You must run fact_check before publish_report'",
       "Rely on the coordinator to review subagent output after the fact and re-delegate if fact_check was skipped",
       "Add a code comment in the tool definition explaining the required order"
+    ],
+    "questionJa": "マルチエージェントのリサーチシステムのコーディネーターが、あるサブエージェント自身の実行内で「fact_check」ツールがすでに実行され合格結果を返していない限り、そのサブエージェントが「publish_report」ツールを呼び出せないことを保証したいと考えている。これを正しく強制する設計はどれか。",
+    "choicesJa": [
+      "publish_reportにPreToolUseフックを追加し、fact_checkが実行済みかどうかを確認して、そうでなければ呼び出しをdenyする",
+      "サブエージェントのプロンプトに「publish_reportの前に必ずfact_checkを実行すること」と指示する",
+      "コーディネーターがサブエージェントの出力を事後にレビューし、fact_checkが省略されていれば再委任するのに任せる",
+      "ツール定義にコメントを追加して必要な実行順序を説明する"
     ],
     "answer": 0,
     "explanation": "PreToolUseフックによってpublish_report呼び出し前にfact_checkの実行状況を検証し、条件を満たさない場合にdenyするのが決定論的で確実な方法です。プロンプト指示はモデルが誤って無視する可能性があり保証にはなりません。コーディネーターによる事後レビューは既にpublish_reportが実行された後の対処であり、事前防止にはなりません。コード内のコメントは実行時に何の強制力も持ちません。",
@@ -1018,6 +1375,13 @@
       "retry and fallback",
       "sync and async"
     ],
+    "questionJa": "Claude Codeのフックシステムにおいて、command・http・mcp_toolと並ぶ5種類のフックタイプのうちの一つはどれか。",
+    "choicesJa": [
+      "promptとagent",
+      "webhookとcron",
+      "retryとfallback",
+      "syncとasync"
+    ],
     "answer": 0,
     "explanation": "5種類のフックタイプはcommand、http、mcp_tool、prompt、agentであり、promptとagentが正しい組み合わせです。webhookはhttpタイプの別名にすぎずcronという独立したフックタイプは存在しません。retryやfallbackはエラー処理の概念でありフックタイプではありません。syncやasyncはフックの実行モデルの一般用語であり、公式に定義された5つのフックタイプ名ではありません。",
     "tags": [
@@ -1032,6 +1396,13 @@
     "difficulty": 2,
     "question": "A CI/CD automation pipeline uses a PreToolUse hook to gate a 'deploy_to_prod' tool. The hook script queries an external change-management API over HTTPS and needs up to 10 seconds to respond. Rather than writing a shell script that shells out to curl, which hook type is purpose-built for delegating the decision to an external webhook?",
     "choices": [
+      "command",
+      "http",
+      "mcp_tool",
+      "prompt"
+    ],
+    "questionJa": "あるCI/CD自動化パイプラインが、PreToolUseフックを使って「deploy_to_prod」ツールをゲートしている。このフックスクリプトはHTTPS経由で外部の変更管理APIに問い合わせを行い、応答に最大10秒かかる。curlを呼び出すシェルスクリプトを書く代わりに、外部Webhookへの判断委譲のために本来設計されているフックタイプはどれか。",
+    "choicesJa": [
       "command",
       "http",
       "mcp_tool",
@@ -1057,6 +1428,13 @@
       "Average the two signals and fall back to 'ask'",
       "Reject the hook configuration entirely as invalid before the session starts"
     ],
+    "questionJa": "あるチームが「send_email」ツールにPreToolUseフックを設定した。このフックスクリプトは終了コード2で終了する一方、標準出力にpermissionDecision: 'allow'を含むJSONオブジェクトも出力する。ハーネスはどうすべきか。",
+    "choicesJa": [
+      "終了コードを権威的なものとして信頼し、ツール呼び出しをブロックする。矛盾するJSONは参考情報として扱う",
+      "JSON出力を権威的なものとして信頼し、終了コードを無視してツール呼び出しを許可する",
+      "両方のシグナルを平均し、'ask'にフォールバックする",
+      "セッション開始前に、このフック設定自体を無効なものとして拒否する"
+    ],
     "answer": 0,
     "explanation": "command型フックの契約ではexit code自体が権威的なシグナルであり、exit 2はブロックを意味するため、矛盾するJSON出力よりexit codeが優先されると解釈するのが最も安全側に倒した一貫性のある挙動です。JSON出力を優先してallowにしてしまうと、明示的なdeny用exit codeの意味を無視することになり危険です。二つのシグナルを平均するという概念はフック契約に存在しません。設定自体を無効として起動を拒否するという扱いも仕様にはなく、実行時の矛盾ハンドリングの問題です。",
     "tags": [
@@ -1076,6 +1454,13 @@
       "Declare the hook in ~/.claude/settings.json so every developer gets it automatically",
       "Declare the hook in the hooks frontmatter of the run-tests SKILL.md so it is scoped to that skill",
       "Declare the hook in .claude/settings.local.json since it only needs to run during local test runs"
+    ],
+    "questionJa": "開発者生産性チームが「run-tests」スキル用のSKILL.mdを作成し、このスキルのツール呼び出しが失敗したときだけ自動的にSlack通知を送るフックを用意したいが、プロジェクト内のすべてのツール呼び出しに対してグローバルに発火させたくはない。正しいアプローチはどれか。",
+    "choicesJa": [
+      ".claude/settings.jsonにグローバルにフックを宣言し、フックスクリプト内でスキル名を条件分岐でチェックする",
+      "~/.claude/settings.jsonにフックを宣言し、全開発者に自動的に適用されるようにする",
+      "run-testsのSKILL.mdのhooksフロントマターにフックを宣言し、そのスキルにスコープする",
+      "ローカルのテスト実行時にのみ必要なため、.claude/settings.local.jsonにフックを宣言する"
     ],
     "answer": 2,
     "explanation": "SKILL.mdのhooksフロントマターに定義することで、そのスキルがアクティブな間だけフックがスコープされ、要件どおりの挙動になります。settings.jsonにグローバルに書いて条件分岐で絞り込む方法は動作はしても複雑で意図に反した設計であり、スキルスコープの仕組みを使う本来の方法ではありません。~/.claude/settings.jsonに書くとプロジェクト全体・全ツール呼び出しに影響し、スキル限定にはなりません。settings.local.jsonもマシンローカルスコープであり、スキル単位のスコーピングとは別の軸です。",
@@ -1097,6 +1482,13 @@
       "The refund tool's input_schema was missing a required field",
       "The stop_reason was misinterpreted as end_turn instead of tool_use"
     ],
+    "questionJa": "カスタマーサポートエージェントの「process_refund」ツールが、トランスクリプト上ではモデルが「まず顧客を確認する」と発言していたにもかかわらず呼び出されてしまうことがある。モデルの発言した意図に頼ることが強制手段として信頼できない理由を説明する一般原則はどれか。",
+    "choicesJa": [
+      "プロンプトによる指示は確率的でベストエフォートに過ぎず、重要なルールを決定論的に100%強制できるのはフックのようなプログラム的な仕組みだけである",
+      "モデルのコンテキストウィンドウが小さすぎて指示を保持できなかった",
+      "refundツールのinput_schemaに必須フィールドが欠けていた",
+      "stop_reasonがtool_useではなくend_turnと誤って解釈された"
+    ],
     "answer": 0,
     "explanation": "プロンプトによる指示は確率的にしか効かず、金融や安全に関わる重要なルールを保証するには、フックのようなプログラム的な強制メカニズムが必要というのがこの分野の核心的な原則です。コンテキストウィンドウのサイズは今回のシナリオの原因として提示されておらず論点のすり替えです。input_schemaの不備はツール呼び出しの引数検証に関する話であり、検証プロセスの省略とは別問題です。stop_reasonの誤解釈はエージェントループの停止判定に関する話であり、今回のツール呼び出し順序の保証問題とは無関係です。",
     "tags": [
@@ -1116,6 +1508,13 @@
       "Add an override in .claude/settings.local.json that disables the hook for their machine only",
       "Ask the org administrator to update the managed policy to disable the hook temporarily",
       "Edit ~/.claude/settings.json to disable all PostToolUse hooks across every project"
+    ],
+    "questionJa": "あるチームが、ツール出力からPIIをスクラブするプロジェクト全体のPostToolUseフックを定義した共有.claude/settings.jsonをgitリポジトリで管理している。新しいコントリビューターがリポジトリをクローンし、チーム全体からそのフックを削除するような変更を絶対にコミットすることなく、自分のマシン上だけで一時的にそのフックを無効化したいと考えている。どうすべきか。",
+    "choicesJa": [
+      ".claude/settings.jsonを直接編集してフックを削除する変更をコミットし、後で元に戻す",
+      ".claude/settings.local.jsonに、自分のマシンだけでそのフックを無効化するオーバーライドを追加する",
+      "組織管理者にmanaged policyを一時的に更新してフックを無効化するよう依頼する",
+      "~/.claude/settings.jsonを編集し、すべてのプロジェクトにわたってPostToolUseフックを無効化する"
     ],
     "answer": 1,
     "explanation": "settings.local.jsonはgitignoreされるマシンローカルスコープであり、個人環境限定でオーバーライドを行うのに最も適した場所です。プロジェクト共有ファイルを直接編集してコミットする方法は、一時的であってもチーム全体に影響するリスクがあり不適切です。組織管理者に依頼してmanaged policyを変更する方法は、この程度のローカルなデバッグ目的には過剰であり非効率です。~/.claude/settings.jsonを編集すると、そのユーザーの全プロジェクトに影響してしまい、対象プロジェクトだけに限定できません。",
@@ -1137,6 +1536,13 @@
       "The hook is silently discarding information the model needs for downstream decisions, which is a scrubbing anti-pattern distinct from legitimate normalization",
       "PostToolUse hooks only run on errors, so a successful parse would never trigger the scrub"
     ],
+    "questionJa": "ある構造化データ抽出システムが、文書解析ツールが返す日付をClaudeに渡す前に正規化するためPostToolUseフックを使っている。あるレビュアーが、このフックがノイズを減らすために「confidence」フィールドをすべてのツール結果から黙って削除していることに気づいた。この設計のリスクは何か。",
+    "choicesJa": [
+      "PostToolUseフックはそもそもツール結果を一切変更できないため、この設定は完全に失敗する",
+      "この方法で結果をスクラブすることは、プロンプトベースの強制と機能的に同一であり、信頼性の面で何のメリットもない",
+      "このフックは、下流の判断にモデルが必要とする情報を無断で捨ててしまっており、正当な正規化とは区別すべきスクラビングのアンチパターンである",
+      "PostToolUseフックはエラー時にのみ実行されるため、解析が成功した場合にこのスクラブが発火することはない"
+    ],
     "answer": 2,
     "explanation": "PostToolUseフックはタイムスタンプ正規化のような正当な整形には有効ですが、confidenceのように下流の判断に必要な情報を無断で削ってしまうのは、有用なスクラビングと区別すべきアンチパターンです。PostToolUseフックはツール結果を変更できないという選択肢は誤りで、まさに結果を書き換えられる点がこの機能の核心です。スクラブが常にプロンプトベース強制と同じという主張も誤りで、PostToolUseはプログラム的（決定論的）に結果を変更する仕組みです。PostToolUseはエラー時だけ発火するという説明も誤りで、成功時にも結果を処理できます。",
     "tags": [
@@ -1157,6 +1563,13 @@
       "Managed policy scope, controlled by org admins and taking precedence over other scopes",
       "Local scope, with a pre-commit check that verifies it wasn't changed"
     ],
+    "questionJa": "Claude Codeの構成リード担当者が、どのプロジェクトで作業していようと、また個人のsettingsに何を書こうと、組織内のどの開発者もテレメトリー報告用フックを絶対に無効化できないようにする全社的なルールをどこに置くか検討している。この全社的で上書き不可能な要件のために設計されたスコープはどれか。",
+    "choicesJa": [
+      "ユーザースコープを、チーム内の慣習として一貫して適用する",
+      "プロジェクトスコープを、チームwikiに必須事項として文書化する",
+      "組織管理者が管理し、他のどのスコープよりも優先されるManaged policyスコープ",
+      "変更されていないことを検証するpre-commitチェックを備えたローカルスコープ"
+    ],
     "answer": 2,
     "explanation": "managed policyスコープはまさに組織全体で強制され、他のどのスコープよりも優先される非上書き可能な設定のために設計されています。ユーザースコープは各開発者が自由に変更できるため、慣習に頼るだけでは強制力がありません。プロジェクトスコープもチームメンバーが編集可能であり、wikiに書くだけでは技術的な強制にはなりません。ローカルスコープは最も上書きしやすいスコープであり、pre-commitチェックを足しても本質的な強制力の高さでは managed policy に及びません。",
     "tags": [
@@ -1172,6 +1585,13 @@
     "difficulty": 1,
     "question": "A team wants a hook that runs once, briefly asks a single yes/no question to an LLM (e.g., 'does this commit message look suspicious?') and returns a decision, without needing tool access or a multi-turn conversation. Which hook type fits this exactly?",
     "choices": [
+      "agent",
+      "prompt",
+      "mcp_tool",
+      "command"
+    ],
+    "questionJa": "あるチームが、ツールへのアクセスやマルチターンの会話を必要とせず、一度だけ実行されてLLMに単純なyes/noの質問（例えば「このコミットメッセージは不審に見えるか」）を投げて判断を返すフックを求めている。この要件にぴったり合うフックタイプはどれか。",
+    "choicesJa": [
       "agent",
       "prompt",
       "mcp_tool",
@@ -1197,6 +1617,13 @@
       "fork_session combined with a hook decision JSON",
       "The Task tool combined with a PreToolUse hook"
     ],
+    "questionJa": "ある開発者がPythonでClaude Agent SDKを使ったマルチエージェントのリサーチシステムを構築している。エージェントセッションを起動するための主要なエントリーポイントを構成する2つの要素はどれか。",
+    "choicesJa": [
+      "query()関数とClaudeAgentOptionsの組み合わせ",
+      "AgentDefinitionとparent_tool_use_idの組み合わせ",
+      "fork_sessionとフック判断JSONの組み合わせ",
+      "TaskツールとPreToolUseフックの組み合わせ"
+    ],
     "answer": 0,
     "explanation": "Claude Agent SDKの主要なエントリーポイントはquery()関数とClaudeAgentOptionsであり、これらを組み合わせてエージェントセッションを起動する。AgentDefinitionとparent_tool_use_idはサブエージェント定義や属性追跡のための要素であり、起動そのものの手段ではない。fork_sessionはセッション分岐の機能で起動用ではない。TaskツールはClaude Code側の呼称でSDKのエントリーポイントではなく、PreToolUseはフックの一種に過ぎない。",
     "tags": [
@@ -1217,6 +1644,13 @@
       "An AgentDefinition object with description, prompt, and tools fields",
       "A PostToolUse hook with additionalContext set"
     ],
+    "questionJa": "Claude Agent SDK上に構築されたマルチエージェントのリサーチシステムで、チームリードが各サブエージェントの役割を、明確な目的、システムプロンプト、使用できる正確なツールセットとともに宣言したいと考えている。これを定義するために使うべき構成要素はどれか。",
+    "choicesJa": [
+      "toolsフィールドのみを設定したClaudeAgentOptionsオブジェクト",
+      "共有のベースラインを持つfork_session呼び出し",
+      "description・prompt・toolsフィールドを持つAgentDefinitionオブジェクト",
+      "additionalContextを設定したPostToolUseフック"
+    ],
     "answer": 2,
     "explanation": "AgentDefinitionはサブエージェントごとの役割を定義するための構造体で、description・prompt・toolsの3フィールドを持つ。ClaudeAgentOptionsはセッション全体の設定用でtoolsフィールドだけでは個々のサブエージェント定義にならない。fork_sessionはセッション分岐機能であり役割定義の手段ではない。PostToolUseフックはツール実行後の結果加工用であり役割定義とは無関係。",
     "tags": [
@@ -1232,6 +1666,13 @@
     "difficulty": 1,
     "question": "A developer notices that in Claude Code the delegation mechanism is called the \"Task\" tool, but when reading the Claude Agent SDK documentation for the same underlying mechanism, what name should they expect to see?",
     "choices": [
+      "Agent",
+      "Subprocess",
+      "Delegate",
+      "Worker"
+    ],
+    "questionJa": "ある開発者が、Claude Codeでは委任の仕組みが「Task」ツールと呼ばれていることに気づいたが、同じ基盤の仕組みについてClaude Agent SDKのドキュメントを読むと、どの名称が使われていると期待すべきか。",
+    "choicesJa": [
       "Agent",
       "Subprocess",
       "Delegate",
@@ -1257,6 +1698,13 @@
       "stop_reason",
       "parent_tool_use_id"
     ],
+    "questionJa": "複数のサブエージェントが出力を生成し、それをコーディネーターが集約するマルチエージェントのリサーチパイプラインをチームがデバッグしている。生のメッセージログを調べて、ある特定の出力がどのサブエージェント呼び出しに由来するかを特定したい場合、どのフィールドを追跡すべきか。",
+    "choicesJa": [
+      "session_id",
+      "custom_id",
+      "stop_reason",
+      "parent_tool_use_id"
+    ],
     "answer": 3,
     "explanation": "parent_tool_use_idはサブエージェントの出力がどのツール呼び出しに由来するかを追跡するための属性フィールドであり、メッセージの帰属関係を明らかにする。session_idはセッション全体の識別子でサブエージェント単位の追跡には使えない。custom_idはMessage Batches APIでの相関付けに使うものでこの文脈とは無関係。stop_reasonはループ終了理由を示すもので出力の出所とは無関係である。",
     "tags": [
@@ -1276,6 +1724,13 @@
       "parent_tool_use_id to tag both approaches for later comparison",
       "A single subagent with a longer max_turns budget",
       "Sequential prompt chaining across two fixed steps"
+    ],
+    "questionJa": "あるマルチエージェントのリサーチシステムでは、同じ大規模データセットに対して2つの競合する分析アプローチを、片方の探索的作業がもう片方のコンテキストを汚染しないようにしつつ、両方とも同じ蓄積済みのリサーチ状態から開始する形で探索する必要がある。この要件を最もよく満たすClaude Agent SDKの機能はどれか。",
+    "choicesJa": [
+      "共有のベースラインから独立した分岐を作るfork_session",
+      "後で比較できるように両方のアプローチにタグ付けするparent_tool_use_id",
+      "max_turnsの予算を長くした単一のサブエージェント",
+      "2つの固定ステップにまたがる逐次的なプロンプトチェイニング"
     ],
     "answer": 0,
     "explanation": "fork_sessionは共有のベースラインから独立した分岐セッションを作る機能で、複数の異なるアプローチを互いに汚染させることなく並行して試すのに適している。parent_tool_use_idは出力の帰属追跡用であり分岐生成の機能ではない。単一サブエージェントでturn数を増やすだけでは2つのアプローチのコンテキストが混ざってしまう。プロンプトチェイニングは既知の固定ステップの逐次実行であり、分岐して探索する用途には合わない。",
@@ -1297,6 +1752,13 @@
       "Pass only the last customer message, since context can be reconstructed on demand",
       "Pass the model's internal stop_reason and tool_use blocks for full transparency"
     ],
+    "questionJa": "Claude上に構築されたカスタマーサポートエージェントが、請求に関する紛争を人間の担当者にエスカレーションする。エンジニアリングチームは何を引き継ぐべきかを検討している。推奨されるアーキテクチャに合致するアプローチはどれか。",
+    "choicesJa": [
+      "人間があらゆるメッセージを読めるように、生の会話トランスクリプト全体を渡す",
+      "顧客ID・問題内容・注文詳細・実施済みアクション・推奨アクションを含む構造化サマリーを渡す",
+      "文脈は必要に応じて再構築できるので、最後の顧客メッセージだけを渡す",
+      "完全な透明性のために、モデル内部のstop_reasonとtool_use blockを渡す"
+    ],
     "answer": 1,
     "explanation": "推奨されるハンドオフ設計は、顧客ID・問題内容・注文詳細・実施済みアクション・推奨アクションを含む構造化サマリーを渡すことであり、人間の担当者は通常トランスクリプト全体を見られない前提で設計する。生のトランスクリプト全体を渡すのは冗長で本来の設計思想に反する。最後のメッセージだけでは文脈が失われ判断材料が不足する。stop_reasonやtool_use blockは内部的なループ制御情報であり人間向けの引き継ぎ情報としては不適切である。",
     "tags": [
@@ -1312,6 +1774,13 @@
     "difficulty": 2,
     "question": "A team wants a hook that fires specifically when a subagent (launched via the Task/Agent tool) finishes its work, so the coordinator can log completion metrics before deciding on the next delegation. Which hook event is designed for this?",
     "choices": [
+      "`SubagentStop`",
+      "`Stop`",
+      "`PreCompact`",
+      "`SessionEnd`"
+    ],
+    "questionJa": "あるチームは、サブエージェント（Task/Agentツールで起動されたもの）が作業を終えた時点で特定的に発火するフックを用意し、コーディネーターが次の委任判断を行う前に完了メトリクスを記録できるようにしたいと考えている。この用途のために設計されているフックイベントはどれか。",
+    "choicesJa": [
       "`SubagentStop`",
       "`Stop`",
       "`PreCompact`",
@@ -1337,6 +1806,13 @@
       "Use --fork-session to branch off the stale session without any summary",
       "Start a fresh session and explicitly tell it what changed via a summary"
     ],
+    "questionJa": "Claude Codeを使う開発者が、長期稼働中のフィーチャーブランチに翌朝戻ってきた。夜間にチームメイトがマージした変更は、開発者のセッションが以前読み込んでツール結果をキャッシュしていた複数のファイルに影響していた。推奨される対応はどれか。",
+    "choicesJa": [
+      "--resumeは最もコンテキストを保持しトークンを節約できるので、常にそれを使う",
+      "--resumeを使い、ファイルが変わったことにモデルが自ら気づくと信頼する",
+      "--fork-sessionを使って、サマリーなしで古いセッションから分岐する",
+      "新規セッションを開始し、何が変わったかをサマリーで明示的に伝える"
+    ],
     "answer": 3,
     "explanation": "ファイルが変更されコンテキストが古くなっている場合は、新規セッションを開始し何が変わったかを明示的に伝えるサマリーを与えるのが推奨される。--resumeはツール結果がまだ有効な場合にのみ適しており、今回のように内容が変わった状況では古いキャッシュされた前提に基づいて誤った判断をするリスクがある。モデルが自動的に変更に気づくという保証はなく、それに頼るのは危険である。fork_sessionは分岐生成の機能であり、状況の説明を省略してよい理由にはならない。",
     "tags": [
@@ -1356,6 +1832,13 @@
       "When the developer wants to reduce token usage regardless of file changes",
       "When the previous session's tool results are still valid and relevant",
       "When multiple unrelated tasks need to share the same context window"
+    ],
+    "questionJa": "Claude Codeにおいて、新規セッションを開始するのではなく--resume <session>を使うことが適切なのはどのような状況か。",
+    "choicesJa": [
+      "前回セッション以降、基盤となるファイルが大きく変わった場合",
+      "ファイルの変更にかかわらず、開発者がトークン使用量を削減したい場合",
+      "前回セッションのツール結果がまだ有効で関連性がある場合",
+      "複数の無関係なタスクが同じコンテキストウィンドウを共有する必要がある場合"
     ],
     "answer": 2,
     "explanation": "--resumeは前回セッションのツール結果がまだ有効で状況が変わっていない場合に適切な選択である。ファイルが大きく変更された場合は前提が崩れているため新規セッションの方が適切。トークン削減だけを理由にファイル変更を無視して再開するのはコンテキストドリフトのリスクを高める。無関係な複数タスクを同じセッションに詰め込むことは推奨されるセッション管理の考え方ではない。",
@@ -1377,6 +1860,13 @@
       "Switch to --output-format stream-json so results are easier to parse",
       "Run Pass 1 as per-file local analysis, then Pass 2 as a cross-file integration pass"
     ],
+    "questionJa": "あるCI/CD自動化パイプラインは、モノレポ内の40ファイルにまたがるプルリクエストのレビューにClaude Codeを使っている。あるレビュアーが、あるモジュールでの関数名変更が無関係な別モジュールの呼び出し元を壊してしまったケースを単一パスのレビューが見逃した、と指摘した。この失敗モードに対処するアーキテクチャ変更はどれか。",
+    "choicesJa": [
+      "単一パスがより長く考えられるように--max-turnsを増やす",
+      "PRを共有コンテキストなしの40個の単一ファイルレビューセッションに分割する",
+      "結果を解析しやすくするために--output-format stream-jsonに切り替える",
+      "Pass 1をファイル単位のローカル解析として実行し、続いてPass 2をクロスファイルの統合パスとして実行する"
+    ],
     "answer": 3,
     "explanation": "大規模PRのレビューでは、まずファイル単位のローカル解析（Pass 1）を行い、続いてクロスファイルの統合的な整合性チェック（Pass 2）を行う多段階レビューが推奨され、これにより関数名変更が他モジュールの呼び出し元に与える影響のような統合バグを検出できる。max_turnsを増やすだけでは単一パスの注意力散漫という根本原因は解決しない。40個の完全に独立したセッションに分割すると、そもそもクロスファイルの依存関係を検出する手段がなくなる。出力フォーマットの変更は解析の質には影響しない。",
     "tags": [
@@ -1396,6 +1886,13 @@
       "Attention dilution and missed integration issues across files",
       "The bot will be forced to use tool_choice: any for every file",
       "The PreToolUse hook will block the review from starting"
+    ],
+    "questionJa": "ある開発者生産性チームが自動PRレビューボットを設計している。まず個々のファイル内の問題（バグ、スタイル、型、セキュリティ）を一貫した深さでフラグ付けし、その後にファイル間の相互作用を検討させたいと考えている。この構造を省いて単一の統合パスにした場合の主なリスクは何か。",
+    "choicesJa": [
+      "ボットが完了前に利用可能なツールを使い果たしてしまう",
+      "注意力の分散（attention dilution）とファイル間の統合的な問題の見落とし",
+      "ボットが各ファイルに対してtool_choice: anyの使用を強制される",
+      "PreToolUseフックがレビューの開始をブロックしてしまう"
     ],
     "answer": 1,
     "explanation": "単一パスでファイル単位とクロスファイルの分析を同時にこなそうとすると、注意力が分散し（attention dilution）、ファイル間の統合的な問題を見落とすリスクが高まる。これがマルチパスレビューを推奨する理由である。ツール不足の問題ではなくレビューの認知的構造の問題である。tool_choice: anyはツール呼び出しを強制する設定でこのシナリオとは無関係。PreToolUseフックは特定操作の事前ブロック用でレビュー品質の劣化とは無関係である。",
@@ -1417,6 +1914,13 @@
       "Dynamic adaptive decomposition, because it eliminates the need for a coordinator",
       "Dynamic adaptive decomposition, because subtasks emerge only as findings surface"
     ],
+    "questionJa": "ある開発者生産性ツールを構築中のエンジニアが、あるタスクに対してプロンプトチェイニングと動的適応的分解のどちらを使うか決めようとしている。タスクは「チェックアウトサービスが断続的に遅い原因を調査する」というものである。どちらのアプローチが最も適切で、それはなぜか。",
+    "choicesJa": [
+      "プロンプトチェイニング。診断手順の正確な順序が事前にわかっているから",
+      "プロンプトチェイニング。調査結果にかかわらず固定のトークン予算を保証するから",
+      "動的適応的分解。コーディネーターが不要になるから",
+      "動的適応的分解。サブタスクは調査結果が明らかになるにつれて初めて生じるから"
+    ],
     "answer": 3,
     "explanation": "「なぜ遅いのか」を調査するようなタスクは事前に手順が確定しておらず、調査の過程で見つかった手がかりに応じてサブタスクが動的に生まれるため、動的適応的分解が適している。プロンプトチェイニングは既知の固定順序ステップに向いており、原因不明の調査には合わない。プロンプトチェイニングが固定トークン予算を保証するという性質は正しくない。動的分解を使ってもコーディネーターの役割が不要になるわけではなく、依然として結果の統合や再委任が必要である。",
     "tags": [
@@ -1436,6 +1940,13 @@
       "Treat `category` as a coarse machine-readable signal (e.g., route cyber-related refusals to a security review queue) while treating `explanation` as human-readable context, not a parsing target",
       "Ignore `stop_details` entirely since it is only populated for `end_turn` responses",
       "Automatically retry the exact same request, since `refusal` behaves like a transient error category"
+    ],
+    "questionJa": "CI/CD自動化スクリプトが非対話的にClaude Codeを実行しており、`stop_reason`が`refusal`で`stop_details.category`が`\"cyber\"`であるレスポンスを受け取った。チームはこれをプログラム的にどう処理するかを決めたい。これを解釈し行動に移す正しい方法はどれか。",
+    "choicesJa": [
+      "`stop_details.explanation`は機械解析用に設計されているので、そのテキストをregexで解析してリトライ戦略を決める",
+      "`category`は大まかな機械可読シグナル（例えばcyber関連の拒否をセキュリティレビューキューに回すなど）として扱い、`explanation`は解析対象ではなく人間可読の文脈情報として扱う",
+      "`stop_details`は`end_turn`レスポンスにしか設定されないので、完全に無視する",
+      "`refusal`は一時的エラーのカテゴリのように振る舞うので、まったく同じリクエストを自動的に再試行する"
     ],
     "answer": 1,
     "explanation": "`stop_details`の`category`（\"cyber\"、\"bio\"、またはnull）は機械的に扱える大まかな分類シグナルとして使えるが、`explanation`は人間可読な説明であり構文解析の対象にすべきではない。`explanation`をregexで解析して制御ロジックに使うのは誤った使い方である。`stop_details`はrefusal時に設定されるものであり`end_turn`用ではないため、無視するという説明も誤り。refusalは安全性判断によるモデルの拒否であり一時的エラー（transient error）ではないため、単純な再試行は不適切である。",
@@ -1457,6 +1968,13 @@
       "Forking per file would isolate each file's analysis but provide no mechanism for the cross-file integration pass that catches inter-file issues",
       "PreToolUse hooks cannot run inside a forked session, so financial-rule enforcement would be lost"
     ],
+    "questionJa": "あるCI/CD自動化チームは、毎晩の大規模PRレビューにClaude Codeを使い、さらにfork_sessionで競合する仮説をファンアウトさせるマルチエージェントのリサーチシステムにClaude Agent SDKを使っている。新しく加わったエンジニアが、PRレビューのコーディネーターにおいて、ファイル単位パスとクロスファイルパスを行う代わりに、ファイルごとにfork_sessionする方式へ両システムを統合することを提案した。この提案の主な問題点は何か。",
+    "choicesJa": [
+      "fork_sessionはClaude Codeから呼び出すことができず、Agent SDKから直接呼び出す場合にのみ使える",
+      "fork_sessionはすべての分岐を自動的に1つのコンテキストへマージしてしまい、ファイル単位の分離の目的が失われる",
+      "ファイルごとに分岐すると各ファイルの分析は分離できるが、ファイル間の問題を捉えるクロスファイル統合パスを行う仕組みが存在しなくなる",
+      "フォークされたセッション内ではPreToolUseフックが動作しないため、財務ルールの強制が失われる"
+    ],
     "answer": 2,
     "explanation": "fork_sessionはファイルごとに独立した分岐を作れるが、それだけでは各分岐間の情報統合を行う仕組みがなく、クロスファイルの整合性チェック（Pass 2）に相当する統合的な分析が失われてしまう。fork_session自体はClaude CodeベースのワークフローでもAgent SDK的な概念として利用可能であり、呼べないという制約は誤り。fork_sessionが自動的にすべての分岐をマージするという挙動は事実に反する。フックの継承についての制約は本シナリオの核心的な問題ではない。",
     "tags": [
@@ -1476,6 +1994,13 @@
       "Use a PreToolUse hook to deterministically block process_refund until verification, and use AgentDefinition's tools field to scope what each research subagent can call",
       "Rely on the coordinator's judgment at runtime to decide both when to allow refunds and which tools each subagent needs",
       "Encode the refund rule as a stop_sequence so the model halts before calling process_refund"
+    ],
+    "questionJa": "あるカスタマーサポートエージェントを構築するチームは、返金承認というベストエフォートではなく100%の信頼性で強制されるべき金銭的ルールを扱いたい。同時に、AgentDefinitionを使ったリサーチ用サブエージェントアーキテクチャも構築している。この2つの関心事を正しく分離する設計はどれか。",
+    "choicesJa": [
+      "両方の関心事に対して、AgentDefinitionのpromptフィールド内に「返金前に必ず確認する」といったプロンプト指示を使う",
+      "process_refundを検証完了まで決定論的にブロックするPreToolUseフックを使い、各リサーチ用サブエージェントが呼び出せる範囲をAgentDefinitionのtoolsフィールドでスコープする",
+      "返金をいつ許可するか、各サブエージェントにどのツールが必要かの両方をコーディネーターの実行時判断に委ねる",
+      "process_refundを呼び出す前にモデルが停止するように、返金ルールをstop_sequenceとしてエンコードする"
     ],
     "answer": 1,
     "explanation": "返金のような金銭的に重要なルールはPreToolUseフックによる決定論的な強制で100%のガードレールを実現すべきであり、一方でサブエージェントに使わせるツールの範囲はAgentDefinitionのtoolsフィールドで明示的にスコープするのが正しい設計分担である。プロンプト内の指示文だけに頼る方法は確率的で失敗の可能性がある。コーディネーターの実行時判断に両方を委ねるのは金融系ルールに対して信頼性が不十分。stop_sequenceはテキスト内の停止文字列一致であり、ツール呼び出しをブロックする仕組みではない。",
@@ -1497,6 +2022,13 @@
       "The `prompt` field, since instructing the subagent in text about which tools to use is sufficient",
       "There is no per-subagent scoping; all subagents always share the full tool list configured on the coordinator"
     ],
+    "questionJa": "ある構造化データ抽出パイプラインが、`AgentDefinition`でそれぞれ定義された3つの専門サブエージェント（表・本文テキスト・脚注）を持つマルチエージェントシステムとして再設計されている。リード担当は、各サブエージェントがパイプライン全体で使える全ツールではなく、自分の担当セクション種別に関連するツールだけを呼び出せるように制限したいと考えている。このスコープ制限を強制する`AgentDefinition`のフィールドはどれか。",
+    "choicesJa": [
+      "`description`フィールド。サブエージェントがどのツールを使う想定かを文書化するものだから",
+      "`tools`フィールド。特定のサブエージェントが呼び出せるツールセットを明示的に列挙するものだから",
+      "`prompt`フィールド。どのツールを使うべきかをテキストで指示すれば十分だから",
+      "サブエージェントごとのスコープ制限は存在せず、すべてのサブエージェントは常にコーディネーターに設定された全ツールリストを共有する"
+    ],
     "answer": 1,
     "explanation": "`AgentDefinition`の`tools`フィールドは、そのサブエージェントが呼び出せるツールの集合を明示的に制限するためのものであり、これにより各サブエージェントを自分のセクション種別に関連するツールだけに限定できる。`description`はサブエージェントの役割説明であり選択のためのメタ情報に過ぎずアクセス制御ではない。`prompt`内の指示文だけに頼るのはプロンプトベースの強制であり確率的で信頼性が低い。ツールが常に全サブエージェントで共有されるという説明は誤りで、`tools`フィールドによる個別スコープが可能である。",
     "tags": [
@@ -1516,6 +2048,13 @@
       "By setting --max-turns to a higher number",
       "By using the Message Batches API with custom_id correlation",
       "By enabling bypassPermissions mode"
+    ],
+    "questionJa": "Claude Agent SDKのドキュメントによると、コーディネーターは複数のサブエージェントを逐次的にではなく並列に実行させるにはどうすればよいか。",
+    "choicesJa": [
+      "単一の応答の中で複数のTask/Agent tool_use呼び出しを発行する",
+      "--max-turnsをより高い値に設定する",
+      "custom_idによる相関付けを伴うMessage Batches APIを使う",
+      "bypassPermissionsモードを有効にする"
     ],
     "answer": 0,
     "explanation": "並列実行を得るには単一の応答の中で複数のTask/Agent tool_use呼び出しをまとめて発行することが必須である。max_turnsを増やすのはターン数の上限であり並列性とは無関係。Message Batches APIはマルチターン不可のバッチ処理用でエージェントの並列サブタスク実行の仕組みとは異なる。bypassPermissionsは権限確認をスキップする危険なモードであり並列実行とは無関係である。",
@@ -1537,6 +2076,13 @@
       "The AgentDefinition for the CI subagent lacked a tools field; add Read and Glob explicitly",
       "The session was resumed with stale cached context after the underlying files changed; start a fresh session and supply an explicit change summary"
     ],
+    "questionJa": "あるCI/CD自動化向けのClaude Code構成では、トークンコストを低く抑えるために--resumeを使って夜間実行のたびに長期稼働セッションを再開している。ある朝、パイプラインが失敗した。エージェントが、前日の夜に削除されたはずの設定ファイルを自信満々に参照していたのである。最も可能性の高い根本原因と正しい修正方法はどれか。",
+    "choicesJa": [
+      "エージェントのstop_reasonの設定が誤っていた。tool_result contentのチェックに切り替えるべき",
+      "Message Batches APIがそのファイルのcustom_idを黙って取り落とした。バッチ全体を再送信すべき",
+      "CI用サブエージェントのAgentDefinitionにtoolsフィールドがなかった。ReadとGlobを明示的に追加すべき",
+      "基盤となるファイルが変更された後もセッションが古いキャッシュ済みコンテキストのまま再開された。新規セッションを開始し、明示的な変更サマリーを与えるべき"
+    ],
     "answer": 3,
     "explanation": "--resumeを使い続けたことで前夜のファイル削除後もセッションが古いキャッシュされた前提を保持してしまい、存在しないファイルを参照するという問題が起きたと考えられる。正しい対処は新規セッションを開始し、何が変わったかを明示的に伝えるサマリーを与えることである。stop_reasonはループ終了判定のための仕組みでありファイル参照の誤りとは無関係。Message Batches APIのcustom_idはバッチ処理の相関付け用でこの単一セッションの文脈とは関係ない。tools定義の欠如はツール呼び出し不能を招くが、今回のような「存在しないファイルを参照する」挙動の説明にはならない。",
     "tags": [
@@ -1556,6 +2102,13 @@
       "The developer forgot to pass fork_session:true when launching the subagent",
       "Subagents do not inherit the coordinator's conversation history, so the competitor name and product line must be passed explicitly in the subagent's prompt",
       "The subagent's prompt exceeded the model_context_window, triggering truncation"
+    ],
+    "questionJa": "あるマルチエージェントのリサーチシステムのコーディネーターが、レポートのために競合他社の価格ページを要約するようサブエージェントに指示した。コーディネーター自身の会話の中では既にどちらの競合他社かも製品ラインも詳しく話し合っていたにもかかわらず、サブエージェントはどの競合他社のどの製品ラインかを聞き返してきた。最も可能性の高い説明はどれか。",
+    "choicesJa": [
+      "サブエージェントのAgentDefinition.toolsフィールドに、ページを読み込むために必要なfetchツールが列挙されていなかった",
+      "サブエージェントを起動する際に開発者がfork_session:trueを渡し忘れた",
+      "サブエージェントはコーディネーターの会話履歴を継承しないため、競合他社名や製品ラインはサブエージェントのプロンプトに明示的に渡す必要がある",
+      "サブエージェントのプロンプトがmodel_context_windowを超え、truncationが発生した"
     ],
     "answer": 2,
     "explanation": "サブエージェントはコーディネーターの会話履歴を継承しないため、競合名や製品ラインといった必要な情報は明示的にサブエージェントのプロンプトに渡さなければならない。これを怠ると、コーディネーターが既に把握している前提をサブエージェントが知らず、確認を求め返してくる。tools fieldにfetchツールがないなら，ページ取得自体ができずエラーになるはずで質問返しにはならない。fork_sessionは分岐生成のための機能で情報欠落の原因ではない。コンテキストウィンドウ超過によるtruncationは出力が途切れる問題であり、前提情報を尋ね返す挙動の説明にはならない。",
@@ -1577,6 +2130,13 @@
       "tool_choice: any to force some tool call, combined with a single combined per-file-and-cross-file pass to save turns",
       "A single review pass with a strongly worded system prompt telling the model to always check security-sensitive files before approving"
     ],
+    "questionJa": "ある開発者生産性プラットフォームが、60ファイルのPRに対して自動レビューボットを実行している。経営陣は、(a) セキュリティ上重要なファイルのチェックが実行されないままPRがマージされることがないという確実な強制と、(b) 差分全体にわたる十分なレビュー品質の両方を求めている。この両方の目標に正しく対応する組み合わせはどれか。",
+    "choicesJa": [
+      "セキュリティファイルチェックのツール呼び出し完了をマージ承認ツールの条件とするPreToolUseフックと、ファイル単位のPass 1に続くクロスファイルのPass 2レビューの組み合わせ",
+      "強制のためのプロンプトベースの指示と、PRを60個の完全に孤立した単一ファイルセッションに分割することの組み合わせ",
+      "何らかのツール呼び出しを強制するtool_choice: anyと、ターン数を節約するためのファイル単位・クロスファイル統合の単一パスの組み合わせ",
+      "承認前に必ずセキュリティ関連ファイルを確認するようモデルに指示する、強い文言のシステムプロンプトによる単一のレビューパス"
+    ],
     "answer": 0,
     "explanation": "確実な強制にはPreToolUseフックによる決定論的なゲーティングが必要であり、レビュー品質の担保にはファイル単位のPass 1とクロスファイルのPass 2という多段階レビューが必要で、この二つを組み合わせるのが正解である。プロンプト指示だけに頼る強制は確率的であり100%の保証にならない。60個の完全孤立セッションに分割するとクロスファイルの統合分析ができなくなる。tool_choice: anyは何らかのツール呼び出しを強制するだけで特定の検査の実行を保証せず、また単一の統合パスは注意力分散のリスクを抱える。",
     "tags": [
@@ -1596,6 +2156,13 @@
       "A code-migration coordinator decomposes 'modernize the auth module' into only a single 'update password hashing' subagent, omitting session handling, token refresh, and third-party SSO integration entirely",
       "A billing coordinator passes the full order ID and refund amount into a subagent's prompt instead of a vague natural-language description",
       "A CI coordinator emits two independent Task tool_use calls in the same response instead of across two separate turns"
+    ],
+    "questionJa": "あるマルチエージェントのリサーチシステムに「2026年にグローバルサプライチェーンが直面する新興リスク」を調査するよう依頼した。コーディネーターはこのタスクを「半導体不足」だけに限定した単一のサブエージェントに分解した。あるレビュアーはこれを狭すぎると指摘した。以下のうち、構造的に同種の分解ミスはどれか。",
+    "choicesJa": [
+      "あるサポートチケットのトリアージ用コーディネーターが、出荷遅延のみに関するリクエストに対して、法務レビュー用サブエージェントを含む8つのサブエージェントすべてを呼び出す",
+      "あるコード移行用コーディネーターが「認証モジュールを近代化する」を「パスワードハッシュ更新」のみのサブエージェントに分解し、セッション管理・トークン更新・サードパーティSSO連携を完全に見落とす",
+      "ある請求担当のコーディネーターが、あいまいな自然言語による説明の代わりに、完全な注文IDと返金額をサブエージェントのプロンプトに渡す",
+      "あるCI用コーディネーターが、2つの独立したTask tool_use呼び出しを2つの別々のターンではなく同じ応答内で発行する"
     ],
     "answer": 1,
     "explanation": "半導体不足のみに限定した供給網リスク調査と同様に、認証モジュールの近代化を『パスワードハッシュ更新』のみに限定するのも、セッション管理・トークン更新・サードパーティSSO連携といった重要な側面を見落とす『分解範囲が狭すぎる』という同種のアンチパターンである。無関係な全サブエージェントを起動する例は動的サブエージェント選択の問題であり別種の誤り、具体的情報をきちんと渡す例はむしろ推奨されるコンテキスト分離対応の好例、単一応答内での並列tool_use発行は推奨される並列実行のベストプラクティスであり、いずれも分解範囲の狭さとは異なる論点である。",

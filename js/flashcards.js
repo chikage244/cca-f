@@ -158,6 +158,7 @@ function renderCurrentCard(slot) {
   const front = el("div", { class: "flip-card__face flip-card__face--front" }, [
     el("span", { class: "badge badge-neutral flip-card__badge" }, domainMeta ? domainMeta.nameJa : card.domain),
     el("p", { class: "flip-card__term" }, card.term),
+    card.termJa ? el("p", { class: "text-muted flip-card__term-ja" }, card.termJa) : null,
     el("p", { class: "text-muted flip-card__hint" }, "タップして解説を見る"),
   ]);
 

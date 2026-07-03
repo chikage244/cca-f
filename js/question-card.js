@@ -62,6 +62,9 @@ export function renderQuestionCard(container, question, opts) {
 
   // Question text
   card.appendChild(el("p", { class: "question-card__text" }, question.question));
+  if (question.questionJa) {
+    card.appendChild(el("p", { class: "question-card__text-ja" }, question.questionJa));
+  }
 
   // Choices
   const choiceList = el("div", { class: "question-card__choices" });
@@ -69,6 +72,11 @@ export function renderQuestionCard(container, question, opts) {
   let answered = false;
 
   order.forEach((originalIndex) => {
+    const choiceJa = question.choicesJa && question.choicesJa[originalIndex];
+    const btnChildren = [el("span", { class: "choice__text" }, question.choices[originalIndex])];
+    if (choiceJa) {
+      btnChildren.push(el("span", { class: "choice__text-ja" }, choiceJa));
+    }
     const btn = el(
       "button",
       {
@@ -82,7 +90,7 @@ export function renderQuestionCard(container, question, opts) {
               grade(originalIndex);
             },
       },
-      question.choices[originalIndex]
+      btnChildren
     );
     if (readOnly) btn.disabled = true;
     buttons.push({ btn, originalIndex });

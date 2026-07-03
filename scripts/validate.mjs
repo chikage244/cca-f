@@ -19,10 +19,18 @@ const ROOT = path.resolve(__dirname, "..");
 const FULL = process.argv.includes("--full");
 
 const errors = [];
+const warnings = [];
 
 function fail(message) {
   errors.push(message);
 }
+
+function warn(message) {
+  warnings.push(message);
+}
+
+let questionsWithJaCount = 0;
+let flashcardsWithJaCount = 0;
 
 function readJson(relPath) {
   const abs = path.join(ROOT, relPath);
@@ -119,6 +127,33 @@ function validateQuestionFile({ domain, file, fullCount }) {
     if (!Array.isArray(item.tags)) {
       fail(`${where}: tags must be an array`);
     }
+
+    // questionJa / choicesJa (optional translation fields; only validated
+    // in --full mode, and only their shape IF present)
+    if (FULL) {
+      const hasQuestionJa = Object.prototype.hasOwnProperty.call(item, "questionJa");
+      const hasChoicesJa = Object.prototype.hasOwnProperty.call(item, "choicesJa");
+
+      if (hasQuestionJa) {
+        if (typeof item.questionJa !== "string" || item.questionJa.trim().length === 0) {
+          fail(`${where}: questionJa must be a non-empty string when present`);
+        }
+      }
+
+      if (hasChoicesJa) {
+        if (!Array.isArray(item.choicesJa) || item.choicesJa.length !== 4) {
+          fail(`${where}: choicesJa must be an array of exactly 4 items when present`);
+        } else {
+          item.choicesJa.forEach((choiceJa, choiceIndex) => {
+            if (typeof choiceJa !== "string" || choiceJa.trim().length === 0) {
+              fail(`${where}: choicesJa[${choiceIndex}] must be a non-empty string`);
+            }
+          });
+        }
+      }
+
+      if (hasQuestionJa || hasChoicesJa) questionsWithJaCount += 1;
+    }
   });
 
   if (FULL && data.length !== fullCount) {
@@ -182,6 +217,15 @@ function validateFlashcards() {
 
     if (typeof item.definition !== "string" || item.definition.trim().length === 0) {
       fail(`${where}: definition must be a non-empty string`);
+    }
+
+    // termJa (optional translation field; only validated in --full mode)
+    if (FULL && Object.prototype.hasOwnProperty.call(item, "termJa")) {
+      if (typeof item.termJa !== "string" || item.termJa.trim().length === 0) {
+        fail(`${where}: termJa must be a non-empty string when present`);
+      } else {
+        flashcardsWithJaCount += 1;
+      }
     }
   });
 
@@ -262,7 +306,26 @@ function validatePrecache() {
 
 validatePrecache();
 
+// ---------- Ja translation coverage (informational, --full only) ----------
+
+if (FULL) {
+  if (questionsWithJaCount === 0) {
+    warn("no questions have questionJa/choicesJa yet (translation may still be in progress)");
+  }
+  if (flashcardsWithJaCount === 0) {
+    warn("no flashcards have termJa yet (translation may still be in progress)");
+  }
+}
+
 // ---------- Report ----------
+
+if (warnings.length > 0) {
+  console.warn(`\nvalidate.mjs: ${warnings.length} warning(s)${FULL ? " (--full mode)" : ""}:\n`);
+  for (const w of warnings) {
+    console.warn(`  - ${w}`);
+  }
+  console.warn("");
+}
 
 if (errors.length > 0) {
   console.error(`\nvalidate.mjs: ${errors.length} error(s) found${FULL ? " (--full mode)" : ""}:\n`);

@@ -318,7 +318,9 @@ button {
 /* ---------- Choice Button (quiz/exam) ---------- */
 .choice {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
   width: 100%;
   min-height: 44px;
   padding: var(--space-3) var(--space-4);
@@ -328,8 +330,19 @@ button {
   border-radius: var(--radius-md);
   text-align: left;
   font-size: 0.95rem;
+  line-height: 1.4;
   cursor: pointer;
   touch-action: manipulation;
+}
+
+.choice__text {
+  display: block;
+}
+
+.choice__text-ja {
+  display: block;
+  font-size: 0.9em;
+  color: var(--color-text-muted);
 }
 
 .choice:active {
@@ -348,6 +361,11 @@ button {
   border-color: var(--color-danger);
   color: var(--color-danger);
   font-weight: 700;
+}
+
+.choice.correct .choice__text-ja,
+.choice.wrong .choice__text-ja {
+  color: inherit;
 }
 
 /* ---------- Chip Filter ---------- */
@@ -522,6 +540,13 @@ button {
 
 .question-card__text {
   font-size: 1rem;
+  margin-bottom: var(--space-4);
+}
+
+.question-card__text-ja {
+  font-size: 0.9em;
+  color: var(--color-text-muted);
+  margin-top: calc(-1 * var(--space-3));
   margin-bottom: var(--space-4);
 }
 
@@ -700,6 +725,11 @@ button {
 .flip-card__term {
   font-size: 1.2rem;
   font-weight: 700;
+  margin: 0;
+}
+
+.flip-card__term-ja {
+  font-size: 0.9em;
   margin: 0;
 }
 

@@ -386,10 +386,18 @@ function renderQuestionAt(active, index, refs) {
     ])
   );
   card.appendChild(el("p", { class: "question-card__text" }, question.question));
+  if (question.questionJa) {
+    card.appendChild(el("p", { class: "question-card__text-ja" }, question.questionJa));
+  }
 
   const choiceList = el("div", { class: "question-card__choices" });
   const chosen = active.answers[clamped];
   choiceOrder.forEach((originalIndex) => {
+    const choiceJa = question.choicesJa && question.choicesJa[originalIndex];
+    const btnChildren = [el("span", { class: "choice__text" }, question.choices[originalIndex])];
+    if (choiceJa) {
+      btnChildren.push(el("span", { class: "choice__text-ja" }, choiceJa));
+    }
     const btn = el(
       "button",
       {
@@ -402,7 +410,7 @@ function renderQuestionAt(active, index, refs) {
           btn.classList.add("is-selected");
         },
       },
-      question.choices[originalIndex]
+      btnChildren
     );
     choiceList.appendChild(btn);
   });

@@ -10,6 +10,13 @@
       "The tool_choice parameter should be set to force the flag_refund tool on every turn",
       "The instruction relies on subjective judgment instead of explicit qualifying and disqualifying criteria with boundary examples"
     ],
+    "questionJa": "あるチームが、返金リクエストを人間によるレビュー対象として「suspicious（不審）」とフラグ付けするカスタマーサポートエージェントを構築している。最初のプロンプトは「不正のリスクについて、あなたの最善の判断（best judgment）を使って、不審に見える返金リクエストにはすべてフラグを立ててください」となっている。本番環境では、このエージェントが正当なリクエストの40%にフラグを立ててしまっている。最も可能性が高い根本原因は何か。",
+    "choicesJa": [
+      "モデルのコンテキストウィンドウが小さすぎて、返金ポリシー全体を保持できない",
+      "エージェントには返金ツール呼び出しをインターセプトするPostToolUseフックが必要である",
+      "tool_choiceパラメータを設定し、毎ターンflag_refundツールを強制すべきである",
+      "この指示は、明示的な適格・非適格条件と境界事例の代わりに主観的な判断に依存している"
+    ],
     "answer": 3,
     "explanation": "正解は3です。「best judgment」のような主観的な指示は基準が曖昧になり、過剰検知（false positive）を招きます。明示的な適格/非適格条件と境界事例を定義することが解決策です。選択肢0はコンテキストウィンドウの問題ではなく指示設計の問題なので誤り。選択肢1はフック自体は正しい実行を保証する手段であり、判定基準の曖昧さという根本原因を解決しません。選択肢2はツール選択の強制であり、判定基準の曖昧さとは無関係です。",
     "tags": [
@@ -30,6 +37,13 @@
       "Use your best judgment to decide whether a comment still applies",
       "A comment referencing a function that no longer exists in the file qualifies as outdated"
     ],
+    "questionJa": "自動コードレビューエージェント向けの分類指示のベストプラクティスによれば、コメントを古い（outdated）としてフラグ付けするタイミングを伝えるプロンプトにおいて、避けるべき表現はどれか。",
+    "choicesJa": [
+      "主張されている挙動が現在のコードと直接矛盾する場合に限りコメントを古いとフラグ付けする",
+      "挙動ではなく意図や理由を説明しているコメントにはフラグを立てない",
+      "コメントがまだ当てはまるかどうかを判断する際は、あなたの最善の判断（best judgment）を使う",
+      "ファイル内に存在しなくなった関数を参照しているコメントは、古いコメントに該当する"
+    ],
     "answer": 2,
     "explanation": "正解は2です。「use your best judgment」は明確な基準を示さない曖昧な指示であり、一貫性のない判定と過剰検知を招くため避けるべき表現です。選択肢0は「ONLY when」という否定境界を明示した良い例です。選択肢1は非該当条件を明示しているため良い例です。選択肢3は具体的な該当条件（境界事例）を示しているため良い例です。",
     "tags": [
@@ -48,6 +62,13 @@
       "A single noisy flag category erodes trust in all flag categories, even accurate ones",
       "The coordinator failed to use parallel Task tool_use calls in a single response",
       "The hooks system was not configured to enforce flagging deterministically"
+    ],
+    "questionJa": "あるマルチエージェントリサーチシステムには、「確信度が低い（low confidence）」主張を人間のレビュー対象としてフラグ付けするサブエージェントがある。リリース後、エンジニアたちは、精度の高い別の「情報源の矛盾（source conflict）」フラグを含め、すべてのサブエージェントからのフラグをレビュアーが信用しなくなり、レビューキューを完全に無視し始めたことに気づいた。この結果を説明する原則は何か。",
+    "choicesJa": [
+      "サブエージェントはコーディネーターの会話履歴を引き継がないため、フラグに文脈が欠けている",
+      "一つのノイズの多いフラグカテゴリが、精度の高いものも含めたすべてのフラグカテゴリへの信頼を損なう",
+      "コーディネーターが一つの応答内で並列にTaskのtool_use呼び出しを行っていなかった",
+      "フラグ付けを決定論的に強制するようhooksシステムが設定されていなかった"
     ],
     "answer": 1,
     "explanation": "正解は1です。あるカテゴリのフラグが精度不足でノイズが多いと、人間のレビュアーは他の正確なカテゴリも含めて全体を信用しなくなる、というfalse-positive economicsの典型例です。選択肢0はサブエージェントのコンテキスト分離に関する話で、この症状とは無関係です。選択肢2は並列実行の話で信頼低下の原因ではありません。選択肢3はhookの強制力の話であり、この経済学的な信頼喪失の説明にはなりません。",
@@ -68,6 +89,13 @@
       "Switch the tool_choice parameter from auto to any so a flag is always emitted",
       "Disable the noisy flag category, refine its criteria against real failure cases, then re-enable it"
     ],
+    "questionJa": "ある構造化データ抽出パイプラインは、手動監査のために「異常な請求書明細項目」にフラグを立てている。あるベンダーカテゴリでの誤検知率が65%に達し、監査担当者が監査キュー全体をスキップするようになってしまった。推奨される是正手順は何か。",
+    "choicesJa": [
+      "すぐに、すべてのベンダーカテゴリを網羅するfew-shot例を同じプロンプトに追加する",
+      "実行ごとの出力のばらつきを減らすため、モデルのtemperatureを下げる",
+      "フラグが必ず出力されるよう、tool_choiceパラメータをautoからanyに切り替える",
+      "ノイズの多いフラグカテゴリを一旦無効化し、実際の失敗事例をもとに基準を洗練させてから再度有効化する"
+    ],
     "answer": 3,
     "explanation": "正解は3です。ノイズの多いフラグカテゴリは一旦無効化し、実際の失敗事例をもとに基準を洗練させてから再度有効化する、というdisable→refine→re-enableの手順が推奨されます。選択肢0は場当たり的にexample数を増やすだけで根本原因（基準の曖昧さ)に対処していません。選択肢1はtemperatureの調整は本ドメインで扱う手法ではなく、判定基準の問題を解決しません。選択肢2はtool_choiceの変更はどのツールを呼ぶかを強制するだけで、判定精度の改善にはつながりません。",
     "tags": [
@@ -86,6 +114,13 @@
       "Add the phrase 'only flag high-confidence findings' to reduce the volume of flags",
       "Increase max_retries on the validation loop so the agent double-checks each flag before emitting it",
       "Merge all four categories into a single combined confidence score so reviewers see one number"
+    ],
+    "questionJa": "あるCI/CDパイプラインは、古くなったコードコメントにフラグを立てる自動PRコメントエージェントを稼働させている。経営陣はこれを拡張し、古くなったドキュメントリンク、質の低い変数名、不足しているテストについても、同じパスで一つの広い指示を使ってまとめてフラグ付けしたいと考えている。「誤検知については保守的（conservative）にしつつ、古い、または質が低いと思われるものにはすべてフラグを立ててください」。エンジニアからは、レビュアーがこのボットの出力を完全に無視するようになったという苦情が増えている。最善の修正策は何か。",
+    "choicesJa": [
+      "カテゴリごとに範囲を絞った基準に分割し、それぞれに明示的な適格・非適格の境界を設け、1カテゴリずつ段階的に展開する",
+      "フラグの数を減らすため、「high-confidenceな所見のみフラグを立てる」というフレーズを追加する",
+      "エージェントがフラグを出す前に各所見を再チェックするよう、検証ループのmax_retriesを増やす",
+      "レビュアーが一つの数値だけを見られるように、4つのカテゴリすべてを一つの統合信頼スコアにまとめる"
     ],
     "answer": 0,
     "explanation": "正解は0です。複数の曖昧なカテゴリを一つの広い指示にまとめると基準が薄まり誤検知が増えるため、カテゴリごとに明示的な適格/非適格の境界を定義し、1カテゴリずつ段階的に展開するのが正しいアプローチです。選択肢1は「conservative」や「high-confidence」も同様に曖昧で誤った表現の代表例であり解決になりません。選択肢2はvalidation-retryループはスキーマ検証の話であり、判定基準の曖昧さには対処できません。選択肢3は複数カテゴリを一つのスコアに統合しても、根本原因である基準の曖昧さは解決されず、むしろ個別カテゴリの原因追跡を困難にします。",
@@ -106,6 +141,13 @@
       "Classify as 'critical' only when production is down or data loss is occurring; classify as 'low' when the issue is cosmetic and has a workaround; treat ambiguous reports lacking impact details as 'needs-triage', not 'critical'",
       "Classify priority the way an experienced senior engineer would after quickly skimming the bug report"
     ],
+    "questionJa": "ある開発者生産性ツールは、自由記述のバグレポートからチケットの優先度を抽出する。現在のプロンプトは「優先度を保守的（conservatively）に分類してください」となっている。explicit criteria frameworkに最も適合する書き換えはどれか。",
+    "choicesJa": [
+      "自由記述レポートから検知した緊急度のシグナルに基づき、あなたの最善の判断（best judgment）を使って優先度を分類する",
+      "レポートが不確かな場合は常に低い優先度ラベルに寄せて、優先度を保守的に（conservatively）分類する",
+      "本番環境がダウンしている、またはデータ損失が発生している場合に限り「critical」に分類する。表面的な問題で回避策がある場合は「low」に分類する。影響の詳細を欠く曖昧なレポートは「critical」ではなく「needs-triage」として扱う",
+      "熟練のシニアエンジニアがバグレポートをざっと読んだ場合に下すであろう分類の仕方で優先度を分類する"
+    ],
     "answer": 2,
     "explanation": "正解は2です。「critical」「low」の該当条件と、情報不足時の非該当な扱い（needs-triageへの退避）まで明示しており、境界事例を含む明確な基準を提示しています。選択肢0は「best judgment」という曖昧な表現で基準がありません。選択肢1は「conservatively」という曖昧な形容詞に依存しており具体的な境界を示していません。選択肢3は「シニアエンジニアならどうするか」という比喩も具体性を欠き、モデルが一貫して適用できる基準になりません。",
     "tags": [
@@ -124,6 +166,13 @@
       "Flag a currency mismatch conservatively, using best judgment on ambiguous cases",
       "Flag a currency mismatch if the invoice total seems unusually high for the vendor",
       "Flag a currency mismatch only when the invoice header currency code differs from the currency symbol used in the line-item amounts"
+    ],
+    "questionJa": "請求書向けの構造化データ抽出システムにおいて、エンジニアはエージェントに「通貨の不一致（currency mismatch）」エラーをフラグ付けさせたいと考えている。精密な否定境界（precise negation boundaries）を正しく適用している指示はどれか。",
+    "choicesJa": [
+      "請求書について財務的に何か普通でないと感じられる点があれば、通貨の不一致としてフラグを立てる",
+      "曖昧な事例ではあなたの最善の判断（best judgment）を使いつつ、通貨の不一致を保守的に（conservatively）フラグ付けする",
+      "請求書の合計額がそのベンダーにしては異常に高いと思われる場合、通貨の不一致としてフラグを立てる",
+      "請求書ヘッダーの通貨コードが、明細項目の金額に使われている通貨記号と異なる場合に限り、通貨の不一致としてフラグを立てる"
     ],
     "answer": 3,
     "explanation": "正解は3です。「ONLY when」という形で対象を明確な条件（ヘッダーの通貨コードと明細の通貨記号の不一致）に限定しており、精密な否定境界の典型例です。選択肢0は「anything...unusual」という無限定な表現で境界がありません。選択肢1は「best judgment」という禁句を含み基準が曖昧です。選択肢2は金額の大きさという無関係な代理指標を使っており、通貨不一致という本来の目的とずれています。",
@@ -144,6 +193,13 @@
       "Remove the flagging feature entirely and replace it with a PreToolUse hook that blocks all commits from merging",
       "Add several more few-shot examples of correctly formatted commit messages without listing any disqualifying cases"
     ],
+    "questionJa": "あるClaude Codeの設定は、ポリシー違反についてコミットメッセージをレビューするスキルを定義している。現在の指示は「スタイルガイドに違反するコミットメッセージにフラグを立ててください」である。レビュアーからは、実際には一度も本当の問題になったことのない些細な大文字・小文字の違いでエージェントがフラグを立てているという苦情がある。精密な否定境界を最もよく適用した変更はどれか。",
+    "choicesJa": [
+      "既存の指示に「スタイル違反にフラグを立てる際は保守的（conservative）にしてください」というフレーズを追加する",
+      "「ポリシーで要求されているチケット参照がコミットメッセージに欠けている場合、または件名行が72文字制限を超えている場合に限りフラグを立てる。文体的な言い回しの選択にはフラグを立てない」を追加する",
+      "フラグ付け機能を完全に削除し、すべてのコミットのマージをブロックするPreToolUseフックに置き換える",
+      "非該当となる事例を一切挙げないまま、正しくフォーマットされたコミットメッセージのfew-shot例をさらに複数追加する"
+    ],
     "answer": 1,
     "explanation": "正解は1です。「flag only when」で該当条件を具体的に列挙し、さらに「do not flag」で非該当条件（文体的な言い回し）も明示しており、精密な否定境界の模範例です。選択肢0は「conservative」という曖昧語で解決になりません。選択肢2はコミットを全てブロックするのはビジネスルールとして過剰であり、そもそも柔軟なフラグ機能の要件を満たしません。選択肢3は非該当条件を含まないfew-shotは境界を教えられず、曖昧さが残ります。",
     "tags": [
@@ -163,6 +219,13 @@
       "Flag a claim as inaccurate using your best judgment, weighted toward flagging whenever the fact-checker is in doubt",
       "Flag a claim as inaccurate if it is phrased in a way that sounds uncertain, hedged, or tentative to the reader"
     ],
+    "questionJa": "あるマルチエージェントリサーチシステムのファクトチェック用サブエージェントには「不正確かもしれない主張にはすべてフラグを立ててください」という指示が与えられている。デプロイ後、厳密に言えばほとんど何でも「かもしれない」不正確さがあり得るため、根拠のしっかりした主張も含め、主張の80%にフラグが立ってしまっている。精密な否定境界を使って根本的な問題を解決する書き換えはどれか。",
+    "choicesJa": [
+      "引用元として挙げられている情報源の記載事実と直接矛盾している場合、または情報源が全くない場合に限り、主張を不正確としてフラグ付けする。情報源よりも確信度が低い表現で述べられているだけの主張にはフラグを立てない",
+      "もっともらしく不正確である可能性がある場合は常に主張にフラグを立てるが、レポートあたりのフラグの総数上限を5件に設定する",
+      "ファクトチェッカーが疑わしいと感じる場合にフラグを立てる方向に重みを置きつつ、あなたの最善の判断（best judgment）を使って主張を不正確としてフラグ付けする",
+      "読み手にとって不確か、ヘッジがかかっている、あるいは断定を避けているように聞こえる言い回しであれば、主張にフラグを立てる"
+    ],
     "answer": 0,
     "explanation": "正解は0です。「only when」で該当条件（引用元との直接矛盾、または出典なし）を絞り込み、さらに非該当条件（確信度の違いだけでは対象外）も明示しており、精密な否定境界の要件を満たしています。選択肢1は件数上限を設けるだけで判定基準自体は曖昧なままであり根本原因を解決しません。選択肢2は「best judgment」を含む禁句そのものです。選択肢3は表現のトーン（hedgingの有無）という無関係な代理指標に依存しており、事実の正確性とは無関係です。",
     "tags": [
@@ -181,6 +244,13 @@
       "Provide 15-20 few-shot examples covering every possible phrasing variant seen in historical data",
       "Provide 2-4 targeted few-shot examples, each containing the input note, the correct output, and the reasoning that connects them",
       "Provide one single canonical few-shot example and instruct the model to generalize the pattern on its own"
+    ],
+    "questionJa": "医療問診票向けの構造化データ抽出エージェントを構築しているチームは、自由記述のメモからアレルギーの重症度を分類する必要がある。メモの表現が一貫していないため、このカテゴリはハルシネーションリスクが高い。最も適切なアプローチはどれか。",
+    "choicesJa": [
+      "few-shot例は不要なトークンを追加するだけなので、重症度レベルを説明する詳細なzero-shot指示のみに頼る",
+      "過去データで見られたあらゆる言い回しのバリエーションを網羅する15〜20個のfew-shot例を用意する",
+      "入力ノート、正しい出力、そしてそれらを結びつけるreasoningをそれぞれ含む、2〜4個の的を絞ったfew-shot例を用意する",
+      "1つだけ模範的なfew-shot例を用意し、モデル自身にパターンを汎化させる"
     ],
     "answer": 2,
     "explanation": "正解は2です。曖昧さやハルシネーションリスクが高い抽出タスクでは、2〜4個の的を絞ったfew-shot例を用い、各例にinput・output・reasoning（なぜその出力が正しいかの因果的な説明）を含めることで汎化可能なパターンを教えるのが最適です。選択肢0はzero-shotのみでは高リスクなケースに対応しづらく、few-shotの効果を放棄しています。選択肢1は例が多すぎるとコンテキストを浪費し過学習を招くため最適ではありません。選択肢3は1例だけでは推論の型を十分に示せず、パターンの汎化が不十分になりがちです。",
@@ -202,6 +272,13 @@
       "A list of ten to fifteen similar inputs with a single shared output label",
       "Only the output format, since showing inputs biases the model toward memorization"
     ],
+    "questionJa": "推奨されるfew-shotプロンプティングのアプローチによれば、few-shotプロンプト内の各例には何を含めるべきか。",
+    "choicesJa": [
+      "モデルは自分でreasoningを推測できるので、入力と正しい出力のみ",
+      "入力、正しい出力、そしてなぜその出力が正しいのかを説明するreasoning",
+      "一つの共有された出力ラベルを持つ、10〜15個の類似した入力のリスト",
+      "入力を見せるとモデルが暗記に偏ってしまうため、出力フォーマットのみ"
+    ],
     "answer": 1,
     "explanation": "正解は1です。各few-shot例はinput・output・reasoning（因果的な理由付け）の3要素を含めることで、単なる入出力の暗記ではなく一般化可能なパターンをモデルに教えることができます。選択肢0はreasoningを省くと表面的なパターンマッチングに留まり、新規事例への汎化が弱くなります。選択肢2は複数入力を一つの出力に束ねる形式はfew-shotの基本構造ではなく、境界の学習に向きません。選択肢3は出力形式だけでは入力とのマッピングを学習できず、few-shotの目的を果たしません。",
     "tags": [
@@ -220,6 +297,13 @@
       "The tool_choice parameter was set to auto instead of any, causing free-text answers",
       "The examples lack a required is_error field on each tool_result block",
       "The CLAUDE.md file was not reloaded after the prompt change"
+    ],
+    "questionJa": "あるカスタマーサポートエージェントは、エスカレーションチケットを「billing dispute」「technical failure」「account fraud」に分類する必要がある。エンジニアは、カバレッジを最大化しようと、直近1か月で見られた微妙な言い回しのバリエーションごとに3件ずつ、合計18個のfew-shot例を追加した。この変更後、本当に新規のチケットの言い回しに対する精度が下がってしまった。最も可能性の高い説明は何か。",
+    "choicesJa": [
+      "例が多すぎると過去の言い回しに過学習してしまい、本来汎化可能なパターンを教えるべきコンテキストを浪費する",
+      "tool_choiceパラメータがanyではなくautoに設定されていたため、自由記述の回答になってしまった",
+      "各例にtool_resultブロックの必須フィールドであるis_errorが欠けている",
+      "プロンプト変更後にCLAUDE.mdファイルが再読み込みされなかった"
     ],
     "answer": 0,
     "explanation": "正解は0です。few-shot例が多すぎると、モデルが個々の表現パターンを丸暗記するように過学習し、汎化可能なロジックを学習しにくくなります。最適な例数は2〜4個の的を絞ったものです。選択肢1はtool_choiceの設定はこの分類精度低下の原因ではありません。選択肢2はis_errorはtool_resultの話であり、few-shot例の構成とは無関係です。選択肢3はCLAUDE.mdの再読み込みは本シナリオの症状（過学習）を説明しません。",
@@ -241,6 +325,13 @@
       "No, few-shot examples should never be used for any coding-related classification or linting task",
       "No, few-shot examples are best reserved for ambiguous scenarios, format/reasoning demonstration needs, high hallucination-risk extraction, or edge cases — a simple unambiguous rule usually does not need them"
     ],
+    "questionJa": "ある開発者生産性アシスタントは、コードスニペットが社内の命名規則に違反しているかどうかを判定する必要がある。このルールはシンプルで曖昧さがない（「すべての定数はSCREAMING_SNAKE_CASEでなければならない」）。チームはこの指示にfew-shot例を追加すべきか。",
+    "choicesJa": [
+      "はい、より多くの例が常に精度を確実に最大化するため、タスクの単純さに関わらず常に少なくとも8個のfew-shot例を追加すべきである",
+      "はい、ただしルールはすでに完全に曖昧さがないため、reasoningフィールドを持たない単一の例としてのみ追加すべきである",
+      "いいえ、コーディング関連の分類やlintingタスクにfew-shot例を使うべきではない",
+      "いいえ、few-shot例は曖昧なシナリオ、フォーマットや推論の実演の必要性、ハルシネーションリスクの高い抽出、エッジケースへの対応のために取っておくのが最適であり、単純で曖昧さのないルールには通常不要である"
+    ],
     "answer": 3,
     "explanation": "正解は3です。few-shotは曖昧なシナリオ、フォーマットや推論の実演が必要な場合、ハルシネーションリスクが高い抽出、エッジケースへの対応に適しており、今回のような単純で曖昧さのないルールには通常不要です。選択肢0は常に例を追加するという方針はコンテキストを浪費し不要な複雑さを生みます。選択肢1は例を1つ入れるだけでも不要な文脈消費であり、単純なルールには過剰です。選択肢2はコーディング関連タスクにfew-shotを一切使わないという断定は誤りで、エッジケースがあれば有効です。",
     "tags": [
@@ -259,6 +350,13 @@
       "The example will be silently dropped by strict mode validation since reasoning is a required property",
       "Without reasoning, the tool_use block will fail because input_schema requires a reasoning field for all extraction tools",
       "The model may learn a surface correlation from that specific example rather than the generalizable logic distinguishing 'contested' from 'single-source', hurting performance on novel claims"
+    ],
+    "questionJa": "あるマルチエージェントリサーチシステムの統合用サブエージェントは、各主張の確実性を「well-established」「contested」「single-source」のいずれかに分類する必要がある。情報源によって合意の明示のされ方が異なるため、これは曖昧なタスクである。チームは3つのfew-shot例を用意した。例2は入力となる主張と正しい出力ラベル「contested」を示しているが、なぜそうなるのかの説明がない。reasoningフィールドを省略することのリスクは何か。",
+    "choicesJa": [
+      "問題ない。スキーマ準拠は入力と出力のみを必要とするので、reasoningは任意の装飾にすぎない",
+      "reasoningは必須プロパティであるため、strict modeの検証によってこの例は黙って除外されてしまう",
+      "input_schemaがすべての抽出ツールにreasoningフィールドを必須としているため、reasoningがないとtool_useブロックが失敗する",
+      "モデルはその特定の例から表面的な相関を学習してしまい、'contested'と'single-source'を区別する汎化可能なロジックを学べず、未知の主張に対する性能が下がる"
     ],
     "answer": 3,
     "explanation": "正解は3です。reasoningを省くと、モデルはその例の表面的な特徴を暗記するだけになりがちで、'contested'と'single-source'を区別する一般化可能なロジックを学習できず、未知の主張への適用で精度が落ちます。選択肢0はスキーマ準拠の話とfew-shotの教育効果は別の話であり、reasoningは精度向上に重要です。選択肢1はstrict modeのJSON Schema検証とfew-shot例の構成は別の仕組みであり、この文脈でreasoningが必須プロパティとして扱われるわけではありません。選択肢2はtool_use blockの話とfew-shot例のreasoning欄は無関係です。",
@@ -280,6 +378,13 @@
       "10-15 examples to cover the majority of historical ticket variants",
       "As many examples as fit within the context window, to maximize pattern coverage"
     ],
+    "questionJa": "あるチームは、曖昧なサポートチケットを分類することをエージェントに教える際に含めるべきfew-shot例の最適な数を決めようとしている。ベストプラクティスによれば、どの範囲を目指すべきか。",
+    "choicesJa": [
+      "詳細な指示を伴うzero-shotは常にfew-shotを上回るため、0〜1個の例",
+      "入力・出力・reasoningをそれぞれ示す、2〜4個の的を絞った例",
+      "過去のチケットのバリエーションの大部分をカバーする10〜15個の例",
+      "パターンのカバレッジを最大化するため、コンテキストウィンドウに収まるだけの例"
+    ],
     "answer": 1,
     "explanation": "正解は1です。最適なfew-shot例の数は2〜4個の的を絞った例であり、それぞれinput・output・reasoningを含めることが推奨されています。選択肢0はzero-shotが常に優れているという主張は誤りで、曖昧なタスクではfew-shotが有効です。選択肢2は例が多すぎるとコンテキストを浪費し過学習のリスクが高まります。選択肢3はコンテキストいっぱいに詰め込むアプローチも同様に過学習とコスト増を招きます。",
     "tags": [
@@ -299,6 +404,13 @@
       "Disable the 'needs security review' auto-label, refine the criteria to explicit qualifying/disqualifying conditions based on real false positives, then re-enable it",
       "Increase the max_retries on the validation-retry loop so the label is applied more consistently"
     ],
+    "questionJa": "あるCI/CDパイプラインは、適切な場合にプルリクエストへ「needs security review」ラベルを自動で付与するエージェントを使っている。最初の指示は「機微な領域に触れるPRに、裁量を持ってラベルを付けてください」というものである。1か月後、セキュリティレビュアーからは、ラベル付けされたPRのおよそ半分が無関係（例: 認証コード付近のコメントのタイプミス修正など）であり、そのラベルを無視し始めているという報告がある。チームが順番に行うべき2つのことは何か。",
+    "choicesJa": [
+      "すぐにキューに割り当てるレビュアー数を倍にし、その後プロンプトは変更しない",
+      "認証関連のファイルパスに触れるあらゆるPRのマージをブロックする必須のPreToolUseフックにラベル機能を置き換える",
+      "「needs security review」の自動ラベルを一旦無効化し、実際の誤検知に基づいて明示的な適格・非適格条件に基準を洗練させ、その後再度有効化する",
+      "ラベルがより一貫して適用されるよう、検証-再試行ループのmax_retriesを増やす"
+    ],
     "answer": 2,
     "explanation": "正解は2です。誤検知の多いラベル機能は一旦無効化し、実際のfalse positive事例を分析して明確な適格/非適格基準に基準を洗練させた上で再度有効化する、というdisable→refine→re-enableの順序が正解です。選択肢0はレビュアーを増やすだけでは根本原因（基準の曖昧さ）は解決されず、コストが増えるだけです。選択肢1はPreToolUseフックでマージ自体をブロックするのは、レビューが必要かどうかの分類問題を解決する話ではなく過剰に強い施策です。選択肢3はvalidation-retryループはスキーマ検証の話であり、ラベル基準の曖昧さの解決にはなりません。",
     "tags": [
@@ -317,6 +429,13 @@
       "Engineer B's approach, because a single noisy category erodes trust across all categories, and re-enabling without fixing the underlying criteria perpetuates the trust erosion",
       "Neither — the correct fix is to add more few-shot examples immediately without disabling anything, since disabling loses coverage during the fix window",
       "Engineer A's approach, because 'best judgment' framing for reviewers compensates for imprecise agent criteria"
+    ],
+    "questionJa": "ある構造化データ抽出システムは、契約条項を法務レビュー対象として「非標準（non-standard）」フラグ付けしている。誤検知の急増により、non-standard-clauseカテゴリだけでなく、フラグ付けシステム全体へのレビュアーの信頼が損なわれた後、2人のエンジニアがそれぞれ異なる修正案を提案した。エンジニアAは「念のためもう一度確認してください」という注意書きを添えて、すぐにフラグを再有効化したいと考えている。エンジニアBは、フラグを一旦無効化し、誤検知事例を分析して境界事例を伴う明示的な適格・非適格基準を導出した上で、そのカテゴリのみを再度有効化したいと考えている。false-positive economicsの原則を正しく反映しているのはどちらのアプローチで、それはなぜか。",
+    "choicesJa": [
+      "エンジニアAのアプローチ。フラグを有効なままにしておくことで、レビュアーが順応する間もrecallが維持されるから",
+      "エンジニアBのアプローチ。一つのノイズの多いカテゴリがすべてのカテゴリへの信頼を損なうため、根本の基準を修正しないまま再有効化すると信頼低下が続いてしまうから",
+      "どちらでもない。無効化はその修正期間中のカバレッジを失わせるため、何も無効化せずすぐにfew-shot例を追加するのが正しい修正である",
+      "エンジニアAのアプローチ。レビュアーに対する「best judgment」的な捉え方が、エージェント側の基準の不正確さを補ってくれるから"
     ],
     "answer": 1,
     "explanation": "正解は1です。一つのノイズの多いカテゴリが全体への信頼を損なうため、まず無効化し、実際の誤検知事例から明確な基準を導き出してから再有効化するEngineer Bのアプローチが正しいfalse-positive economicsの適用です。選択肢0はレビュアーに「もう一度確認して」と頼むだけでは信頼低下の根本原因（基準の曖昧さ）を解決せず、信頼はさらに損なわれます。選択肢2は無効化せずにfew-shotを追加するだけでは、修正が検証される前に誤検知が続き信頼をさらに損ないます。選択肢3は「best judgment」でレビュアー側に判断を委ねる発想自体が、明示的基準の欠如という問題を放置するものです。",
@@ -338,6 +457,13 @@
       "Comment on any line that could plausibly contain a bug, using best judgment about how severe the bug might be",
       "Comment only on lines already flagged by static analysis tools, removing the agent's own judgment from the process entirely"
     ],
+    "questionJa": "あるClaude Codeの設定には、差分をレビューし、疑わしい行に「possible bug」とコメントするカスタムスキルが含まれている。SKILL.mdの指示は「バグを含む可能性があると思われる行にはすべてコメントし、不確かな場合はフラグを立てる方向に倒してください」となっている。開発者からは、コメントがあまりに頻繁でもう読むのをやめてしまったという報告がある。explicit criteria frameworkに最も沿ってこれを修正する書き換えはどれか。",
+    "choicesJa": [
+      "同じファイル内の他の場所で明示されている不変条件と行のロジックが直接矛盾する場合に限りコメントする（例: 2行後に参照されている変数のnullチェックが削除されている場合）。スタイルやパフォーマンスに関する懸念にはコメントしない",
+      "バグを含む可能性がある行にはすべてコメントするが、ファイルあたりのコメント総数の上限を3件に設定する",
+      "バグがどれくらい深刻かについてあなたの最善の判断（best judgment）を使いつつ、バグを含む可能性がある行にはすべてコメントする",
+      "静的解析ツールですでにフラグが立てられた行にのみコメントし、エージェント自身の判断をプロセスから完全に排除する"
+    ],
     "answer": 0,
     "explanation": "正解は0です。「comment only when」で該当条件（明示的な不変条件との直接的な矛盾）を具体例とともに定義し、さらに非該当条件（スタイルやパフォーマンスの懸念は対象外）も明示しており、explicit criteria frameworkの模範例です。選択肢1は件数上限を設けるだけで判定基準自体の曖昧さは残ったままです。選択肢2は「best judgment」という禁句をそのまま残しており根本原因を解決していません。選択肢3は静的解析ツールのみに頼る案はエージェントの価値を放棄するものであり、explicit criteria frameworkの適用とは異なるアプローチです。",
     "tags": [
@@ -358,6 +484,13 @@
       "It fails to specify a JSON Schema with additionalProperties set to false",
       "It does not reference the input_schema required field for the extraction tool"
     ],
+    "questionJa": "あるプロンプトエンジニアは、スキャンされた領収書画像が「判読不能（illegible）」に該当するかどうかを判定する必要がある構造化抽出エージェント向けの指示をレビューしている。現在の指示は「適切な場合は判読不能とマークし、保守的（conservative）にしてください」となっている。explicit criteria frameworkの観点から、この指示が設計上の欠陥とみなされるのはなぜか。",
+    "choicesJa": [
+      "明示的な適格・非適格条件と境界事例を示す代わりに、「appropriate」や「conservative」を使っているから",
+      "mark_illegibleツールを強制するために必要なtool_choiceパラメータに言及していないから",
+      "additionalPropertiesがfalseに設定されたJSON Schemaを指定していないから",
+      "抽出ツールのinput_schemaの必須フィールドを参照していないから"
+    ],
     "answer": 0,
     "explanation": "正解は0です。「appropriate」「conservative」はどちらも主観的で曖昧な表現であり、明示的な適格・非適格条件と境界事例が欠けている点が設計上の欠陥です。選択肢1はtool_choiceの設定はこの指示文の曖昧さの問題とは別の話です。選択肢2はJSON Schemaのstrict mode設定はスキーマ準拠の話であり、判定基準の曖昧さとは別の問題です。選択肢3もinput_schemaのrequiredフィールドの話であり、この指示文の欠陥の説明にはなりません。",
     "tags": [
@@ -376,6 +509,13 @@
       "Remove the reasoning field from all examples to save context budget, keeping only bare input/output pairs, then add the 6 extra examples",
       "Stop at 3-4 well-chosen examples whose reasoning teaches the generalizable distinction, since too many examples wastes context and risks overfitting to specific phrasings rather than the underlying pattern",
       "Replace all few-shot examples with a single detailed paragraph describing the distinction in the abstract, since prose alone is always preferable to worked examples"
+    ],
+    "questionJa": "あるマルチエージェントリサーチシステムを構築しているチームは、抽出された事実を「情報源によって直接裏付けられている」か「推論・外挿されたもの」かに分類するサブエージェントを望んでいる。この区別は微妙で誤りやすい。彼らはfew-shotセクションを計画している。例1（reasoning付きの直接裏付け）、例2（reasoning付きの推論）、そしてさらに6個の稀なエッジケースを扱う例を追加するか、3〜4個で止めてそれぞれのreasoningによる汎化に頼るかを議論している。few-shot例の数と目的に関するガイダンスに最も沿った選択はどれか。",
+    "choicesJa": [
+      "あらゆる稀なケースを網羅することは未見の新規入力に対する信頼性を常に向上させるため、すぐに追加の6個のエッジケース例をすべて追加する",
+      "コンテキスト予算を節約するため、すべての例からreasoningフィールドを削除し、入力・出力のペアのみを残した上で、6個の追加例を加える",
+      "汎化可能な区別を教えるreasoningを持つ3〜4個の的を絞った例で止める。例が多すぎるとコンテキストを浪費し、根底にあるパターンではなく特定の言い回しへの過学習を招くリスクがあるため",
+      "散文だけの説明は常に実演された例より望ましいため、すべてのfew-shot例をその区別を抽象的に説明する単一の詳細な段落に置き換える"
     ],
     "answer": 2,
     "explanation": "正解は2です。曖昧で誤りやすい区別を教える際は、2〜4個程度の的を絞った例に留め、各例のreasoningが汎化可能なパターンを教えることを重視すべきです。例を増やしすぎるとコンテキストを浪費し特定の言い回しへの過学習を招きます。選択肢0は例を増やすことが常に信頼性向上につながるという前提が誤りで、過学習のリスクを無視しています。選択肢1はreasoningを削除すると表面的なパターンマッチングに陥りやすく、few-shotの教育効果が失われます。選択肢3は抽象的な説明文だけでは曖昧な区別を十分に教えられず、具体例による実演が有効な場面でこれを放棄するのは適切ではありません。",
@@ -398,6 +538,13 @@
       "Leave `tool_choice` as `\"auto\"` and rely on a strong tool description",
       "Add `\"strict\": true` to the tool's `input_schema` only"
     ],
+    "questionJa": "ある開発者は構造化データ抽出パイプラインを構築しており、Claudeが平文で回答する可能性を排除し、特定の`extract_invoice_data`ツールを確実に呼び出すようにしたいと考えている。この挙動を保証する設定はどれか。",
+    "choicesJa": [
+      "Claudeが何らかのツールを呼び出さざるを得ないよう`tool_choice: {\"type\":\"any\"}`を設定する",
+      "その正確なツールを強制するため`tool_choice: {\"type\":\"tool\",\"name\":\"extract_invoice_data\"}`を設定する",
+      "`tool_choice`を`\"auto\"`のままにし、強力なツール説明文に頼る",
+      "ツールの`input_schema`のみに`\"strict\": true`を追加する"
+    ],
     "answer": 1,
     "explanation": "正解はtool_choiceを{\"type\":\"tool\",\"name\":\"extract_invoice_data\"}のように指定し、特定のツールを強制する方法です。\"any\"は何らかのツール呼び出しを保証しますが、どのツールが呼ばれるかは保証しません。\"auto\"はClaudeがテキスト応答するか判断を任せるためツール呼び出しを保証しません。strict:trueはスキーマ準拠を保証するものであり、ツール選択の強制とは無関係です。",
     "tags": [
@@ -417,6 +564,13 @@
       "`tool_choice: \"auto\"` plus `\"additionalProperties\": true` for flexibility",
       "`\"strict\": true` plus `\"additionalProperties\": false` plus every property listed in `required`",
       "`\"strict\": true` plus `minLength`/`maxLength` constraints on each field"
+    ],
+    "questionJa": "あるCI/CDパイプラインは、Claudeの構造化出力機能を使ってチケットのメタデータをJSONとして抽出している。エンジニアは、下流のコードが想定外のフィールドでクラッシュしないよう、厳密なスキーマ準拠を求めている。これを実現する設定の組み合わせはどれか。",
+    "choicesJa": [
+      "各文字列フィールドに対する`pattern`正規表現に加えて`\"strict\": true`",
+      "柔軟性のための`\"additionalProperties\": true`に加えて`tool_choice: \"auto\"`",
+      "`\"strict\": true`に加えて`\"additionalProperties\": false`、さらにすべてのプロパティを`required`に含める",
+      "各フィールドの`minLength`/`maxLength`制約に加えて`\"strict\": true`"
     ],
     "answer": 2,
     "explanation": "strict modeで保証されるスキーマ準拠は、strict:trueに加えてadditionalProperties:falseとすべてのプロパティをrequiredに含めることで実現します。patternやminLength/maxLengthはstrict mode未サポートの機能であり、これらを指定してもエラーになるか無視されます。additionalProperties:trueは余分なフィールドを許容してしまい厳格な保証にならず、tool_choice:\"auto\"はツール呼び出し自体を保証しません。",
@@ -438,6 +592,13 @@
       "Use only `tool_choice: {\"type\":\"any\"}` with no schema attached",
       "Rely on the deprecated top-level `output_format` field as the primary mechanism"
     ],
+    "questionJa": "ある古い統合を移行しているチームは、すべてを合成的なツール呼び出しに通す代わりに、Claudeの現行の直接JSON出力パターンを採用したいと考えている。現在推奨されているアプローチを反映した設定はどれか。",
+    "choicesJa": [
+      "リクエストに`output_config: {\"format\": {\"type\": \"json_schema\", \"schema\": {...}}}`を設定する",
+      "すべてのリクエストに`structured-outputs-2025-11-13`ベータヘッダーを追加する",
+      "スキーマを一切添付せず、`tool_choice: {\"type\":\"any\"}`のみを使う",
+      "非推奨のトップレベル`output_format`フィールドを主要な仕組みとして頼る"
+    ],
     "answer": 0,
     "explanation": "現行の直接JSON出力パターンはoutput_config: {\"format\": {\"type\": \"json_schema\", \"schema\": {...}}}です。古いoutput_formatは移行期のため残されているだけで主機構ではありません。structured-outputs-2025-11-13ベータヘッダーはもはや不要です。tool_choice:\"any\"はスキーマなしでは何らかのツール呼び出しを強制するだけで、直接JSON出力の指定にはなりません。",
     "tags": [
@@ -457,6 +618,13 @@
       "Schema validation guarantees types and required fields but never guarantees semantic correctness like totals summing correctly",
       "The model is hallucinating field values despite valid JSON structure, so `additionalProperties` should be set to true",
       "The `enum` constraints on the amount fields are missing, which is why totals do not reconcile"
+    ],
+    "questionJa": "あるカスタマーサポートエージェントは、返金リクエストを`line_items`、`line_item_total`、`stated_total`のフィールドを持つstrict-modeのJSONスキーマに抽出している。本番環境では抽出は常に検証に成功しているが、経理部門からは`stated_total`が`line_item_total`の合計と一致しないことがあると報告されている。最も正確な説明はどれか。",
+    "choicesJa": [
+      "このリクエストでは`strict`フラグがおそらく実際には適用されていなかった",
+      "スキーマ検証は型と必須フィールドを保証するが、合計値が正しく合算されるといった意味的正しさは決して保証しない",
+      "有効なJSON構造にもかかわらずモデルがフィールド値をハルシネーションしているため、`additionalProperties`をtrueに設定すべきである",
+      "金額フィールドに`enum`制約が欠けていることが、合計が一致しない原因である"
     ],
     "answer": 1,
     "explanation": "これは最頻出のポイントで、スキーマ準拠(型・必須項目・enum・formatの保証)と意味的正しさ(合計値の整合性などのビジネスロジック)は別物であり、後者は保証されないためカスタム検証が必要です。additionalProperties:trueにしても整合性チェックにはならず、むしろ余分なフィールドを許容するだけです。enumは金額のような数値フィールドには通常使わず、合計不一致の原因ではありません。strictフラグが外れていたとしても型自体は保証されており、今回の問題の本質的な原因ではありません。",
@@ -478,6 +646,13 @@
       "Declare `\"type\": [\"string\", \"null\"]` for `publication_date` so absent data can be represented as null",
       "Increase `max_retries` in the validation loop so the model eventually finds the real date"
     ],
+    "questionJa": "あるマルチエージェントリサーチシステムでは、サブエージェントが情報源の文書から`publication_date`フィールドを抽出するが、多くの文書はそもそも日付を記載していない。エンジニアは、日付が存在しない場合にモデルがそれらしい日付を捏造することを避けたいと考えている。これに対処するスキーマ設計はどれか。",
+    "choicesJa": [
+      "`publication_date`にISO-8601の日付形式を要求する`pattern`正規表現を追加する",
+      "捏造を自動的に防ぐ`\"strict\": true`のみを設定する",
+      "情報源に日付が存在しない場合にnullで表現できるよう、`publication_date`に`\"type\": [\"string\", \"null\"]`を宣言する",
+      "モデルが最終的に本当の日付を見つけられるよう、検証ループの`max_retries`を増やす"
+    ],
     "answer": 2,
     "explanation": "\"type\": [\"string\", \"null\"]のようなnullable指定によって、情報源に日付が存在しない場合にnullを許容でき、モデルが捏造する動機を減らせます。patternはstrict modeで未サポートの機能であり、フォーマット強制にはなってもデータの有無の問題は解決しません。strict:trueだけでは捏造防止は保証されません。リトライを増やしても存在しないデータを作り出すことはできず、根本的な解決になりません。",
     "tags": [
@@ -497,6 +672,13 @@
       "Make `signing_date` nullable and accept that retries cannot manufacture data that was never present in the source",
       "Switch `tool_choice` to `\"any\"` so the model can skip the field entirely",
       "Remove `\"strict\": true` so the model can return any shape of JSON for this field"
+    ],
+    "questionJa": "ある構造化抽出パイプラインは、`signing_date`フィールドが完全に判読不能な場合があるスキャンされた契約書を処理している。3回の検証リトライの後もそのフィールドは空のままで、`signing_date`が必須の非null文字列であるためパイプラインは検証に失敗し続けている。正しい修正は何か。",
+    "choicesJa": [
+      "モデルに日付を読み取るチャンスをより多く与えるため、`max_retries`を3から10に増やす",
+      "`signing_date`をnullable（`[\"string\",\"null\"]`など）にし、そもそも情報源に存在しなかったデータをリトライで作り出すことはできないと受け入れる",
+      "モデルがそのフィールドを完全にスキップできるよう、`tool_choice`を`\"any\"`に切り替える",
+      "このフィールドについてモデルがどんな形のJSONでも返せるよう、`\"strict\": true`を削除する"
     ],
     "answer": 1,
     "explanation": "リトライは存在しないデータを作り出すことはできないため、フィールドをnullable([\"string\",\"null\"]など)にして情報が読み取れない場合を正しく表現するのが正解です。retriesを増やしても元画像に情報がなければ結果は変わりません。tool_choice:\"any\"はツール呼び出しの強制であり、個々のフィールドの必須制約とは無関係です。strictを外すとスキーマ準拠全体の保証を失ってしまい、過剰な代償です。",
@@ -518,6 +700,13 @@
       "Add a `pattern` to restrict the category string to five known words",
       "Set `\"additionalProperties\": true` so extra category values can be appended"
     ],
+    "questionJa": "ある開発者生産性ツールは、strict-modeの`enum`フィールドを使って受信したサポートチケットを5つのカテゴリのいずれかに分類する。時折、チケットがどのカテゴリにもきれいに一致しないことがある。モデルが誤ったカテゴリを推測してしまうのを防ぐenum設計はどれか。",
+    "choicesJa": [
+      "明示的なフォールバックオプションとして`\"other\"`と`\"unclear\"`の値をenumに追加する",
+      "enum制約を完全に取り除き、自由記述のカテゴリ文字列を受け入れる",
+      "カテゴリ文字列を既知の5つの単語に制限する`pattern`を追加する",
+      "追加のカテゴリ値を後から付け足せるよう`\"additionalProperties\": true`を設定する"
+    ],
     "answer": 0,
     "explanation": "enumに\"other\"や\"unclear\"のようなフォールバック値を含めることで、どのカテゴリにも当てはまらない場合にモデルが無理に既存カテゴリへ当てはめて推測することを防げます。enumを外すと分類の一貫性が失われます。patternはstrict modeで未サポートであり、そもそもenumの代替にはなりません。additionalPropertiesはオブジェクトの余剰プロパティに関する設定であり、単一フィールドの値の選択肢とは無関係です。",
     "tags": [
@@ -537,6 +726,13 @@
       "Strict mode does not support `minimum`/`maximum`, so the range must be enforced with custom validation code after extraction",
       "Strict mode automatically clamps out-of-range numbers to the nearest valid boundary",
       "Using `enum` with every integer from 0 to 100 is the officially recommended way to express a numeric range"
+    ],
+    "questionJa": "あるチームは、strict-modeの抽出スキーマにおける数値の`discount_percent`フィールドが常に0から100の範囲に収まることを強制したいと考えている。これについて正確な記述はどれか。",
+    "choicesJa": [
+      "スキーマに`\"minimum\": 0, \"maximum\": 100`を追加することはstrict modeで完全にサポートされており、範囲を強制する",
+      "strict modeは`minimum`/`maximum`をサポートしないため、範囲は抽出後のカスタム検証コードで強制する必要がある",
+      "strict modeは範囲外の数値を最も近い有効な境界値に自動的にクランプする",
+      "0から100までのすべての整数を`enum`で列挙することが、数値範囲を表現する公式な推奨方法である"
     ],
     "answer": 1,
     "explanation": "strict modeではminimum/maximumはサポートされていない機能であり、数値範囲の検証は抽出後のカスタム検証コードで行う必要があります。したがってminimum/maximumを追加しても保証にはなりません。strict modeが自動的に値をクランプすることもありません。0から100までの全整数をenumで列挙するのは非現実的で公式に推奨される方法でもありません。",
@@ -558,6 +754,13 @@
       "`pattern` works normally in strict mode but only for fields also marked `nullable`",
       "`pattern` is unsupported in strict mode, so this constraint has no enforcement effect and malformed numbers must be caught by custom validation after the response"
     ],
+    "questionJa": "あるエンジニアは、電話番号を抽出するstrict-modeスキーマを設計しており、`phone_number`フィールドに`\"pattern\": \"^\\\\+?[0-9]{10,15}$\"`を記述し、生成時にAPIが不正な形式の番号を拒否することを期待している。実際には何が起こるか。",
+    "choicesJa": [
+      "APIは生成時にpatternを強制し、一致しない出力は内部で自動的にリトライされる",
+      "`pattern`はJSON SchemaのAPIリクエストのどこにも含めることができないため、リクエストはそのまま拒否される",
+      "`pattern`はstrict modeで通常通り機能するが、`nullable`ともマークされているフィールドに対してのみである",
+      "`pattern`はstrict modeでサポートされていないため、この制約には強制力がなく、不正な形式の番号はレスポンス後のカスタム検証で捕捉する必要がある"
+    ],
     "answer": 3,
     "explanation": "strict modeではpatternのような正規表現制約はサポートされていないため、それを書いても生成時の強制力を持たず、フォーマットの妥当性はレスポンス後のカスタム検証コードでチェックする必要があります。APIが内部で自動リトライして修正することはありません。patternフィールド自体を含めることでリクエストが拒否されるわけでもありません(単に無視されるだけ)。nullableかどうかとpatternのサポート有無は無関係です。",
     "tags": [
@@ -577,6 +780,13 @@
       "Wrap the `oneOf` block inside `additionalProperties: false` to make it strict-mode compatible",
       "Convert `oneOf` into an `enum` of the two possible type names",
       "Redesign the schema to avoid `oneOf`/`anyOf`/`allOf`, since these composition keywords are unsupported in strict mode"
+    ],
+    "questionJa": "ある構造化データ抽出システムには、文字列型の注文メモか、サブフィールドを持つ構造化されたオブジェクトのいずれかになり得るフィールドが必要で、当初は`oneOf`でモデル化されていた。チームはこれをstrict mode下で動作させたいと考えている。どうすべきか。",
+    "choicesJa": [
+      "strict modeはスキーマ合成キーワードを完全にサポートしているため、`oneOf`をそのまま残す",
+      "strict mode互換にするため、`oneOf`ブロックを`additionalProperties: false`で包む",
+      "`oneOf`を2つの型名からなる`enum`に変換する",
+      "`oneOf`/`anyOf`/`allOf`はstrict modeでサポートされていないため、これらの合成キーワードを使わないようスキーマを再設計する"
     ],
     "answer": 3,
     "explanation": "strict modeではallOf/anyOf/oneOf/if-then-elseのような合成キーワードは未サポートのため、これらを使わない形にスキーマを再設計する必要があります。additionalProperties:falseで包んでも合成キーワード自体のサポート状況は変わりません。oneOfをenumの型名一覧に変換しても実際のデータ構造の分岐を表現できず、根本的な解決になりません。",
@@ -598,6 +808,13 @@
       "This is expected: schema validation only guarantees structural correctness, not cross-field consistency, so custom logic must check version ordering",
       "The fix is to add a `pattern` constraint on `version` to force higher numbers"
     ],
+    "questionJa": "あるCI/CD自動化システムは、`json_schema`を伴う`output_config`を使ってリリースノートをJSONに抽出している。QAは、スキーマ検証が毎回完璧に通る一方で、`version`フィールドが`changelog_entries`で参照されているバージョンより前のものを示すことがあると気づいた。チームは何を結論付けるべきか。",
+    "choicesJa": [
+      "strict検証がこれを捕捉すべきだったので、`json_schema`が不正な形式であるに違いない",
+      "これは`additionalProperties`が`true`のまま残されていて、不整合なバージョンを通してしまっていることを示している",
+      "これは想定通りである。スキーマ検証は構造的な正しさのみを保証し、フィールド間の整合性は保証しないため、バージョンの前後関係をチェックするカスタムロジックが必要である",
+      "解決策は、より大きい番号を強制するために`version`に`pattern`制約を追加することである"
+    ],
     "answer": 2,
     "explanation": "スキーマ検証は型や必須項目などの構造面のみを保証し、フィールド間の整合性(バージョン番号の前後関係など)は保証しないため、カスタムロジックでのチェックが必要です。スキーマが壊れているわけではなく、これはstrict modeの想定通りの限界です。additionalPropertiesは余剰プロパティの許可可否に関する設定であり、クロスフィールドの整合性とは無関係です。patternはstrict mode未サポートであり、そもそも大小関係の比較には使えません。",
     "tags": [
@@ -617,6 +834,13 @@
       "A `system` prompt asking Claude to \"always respond in JSON\" plus a high `max_tokens` value",
       "`tool_choice: \"auto\"` plus a detailed few-shot example embedded in the user message",
       "An `output_config` block plus `tool_choice: \"any\"` combined in the same request"
+    ],
+    "questionJa": "請求書抽出用のツールを設定している開発者は、より新しい直接JSONパターンではなくtoolベースのアプローチを使って、Claudeの応答が常に事前定義された形に一致する有効でパース可能なJSONになるようにしたいと考えている。これを実現する2つの仕組みの組み合わせはどれか。",
+    "choicesJa": [
+      "`input_schema`を持つツール定義に加え、そのツールの呼び出しを強制する`tool_choice: {\"type\":\"tool\",\"name\":...}`",
+      "「常にJSONで回答してください」と頼む`system`プロンプトに加え、高い`max_tokens`の値",
+      "ユーザーメッセージに埋め込まれた詳細なfew-shot例を伴う`tool_choice: \"auto\"`",
+      "同じリクエスト内で組み合わせた`output_config`ブロックと`tool_choice: \"any\"`"
     ],
     "answer": 0,
     "explanation": "tool_use方式での構造化出力は、input_schemaを持つツール定義とtool_choiceで特定のツール名を強制する組み合わせで実現します。システムプロンプトで「JSONで答えて」と頼むだけでは構造の保証にはなりません。tool_choice:\"auto\"は呼び出し自体を保証しないため信頼できません。output_configは直接JSON出力パターンのものであり、tool_choice:\"any\"と組み合わせる設計は問題設定(tool方式)に合いません。",
@@ -638,6 +862,13 @@
       "The request will fail validation immediately since strict mode mandates every property be listed in `required`",
       "Strict mode will automatically infer that `signature_date` should be required based on field naming conventions"
     ],
+    "questionJa": "ある法律文書向けの構造化抽出システムは、`party_name`、`role`、`signature_date`を含むオブジェクトを持つstrict-modeスキーマを定義している。コードレビュー中に、誰かが`signature_date`が`required`配列から漏れていることに気づいた。strict mode下での結果はどうなるか。",
+    "choicesJa": [
+      "影響はない。strict modeが要求するのは`additionalProperties: false`のみで、完全な`required`リストではないため",
+      "モデルは、日付が欠けている場合は常にプレースホルダーの日付を黙って代用する",
+      "strict modeはすべてのプロパティが`required`に列挙されていることを義務付けているため、リクエストは即座に検証に失敗する",
+      "strict modeは、フィールド名の命名規則に基づいて`signature_date`を自動的にrequiredと推論する"
+    ],
     "answer": 2,
     "explanation": "strict modeでは、additionalProperties:falseだけでなく、すべてのプロパティがrequiredに列挙されている必要があるため、signature_dateが漏れているとその時点で仕様を満たさずリクエストが失敗します。モデルがプレースホルダーの日付を自動生成することはありません。フィールド名の慣習からrequiredを自動推論する機能もありません。",
     "tags": [
@@ -657,6 +888,13 @@
       "`strict: true` cannot legally be set at more than one level, so the request would simply be rejected by the API",
       "The real fix is to add a `pattern` on `net_income` matching the expected numeric format",
       "`strict` only governs schema-level compliance (types, required fields, enums); arithmetic consistency between fields is semantic correctness, which schema validation never checks regardless of how `strict` is applied"
+    ],
+    "questionJa": "あるマルチエージェントリサーチシステムは、strict-modeスキーマを使って財務諸表を抽出している。すべての応答はスキーマに対してきれいに検証を通るが、下流の監査により、同じ呼び出しで抽出された`net_income`が`revenue`から`expenses`を引いた値と一致しないことがあると判明した。あるエンジニアは、トップレベルのツール設定とスキーマオブジェクト内部の両方に`\"strict\": true`を2回設定することを提案し、それが算術エラーを捕捉すると考えている。この提案が誤っているのはなぜか。",
+    "choicesJa": [
+      "`strict: true`を重複させると検証強度が2倍になり、実際に算術エラーを捕捉できる",
+      "`strict: true`は複数のレベルで設定することが法的に許されていないため、リクエストは単にAPIに拒否されるだけである",
+      "本当の修正策は、`net_income`に期待される数値形式に一致する`pattern`を追加することである",
+      "`strict`はあくまでスキーマレベルの準拠（型・必須フィールド・enum）を管理するものであり、フィールド間の算術的な整合性は意味的正しさの問題であって、`strict`をどう適用してもスキーマ検証では決してチェックされない"
     ],
     "answer": 3,
     "explanation": "strictはあくまでスキーマレベルの準拠(型・必須・enumなど)を保証するものであり、net_income = revenue - expensesのような算術的な整合性は意味的正しさの領域で、strictの重ね掛けでは検出できません。したがってdual-extractionやcalculated_totalとの比較のようなカスタム検証が必要です。strictを二重指定してもAPIエラーになるわけではありませんが、意味がなく効果もありません。patternは数値フォーマットの制約であり、strict mode未サポートな上、そもそも計算の整合性チェックにはなりません。",
@@ -678,6 +916,13 @@
       "Nullable types automatically trigger the validation-retry loop whenever a value is missing",
       "Nullable types allow `additionalProperties` to be safely set to `true` for that field"
     ],
+    "questionJa": "あるカスタマーサポートエージェントは、nullable な`follow_up_date`フィールドを持つ`resolution_summary`オブジェクトを抽出している。QAは、プロンプトでモデルに「不明な場合は日付を空欄にしてください」と指示するだけでなく、なぜわざわざnullable型を使う必要があるのかを尋ねている。最善の根拠は何か。",
+    "choicesJa": [
+      "プロンプトによる指示はあくまで確率的であり、スキーマで`[\"string\",\"null\"]`を宣言することで、モデルがテキスト指示に従うことに頼るのではなく、データの欠如をスキーマによって保証された明示的な表現にできる",
+      "nullable型はAPIによって必須とされており、それを伴わないリクエストはそのまま拒否される",
+      "nullable型は、値が欠けているときは常に検証-再試行ループを自動的に発火させる",
+      "nullable型により、そのフィールドで`additionalProperties`を安全に`true`に設定できるようになる"
+    ],
     "answer": 0,
     "explanation": "プロンプトでの指示は確率的で完全には保証されないのに対し、スキーマでnullableを明示することで欠損の表現をスキーマレベルで保証できます。これはhooksによる強制と同様に「プロンプトより構造的制約の方が信頼できる」という思想に沿っています。nullable型がAPIの必須要件というわけではありません。nullable自体がリトライループを自動発火させるわけでもありません。additionalPropertiesの許可可否とnullable型の使用は別の話です。",
     "tags": [
@@ -697,6 +942,13 @@
       "Raise an error/exception after exhausting retries rather than silently accepting invalid output",
       "Automatically disable `strict` mode and accept whatever the model returns",
       "Switch `tool_choice` to `\"auto\"` and retry indefinitely without a cap"
+    ],
+    "questionJa": "ある構造化抽出向けの検証-再試行ループにおいて、モデルが必須の`customer_id`フィールドを省略し続けるため、スキーマ検証が3回連続で失敗している。リトライ予算（例: `max_retries: 3`）を使い切った後の正しい振る舞いは何か。",
+    "choicesJa": [
+      "これまでに得られた最良の部分的なJSONを、あたかも有効であるかのように黙って返す",
+      "無効な出力を黙って受け入れるのではなく、リトライを使い切った後にエラー・例外を発生させる",
+      "`strict`モードを自動的に無効化し、モデルが返すものを何でも受け入れる",
+      "`tool_choice`を`\"auto\"`に切り替え、上限なく無限にリトライする"
     ],
     "answer": 1,
     "explanation": "リトライ回数を使い切った場合の正しい振る舞いは、エラーを発生させて呼び出し元に失敗を通知することです。無効なJSONをあたかも有効であるかのように黙って返すのはサイレントな不具合の温床になります。strictを自動的に無効化するのは保証を失わせるその場しのぎの対応です。リトライ上限を設けず無限に繰り返すのも適切な設計ではありません。",
@@ -718,6 +970,13 @@
       "Rely on `\"strict\": true` alone, since strict mode already cross-checks numeric fields against each other",
       "Add a `pattern` on `stated_total` restricting it to two decimal places"
     ],
+    "questionJa": "ある経費レポート向けの抽出パイプラインは、Claudeに`stated_total`を直接返すよう求めている。モデルの記載合計が根底の明細項目と一致しないケースを捕捉するため、チームは下流のコードだけでなく、抽出呼び出し自体がこの不一致の検出を助けることを望んでいる。この自己修正の目標を最もよく支えるスキーマ設計はどれか。",
+    "choicesJa": [
+      "`stated_total`と、独立して計算された`calculated_total`、さらにブール値の`conflict_detected`フィールドを抽出し、不一致が抽出そのものから直接明らかになるようにする",
+      "負の合計が生成時に拒否されるよう、`stated_total`に`\"minimum\": 0`を追加する",
+      "strict modeはすでに数値フィールド同士を相互にクロスチェックしているため、`\"strict\": true`のみに頼る",
+      "`stated_total`を小数点以下2桁に制限する`pattern`を追加する"
+    ],
     "answer": 0,
     "explanation": "dual-extraction self-correctionパターンでは、stated_totalに加えてcalculated_totalとconflict_detectedフラグを同時に抽出させることで、抽出そのものから不整合を検出できるようにします。minimumはstrict mode未サポートな上、負数の排除であって合計の整合性チェックにはなりません。strict:trueはあくまで型・必須項目などスキーマレベルの保証であり、フィールド間の算術的な整合性は保証しません。patternも strict mode未サポートで、小数桁数の制約は今回の不整合検出とは無関係です。",
     "tags": [
@@ -737,6 +996,13 @@
       "Add `\"minimum\": 0` to `total_amount` since strict mode enforces numeric ranges and this will catch the ambiguity",
       "Switch `total_amount` to an `enum` listing all plausible totals so the model must pick the correct one",
       "Remove `\"strict\": true` so the model has more freedom to express uncertainty in free text"
+    ],
+    "questionJa": "あるスキャンされた領収書向けの構造化抽出パイプラインは、`number`型の`total_amount`フィールドを持つstrict modeを使っている。時折、OCRで得られたテキストの合計額が曖昧である（例: にじんだ数字が「$18.00」にも「$78.00」にも見える）。どちらの数値として解釈しても有効な数値であるため抽出は常にスキーマ検証を通るが、精度監査ではこのフィールドで頻繁に静かなエラーが見られる。strict modeがすでに保証している内容に触れることなく、この特定の失敗モードに対処する追加の設計変更は何か。",
+    "choicesJa": [
+      "`total_amount`と並べて`confidence`サブフィールドを追加し（例: `{value, confidence}`）、曖昧な抽出結果を確実なものとして黙って受け入れるのではなく、レビュー対象としてフラグ付けできるようにする",
+      "strict modeは数値の範囲を強制するため、`total_amount`に`\"minimum\": 0`を追加すればこの曖昧さを捕捉できる",
+      "モデルが正しい合計を必ず選ぶよう、`total_amount`をあり得る合計をすべて列挙した`enum`に切り替える",
+      "モデルが自由記述で不確実性を表現する余地を広げるため、`\"strict\": true`を削除する"
     ],
     "answer": 0,
     "explanation": "スキーマ準拠は「妥当な数値である」ことしか保証せず、値の確からしさ(意味的な正しさ)は別問題であるため、{value, confidence}のようなフィールドレベルの確信度スコアを設けて曖昧な抽出を人手レビューに回す設計が有効です。minimumはstrict modeで未サポートであり、そもそも上下限の範囲チェックとは無関係な問題です。enumで全ての可能性のある金額を列挙するのは現実的ではありません。strictを外すことはスキーマ準拠の保証全体を失わせる過大な対応です。",
@@ -758,6 +1024,13 @@
       "Add `\"strict\": true` to the output schema so false positives are rejected at validation time",
       "Tell Claude to lower its confidence threshold so it flags fewer comments overall, regardless of criteria"
     ],
+    "questionJa": "あるコードレビュー自動化プロンプトは、Claudeに「あなたの最善の判断（best judgment）を使い、保守的（conservative）に、古くなったコメントにフラグを立ててください」と伝えている。ロールアウト後、エンジニアからは、単に不正確なだけで実際には間違っていないコメントに多くの誤検知フラグが立ち、ツールの出力を完全に無視し始めているという報告がある。根本原因に最もよく対処するプロンプトへの変更は何か。",
+    "choicesJa": [
+      "「best judgment」や「be conservative」のような曖昧な指示を、何が該当し何が該当しないか（境界事例）、そして「主張されている挙動が実際のコードと直接矛盾する場合のみフラグを立てる」のような精密な否定ルールを含む明示的な基準に置き換える",
+      "同じ文言を維持しつつ、フラグを立てる前にClaudeがより多くの推論の余地を持てるよう`max_tokens`を上げる",
+      "誤検知が検証時に却下されるよう、出力スキーマに`\"strict\": true`を追加する",
+      "基準に関わらず全体的にフラグを立てる件数を減らすよう、Claudeに確信度の閾値を下げるよう伝える"
+    ],
     "answer": 0,
     "explanation": "「best judgment」「conservative」のような曖昧な指示は解釈のばらつきを生み、誤検知（false positive）を増やします。何が該当し何が該当しないか（境界事例）を明示し、「主張された挙動が実際のコードと直接矛盾する場合のみ」のような精密な否定条件を与えることが根本対策です。誤検知は一つのカテゴリでも起きると他の正しいカテゴリへの信頼も損なうため重要です。max_tokensは出力の分量枠であり判断基準の曖昧さとは無関係です。strict:trueはJSON構造の準拠を保証するだけで、意味的な誤検知の削減にはなりません。閾値を機械的に下げるだけでは根本原因である基準の曖昧さは解決せず、見逃し（false negative）を増やす副作用もあります。",
     "tags": [
@@ -777,6 +1050,13 @@
       "None of the three can be expressed in strict mode at all, so the schema must be abandoned in favor of free-text output",
       "Only the `case_id` pattern is supported natively; the other two require workarounds",
       "No: `minimum`/`maximum`, `pattern`, and `oneOf`/`anyOf` are all unsupported in strict mode, so all three constraints must be enforced with custom validation code after generation"
+    ],
+    "questionJa": "あるコンプライアンス抽出ツール向けの構造化出力を設定している開発者は、(1) `risk_score`を0〜100に制限すること、(2) `case_id`が特定の正規表現に一致すること、(3) `status`が`reason`を持つオブジェクトか単純な文字列のいずれかであること、という3つを同時に実現したいと考えている。彼らは、この3つすべてをstrict-modeの`input_schema`内で直接表現し、APIが生成時に強制できるかどうかを尋ねている。正確な答えは何か。",
+    "choicesJa": [
+      "はい、strict modeは数値範囲、正規表現パターン、`oneOf`スタイルの合体型を完全にサポートしているため、3つすべてをネイティブに強制できる",
+      "3つのいずれもstrict modeでは全く表現できないため、スキーマを放棄し自由記述の出力にする必要がある",
+      "`case_id`のパターンのみがネイティブにサポートされており、残りの2つは回避策が必要である",
+      "いいえ。`minimum`/`maximum`、`pattern`、`oneOf`/`anyOf`はいずれもstrict modeでサポートされていないため、3つの制約すべてを生成後のカスタム検証コードで強制する必要がある"
     ],
     "answer": 3,
     "explanation": "strict modeではminimum/maximum、pattern、oneOf/anyOf/allOfのいずれも未サポートのため、risk_scoreの範囲チェック、case_idの正規表現チェック、statusの合成型のいずれもAPI側では強制されず、生成後にカスタム検証コードで担保する必要があります。したがって『すべて未サポートで後付け検証が必要』という選択肢が正解です。一部だけ対応しているという主張も誤りで、スキーマ自体を放棄する必要もありません(型・必須・enum・formatなど基本部分は引き続き有効です)。",
@@ -798,6 +1078,13 @@
       "Append the validation error JSON to the prompt and retry, capping retries at about 3 before raising",
       "Silently fill the missing field with a placeholder value and continue processing"
     ],
+    "questionJa": "ある構造化データ抽出パイプラインは、tool_useを伴うstrict-modeのJSON Schemaを使っている。モデルがスキーマ検証に失敗する応答（必須フィールドが欠けている）を返したとき、正しいリトライパターンは何か。",
+    "choicesJa": [
+      "リトライせずに直ちに例外を発生させ、文書を人間のレビューに回す",
+      "スキーマが検証を通るまで、同じプロンプトで無限にリトライする",
+      "検証エラーのJSONをプロンプトに追記して再試行し、約3回でリトライを打ち切って例外を発生させる",
+      "欠けているフィールドを黙ってプレースホルダー値で埋め、処理を続行する"
+    ],
     "answer": 2,
     "explanation": "正解は、バリデーションエラーのJSONをプロンプトに追記して再試行し、最大約3回で打ち切って例外を発生させるという検証-再試行ループのパターンである。選択肢Aは再試行を一切行わず早すぎる諦めであり改善の機会を捨てている。選択肢Bは無限リトライでコストと遅延が青天井になり、失敗の根本原因が解消されない限り無意味である。選択肢Dはデータを捏造することになり、欠落データを埋めるための再試行では実際には存在しない情報を作り出せないという原則に反する。",
     "tags": [
@@ -817,6 +1104,13 @@
       "Schema-catchable: calculated total not matching stated total; custom-logic: missing required field",
       "Schema-catchable: cross-field business rule violations; custom-logic: type mismatches and malformed email format",
       "Both categories are fully caught by schema validation once strict mode and additionalProperties: false are enabled"
+    ],
+    "questionJa": "ある請求書向けの構造化データ抽出システムで、あるエンジニアが、JSON Schemaのバリデータが自動的に捕捉できるエラーと、カスタムロジックを必要とするエラーを区別しようとしている。この2つのカテゴリを正しく分けている組はどれか。",
+    "choicesJa": [
+      "スキーマで捕捉可能: 必須フィールドの欠落、無効なenum値。カスタムロジック: 計算合計と記載合計の不一致、未来日付の請求書",
+      "スキーマで捕捉可能: 計算合計と記載合計の不一致。カスタムロジック: 必須フィールドの欠落",
+      "スキーマで捕捉可能: クロスフィールドの業務ルール違反。カスタムロジック: 型不一致と不正なメールフォーマット",
+      "strict modeとadditionalProperties: falseを有効にすれば、両方のカテゴリとも完全にスキーマ検証で捕捉できる"
     ],
     "answer": 0,
     "explanation": "正解は、必須フィールドの欠落や無効なenum値はスキーマ検証で自動的に検出できるが、計算合計と記載合計の不一致や未来日付といった意味的・業務ロジックの矛盾はカスタムロジックでしか検出できないという区分である。選択肢Bは逆で、合計値の不一致はスキーマでは検出不可能な意味的整合性の問題である。選択肢Cも逆転しており、型不一致やフォーマット不正はスキーマが得意とする領域である。選択肢Dは誤りで、strict modeを有効にしてもビジネスロジックの整合性までは保証されない。",
@@ -838,6 +1132,13 @@
       "Dual-extraction self-correction: extract stated_total and calculated_total separately, plus a conflict_detected flag",
       "Switch from tool_use-based extraction to free-text extraction followed by manual parsing"
     ],
+    "questionJa": "ある経理チームは、strict-modeの構造化出力を使って請求書の明細項目と合計を抽出している。QAは、モデルが明細項目の合計と一致しない合計を報告するケースがあるにもかかわらず、スキーマ検証は毎回通っていることを発見した。この不一致を自動的に表面化させる抽出パターンはどれか。",
+    "choicesJa": [
+      "モデルがより慎重に推論するよう、temperatureを上げる",
+      "JSON Schema内の合計フィールドに正規表現パターン制約を追加する",
+      "デュアル抽出による自己修正: stated_totalとcalculated_totalを別々に抽出し、さらにconflict_detectedフラグを追加する",
+      "tool_useベースの抽出から、自由記述の抽出と手動パースに切り替える"
+    ],
     "answer": 2,
     "explanation": "正解は、記載された合計(stated_total)と算出した合計(calculated_total)を別々に抽出し、conflict_detectedフラグを立てるデュアル抽出による自己修正パターンである。これにより意味的な矛盾がJSON上に明示され、下流処理で検出できる。選択肢Aは無関係な調整で信頼性を保証しない。選択肢Bは誤りで、正規表現(pattern)はstrict modeのJSON Schemaではサポートされない制約である。選択肢Dは構造化出力の利点を放棄しており、根本的な解決にならない。",
     "tags": [
@@ -857,6 +1158,13 @@
       "Only the line number where the issue was found, to keep output minimal",
       "A confidence score generated by asking the model how sure it is about the finding",
       "Detection metadata such as detected_pattern, file, and line so false-positive patterns can be tracked and prompt criteria refined"
+    ],
+    "questionJa": "あるコードレビュー自動化ツールは、古くなったコメントをカテゴリの一つとしてフラグ付けしている。数週間後、そのカテゴリが多くの誤検知を生んだため、エンジニアは古くなったコメントのフラグだけでなく、このツールからのフラグすべてを無視し始めた。チームは今後、誤検知を体系的に追跡し削減したいと考えている。これを支えるため、フラグ付けされた各所見には何を含めるべきか。",
+    "choicesJa": [
+      "エンジニアに真剣に受け止めさせるため、すべてのフラグに「critical」という重大度ラベルを付ける",
+      "出力を最小限に保つため、問題が見つかった行番号のみ",
+      "モデルにどれくらい確信があるかを尋ねて生成された確信度スコア",
+      "誤検知のパターンを追跡し、プロンプトの基準を洗練できるよう、detected_pattern・file・lineなどの検出メタデータ"
     ],
     "answer": 3,
     "explanation": "正解は、detected_pattern・file・lineなどの検出メタデータを付与し、誤検知(false positive)のパターンを追跡してプロンプト基準を改善できるようにすることである。これは一つのノイズの多いカテゴリが全カテゴリへの信頼を損なうという経済性の問題に対処する。選択肢Aは全てを重大扱いすることで逆にアラート疲れを助長し、根本的な誤検知削減にはつながらない。選択肢Bは情報が乏しすぎてパターン分析ができない。選択肢Cはモデルの自己申告の確信度であり、キャリブレーションされていないため信頼できない。",
@@ -878,6 +1186,13 @@
       "A multi-turn conversation in a single Batches API request per ticket",
       "The synchronous API with --output-format stream-json for lower latency"
     ],
+    "questionJa": "ある開発者生産性チームは、リアルタイム性の要件がない中で、15,000件のアーカイブ済みサポートチケットを一晩かけて処理し、構造化された感情分析とカテゴリデータを抽出する必要がある。最も適切なAPIアプローチはどれか。",
+    "choicesJa": [
+      "各チケットに対してタイトなループの中で呼び出す同期Messages API",
+      "大規模で時間に厳しくないワークロードに対しておよそ50%のコスト削減が得られるため、Message Batches API",
+      "チケットごとに1回のBatches APIリクエスト内でのマルチターン会話",
+      "低レイテンシのため--output-format stream-jsonを使う同期API"
+    ],
     "answer": 1,
     "explanation": "正解は、リアルタイム性が不要な大量バッチ処理にはMessage Batches APIが適しており、約50%のコスト削減が得られる点である。選択肢Aは同期APIで15,000件をループ処理するのはコスト・スループットの面で非効率である。選択肢Cは誤りで、Batches APIはマルチターン会話をサポートしない。選択肢Dはストリーミング出力形式の話でありバッチ処理の選択基準とは無関係である。",
     "tags": [
@@ -897,6 +1212,13 @@
       "The Message Batches API with a short 1-hour window configured to simulate real-time behavior",
       "Either API works identically for blocking CI checks since both guarantee sub-second latency",
       "The synchronous Messages API, since pre-merge blocking checks require immediate results within the CI run"
+    ],
+    "questionJa": "あるCI/CDパイプラインは、問題が見つかった場合に数秒以内にプルリクエストをブロックしなければならない自動マージ前チェックを実行するためにClaude Codeを使っている。これにはどの実行モデルを使うべきか。",
+    "choicesJa": [
+      "ユースケースに関わらずバッチリクエストの方が安いため、Message Batches API",
+      "リアルタイムの挙動を模倣するため、短い1時間のウィンドウを設定したMessage Batches API",
+      "どちらのAPIもサブ秒のレイテンシを保証するため、ブロッキングCIチェックには全く同じように機能する",
+      "マージ前のブロッキングチェックはCI実行内で即座の結果を必要とするため、同期Messages API"
     ],
     "answer": 3,
     "explanation": "正解は、マージ前のブロッキングチェックはCI実行中に即座の結果が必要なため同期Messages APIを使うべきという点である。選択肢AとBはBatches APIの特性(最大24時間のウィンドウでSLAなし)を誤解しており、リアルタイム性が必要な場面には不向きである。選択肢Cは誤りで、Batches APIはレイテンシ保証がなく即時性が求められる用途には使えない。",
@@ -918,6 +1240,13 @@
       "Increase the retry count to 10 to compensate for not testing beforehand",
       "Skip sampling and rely on aggregate accuracy metrics after the full batch completes"
     ],
+    "questionJa": "ある構造化データ抽出チームは、Batches APIを使って新しい抽出プロンプトを4万件のスキャンされた契約書のコーパスに対して一晩実行しようとしている。フルバッチを投入する直前に何をすべきか。",
+    "choicesJa": [
+      "Batches APIの失敗は個別に再送できるため、4万件のフルバッチを直接投入する",
+      "4万件のフル実行にコミットする前に、プロンプトやスキーマの問題を捕捉するため、まず代表的な小サンプルで同じプロンプトを実行する",
+      "事前にテストしていないことを補うため、リトライ回数を10に増やす",
+      "サンプリングを省略し、フルバッチ完了後の集計精度指標に頼る"
+    ],
     "answer": 1,
     "explanation": "正解は、10,000件を超える大規模バッチを投入する前に、代表的な小サンプルで同じプロンプトを試して問題を事前に洗い出すプリバッチQAである。選択肢Aは失敗したcustom_idだけ再送できるという事実はあるが、プロンプト自体の欠陥が全件に及ぶリスクを軽視している。選択肢Cはリトライ回数を増やすだけで、プロンプト品質の問題を解決しない。選択肢Dは全体完了後の事後対応であり、コストと時間を無駄にしてから気づく後手の対応である。",
     "tags": [
@@ -937,6 +1266,13 @@
       "A summary generated by compacting the entire conversation history from Pass 1",
       "The original CLAUDE.md file only, since Pass 1 findings are not relevant to cross-file analysis",
       "Pass 1's per-file findings as context, so Pass 2 can reason about cross-file integration issues building on what was already found"
+    ],
+    "questionJa": "あるチームは、大規模なプルリクエスト（10ファイル以上）向けのコードレビュー自動化ワークフローを設計している。彼らはPass 2に、インターフェースの不一致やクロスファイルのデータフロー問題といった統合上の問題を捕捉させたいと考えている。Pass 2は入力として何を受け取るべきか。",
+    "choicesJa": [
+      "バイアスを避けるため、Pass 1の出力を一切参照しない、PRの生の差分のみ",
+      "Pass 1の会話履歴全体を圧縮して生成されたサマリー",
+      "Pass 1の所見はクロスファイル分析に関係ないため、元のCLAUDE.mdファイルのみ",
+      "Pass 2がすでに見つかったものを踏まえてクロスファイルの統合問題を推論できるよう、コンテキストとしてのPass 1のファイル単位の所見"
     ],
     "answer": 3,
     "explanation": "正解は、Pass 2はPass 1のファイル単位の結果をコンテキストとして受け取り、それを踏まえてクロスファイルの統合問題を分析するという設計である。選択肢Aは差分だけでは各ファイルの個別分析結果が失われ、統合分析の質が落ちる。選択肢Bは圧縮されたサマリーでは重要な詳細が失われるリスクがあり、Pass 1の結果をそのままコンテキストとして渡す設計とは異なる。選択肢Cは誤りで、Pass 1の結果はPass 2にとって重要な入力である。",
@@ -958,6 +1294,13 @@
       "Analyze cross-file data flow and interface mismatches across the whole PR",
       "Perform per-file local analysis such as bugs, style, types, and security issues with consistent depth across files"
     ],
+    "questionJa": "大規模なプルリクエスト向けのマルチパス・コードレビューアーキテクチャにおいて、Pass 1の主な責任は何か。",
+    "choicesJa": [
+      "Pass 2からの所見を集約し、人間が読める最終レポートにまとめる",
+      "PRをマージすべきか却下すべきかを決定する",
+      "PR全体にわたるクロスファイルのデータフローとインターフェースの不一致を分析する",
+      "バグ・スタイル・型・セキュリティといったファイル単位の局所的な分析を、ファイル間で一貫した深さで行う"
+    ],
     "answer": 3,
     "explanation": "正解は、Pass 1はファイル単位でバグ・スタイル・型・セキュリティといった局所的な分析を一貫した深さで行うことである。選択肢Aは順序が逆で、Pass 1がPass 2の入力になるのであってその逆ではない。選択肢Bはマージ可否の意思決定であり、Pass 1の役割を超えている。選択肢Cはクロスファイルの統合分析であり、これはPass 2の役割である。",
     "tags": [
@@ -977,6 +1320,13 @@
       "The review used the wrong tool_choice setting; the fix is to force tool_choice to 'any' during review",
       "The session lacked a CLAUDE.md file; the fix is to add project-level coding standards",
       "Reasoning context bias: a session that made the design decisions is unlikely to question them; the fix is to generate and review in completely separate sessions"
+    ],
+    "questionJa": "ある開発者は、複雑なリファクタリングを実装したばかりの同じClaude Codeセッションに、プルリクエストを開く前に自分自身の変更をバグがないかレビューさせている。レビューは問題なしとして返ってきたが、後にチームメイトが微妙なロジックエラーを発見した。最も可能性の高い説明と、その修正策は何か。",
+    "choicesJa": [
+      "モデルのコンテキストウィンドウが小さすぎた。修正策はレビュー依頼のmax_tokensを増やすことである",
+      "レビューで誤ったtool_choice設定が使われた。修正策はレビュー中にtool_choiceをanyに強制することである",
+      "セッションにCLAUDE.mdファイルがなかった。修正策はプロジェクトレベルのコーディング規約を追加することである",
+      "推論コンテキストバイアス: 設計判断を下した本人であるセッションは、その判断を疑いにくい。修正策は生成とレビューを完全に別のセッションで行うことである"
     ],
     "answer": 3,
     "explanation": "正解は、実装を行った同一セッションが自分の設計判断を疑いにくいという推論コンテキストバイアスであり、対策は生成とレビューを完全に別セッションで行うことである。選択肢Aはmax_tokensの問題ではなく、バイアスの本質を見誤っている。選択肢Bはtool_choiceの設定はレビュー品質の根本原因ではない。選択肢Cはコーディング規約の有無は問題ではなく、同一セッションの自己レビューという構造的な問題が原因である。",
@@ -998,6 +1348,13 @@
       "A confidence score attached to the assigned label in each example",
       "A system prompt reminder that few-shot examples exist, placed after the examples themselves"
     ],
+    "questionJa": "サポートチケットをエスカレーション緊急度で分類するfew-shotプロンプトを構築しているチームが、3つの例を含めているが、各例は生のチケットテキストと割り当てられたラベルのみを示し、それ以上の説明がない。新規チケットへの汎化が悪い。few-shotプロンプティングのベストプラクティスによれば、各例に欠けているものは何か。",
+    "choicesJa": [
+      "内容に関わらずより多くの例が常に汎化を改善するため、4番目・5番目の例",
+      "モデルが表面的な特徴を暗記するのではなく根底にあるパターンを学べるよう、その入力がなぜその出力に対応するのかを説明するreasoning",
+      "各例で割り当てられたラベルに付随する確信度スコア",
+      "few-shot例自体の後に配置された、few-shot例が存在するというシステムプロンプトのリマインダー"
+    ],
     "answer": 1,
     "explanation": "優れた少数ショット例は入力・出力に加えて、なぜその出力が正しいのかを説明する推論(reasoning)を含む必要があり、これによりモデルは表面的な特徴の暗記ではなく根底にあるパターンを学習し、新規事例へ一般化できるようになる。例の数を増やすだけでは推論的根拠が欠けたままであり、最適な例数は2〜4個程度でそれ以上はむしろオーバーフィットや文脈の浪費を招く。確信度スコアの付与は分類の一般化能力とは無関係である。システムプロンプトへの言及の位置を変えるだけでは、個々の例に理由付けがないという根本的な欠落は解消されない。",
     "tags": [
@@ -1017,6 +1374,13 @@
       "The tool_choice parameter was incorrectly set to 'auto' instead of a forced tool",
       "Attention dilution and contradictory findings from single-pass review, a known failure mode on 10+ file PRs",
       "The PR exceeded the maximum number of tool_use blocks allowed per response"
+    ],
+    "questionJa": "14ファイルのプルリクエストを単一のClaude Codeパスでレビューしているチームは、PR内で後の方でレビューされたファイルの所見が浅くなり、時には前のファイルの所見と矛盾することに気づいた。この失敗モードを最も正確に説明しているのはどれか。",
+    "choicesJa": [
+      "Anthropic APIからのレート制限が応答の切り詰めを引き起こした",
+      "tool_choiceパラメータが強制されたツールではなく誤って'auto'に設定されていた",
+      "10ファイル以上のPRで知られている失敗モードである、シングルパスレビューによる注意力の希薄化（attention dilution）と矛盾した所見",
+      "PRが1レスポンスあたりのtool_useブロックの最大許容数を超えた"
     ],
     "answer": 2,
     "explanation": "正解は、10ファイル以上のPRにおいてシングルパスレビューで生じる注意力の希薄化(attention dilution)と矛盾した所見という既知の失敗モードである。選択肢Aはレート制限の話であり症状の説明として無関係である。選択肢Bはtool_choiceの設定ミスであり、レビューの深さ低下や矛盾の直接原因ではない。選択肢Dはtool_use blockの上限という架空の制約であり、実際の失敗モードとは異なる。",
@@ -1038,6 +1402,13 @@
       "Dual-extraction self-correction, because it checks the schema against a calculated value",
       "Schema-catchable validation, because a JSON Schema enum could enforce this rule automatically"
     ],
+    "questionJa": "あるチームは分類指示を書いている。「データベースマイグレーションスクリプトが、スキーマの他の場所でまだアクティブな外部キー参照を持つカラムまたはテーブルを削除する場合に限り、'risky'としてフラグを立ててください」。これを、以前の「良い判断で（using good judgment）、危険に見えるマイグレーションにフラグを立ててください」というバージョンと比較すると、書き換えられた指示は正しくどの原則を適用しているか。",
+    "choicesJa": [
+      "危険なマイグレーションの2つの例を暗黙的に実演しているため、few-shotプロンプティング",
+      "精密な否定境界（precise negation boundaries）: 曖昧な判断に頼るのではなく、フラグが適用される正確なタイミングと、暗黙的に何が該当しないかを定義している",
+      "算出値に対してスキーマをチェックしているため、デュアル抽出による自己修正（dual-extraction self-correction）",
+      "JSON Schemaのenumがこのルールを自動的に強制できるため、スキーマで捕捉可能な検証（schema-catchable validation）"
+    ],
     "answer": 1,
     "explanation": "書き換え後の指示は「アクティブな外部キー参照が存在するカラム/テーブルの削除の場合に限りflagする」という明確な境界条件を定義しており、これは曖昧な『良い判断で』という表現に頼らず、何が該当し何が該当しないかを明示する精密な否定境界(precise negation boundaries)の原則を適用したものである。この指示は具体的な入出力例を示しておらず少数ショットの実演ではない。デュアル抽出による自己修正は算出値と記載値の突合というまったく別の概念である。この判定は外部キー参照の有無というスキーマ検証では捉えられない業務ロジックであり、enumで自動的に強制できるものではない。",
     "tags": [
@@ -1057,6 +1428,13 @@
       "Silently drop the document from the output set with no record of the failure",
       "Raise an error after exhausting the retry attempts, since retries cannot create data that was never present in the source",
       "Retry a 4th and 5th time with a higher temperature setting to force compliance"
+    ],
+    "questionJa": "ある構造化抽出システムは医療問診票を処理している。必須の'patient_id'フィールドが欠けている文書に対して3回検証を試みて失敗した後、リトライループが尽きた。正しい振る舞いは何か。",
+    "choicesJa": [
+      "パイプラインが中断せずに続行できるよう、もっともらしいpatient_idを捏造する",
+      "失敗の記録を残さずに、その文書を出力セットから黙って除外する",
+      "リトライを使い切った後にエラーを発生させる。そもそもリトライによって情報源に存在しなかったデータを作り出すことはできないため",
+      "強制的に準拠させるため、より高いtemperature設定で4回目・5回目のリトライを行う"
     ],
     "answer": 2,
     "explanation": "正解は、リトライを使い切った後はエラーを発生させることであり、そもそも元データに存在しない情報を再試行によって作り出すことはできないという原則に基づく。選択肢Aはデータを捏造することになり許容できない。選択肢Bはサイレントに失敗を握りつぶすアンチパターンであり、失敗の記録が失われる。選択肢Dは規定のリトライ上限(約3回)を超えて延々と試行を続けるという誤ったアプローチである。",
@@ -1078,6 +1456,13 @@
       "This indicates tool_choice was set to 'auto' instead of forcing the extraction tool",
       "This means the JSON Schema needs a 'pattern' constraint added to the summary_date field"
     ],
+    "questionJa": "あるマルチエージェントリサーチシステムの統合用サブエージェントは、strict-modeの構造化出力を使って情報源文書から主張を抽出している。QAは、このツールが必須フィールドとenum値を正しく強制していることを発見したが、いくつかの出力には、実際の公開日より後の日付を持ち、同じオブジェクト内の他の抽出フィールドと矛盾する'summary_date'が含まれている。これを最もよく説明し、修正策を示しているのはどれか。",
+    "choicesJa": [
+      "これはスキーマ準拠の失敗であり、additionalProperties: falseを有効にすれば解決する",
+      "これはスキーマ検証では捕捉できない意味的正しさ（semantic correctness）の問題であり、クロスフィールドかつ時系列の整合性をチェックするカスタム検証ロジックが必要である",
+      "これはtool_choiceが抽出ツールを強制する代わりに'auto'に設定されていたことを示している",
+      "これはJSON Schemaのsummary_dateフィールドに'pattern'制約を追加する必要があることを意味する"
+    ],
     "answer": 1,
     "explanation": "正解は、これは意味的整合性(semantic correctness)の問題であり、スキーマ検証では検出できないためクロスフィールド・時系列の整合性をチェックするカスタムロジックが必要という点である。選択肢Aは誤りで、additionalProperties: falseは余分なプロパティを禁止するだけで日付の矛盾は検出できない。選択肢Cはtool_choiceの設定ミスではなく、抽出自体は正しく行われている。選択肢Dは誤りで、patternはstrict modeのJSON Schemaでサポートされない制約であり、そもそも日付の矛盾検出には向かない。",
     "tags": [
@@ -1097,6 +1482,13 @@
       "To satisfy an unrelated compliance audit requirement with no bearing on the extraction pipeline",
       "To replace the need for schema validation entirely",
       "To increase the number of retries allowed per document"
+    ],
+    "questionJa": "あるカスタマーサポート自動化チームは、人間のレビュアーによって誤検知が確認されるたびに、detected_pattern、ソースファイル、行番号といったフィールドを持つすべての抽出エラーをログに記録している。この検出メタデータを収集する主な目的は何か。",
+    "choicesJa": [
+      "誤検知のパターンを時系列で追跡できるようにし、プロンプトの基準を洗練させてシステムへの信頼を回復するため",
+      "抽出パイプラインとは無関係な、別のコンプライアンス監査要件を満たすため",
+      "スキーマ検証の必要性を完全に置き換えるため",
+      "文書あたりに許容されるリトライ回数を増やすため"
     ],
     "answer": 0,
     "explanation": "正解は、誤検知(false positive)のパターンを時系列で追跡し、プロンプトの基準を洗練させてシステムへの信頼を回復するためである。選択肢Bは無関係なコンプライアンス目的であり、抽出パイプラインの改善とは関係がない。選択肢Cは誤りで、検出メタデータはスキーマ検証を置き換えるものではなく補完するものである。選択肢Dはリトライ回数とは無関係な目的である。",
@@ -1118,6 +1510,13 @@
       "Rely solely on the enum fallback value 'other' for the total field",
       "Increase max_retries to 10 so the model eventually self-corrects the total"
     ],
+    "questionJa": "ある法律契約書向けの構造化抽出パイプラインは、（strict modeでサポートされていない）正規表現や数値範囲制約に頼ることなく、モデルが報告する契約合計が個別に抽出された条項の合計と矛盾するケースを捕捉したいと考えている。これを実現する設計はどれか。",
+    "choicesJa": [
+      "JSON Schemaの合計フィールドに'maximum'と'minimum'の制約を追加する",
+      "stated_totalとcalculated_totalの両方を別々のフィールドとして抽出し、さらにconflict_detectedブール値を追加した上で、下流でカスタム検証ロジックを適用する",
+      "合計フィールドについて、enumのフォールバック値'other'のみに頼る",
+      "モデルが最終的に合計を自己修正するよう、max_retriesを10に増やす"
+    ],
     "answer": 1,
     "explanation": "正解は、stated_totalとcalculated_totalを別フィールドとして抽出し、conflict_detectedフラグを立てて下流でカスタム検証を行うデュアル抽出方式である。選択肢Aは誤りで、minimum/maximumはstrict modeのJSON Schemaではサポートされない制約である。選択肢Cはenumのfallback値であり、数値の整合性チェックとは無関係である。選択肢Dはリトライ回数を増やすだけで、モデルが自発的に矛盾を解消する保証はなく、根本的な解決にならない。",
     "tags": [
@@ -1137,6 +1536,13 @@
       "Use the Message Batches API for cost savings, and first validate the prompt on a small sample before running the full 12,000-document batch",
       "Use the Message Batches API, and submit the full batch immediately since sampling is unnecessary once documents exceed 10,000",
       "Use the synchronous API in a multi-turn conversation to maintain context across all 12,000 receipts"
+    ],
+    "questionJa": "リアルタイム性の要件がない、12,000件のスキャンされた領収書の文書抽出ワークロードについて、推奨されるAPIと前処理の判断を正しく反映している組み合わせはどれか。",
+    "choicesJa": [
+      "コスト削減のため同期APIを使い、strict modeが正しさを保証するためサンプリングは省略する",
+      "コスト削減のためMessage Batches APIを使い、12,000件のフルバッチを実行する前にまず小サンプルでプロンプトを検証する",
+      "Message Batches APIを使い、文書が1万件を超えるとサンプリングは不要になるため、すぐにフルバッチを投入する",
+      "12,000件すべての領収書にわたってコンテキストを維持するため、マルチターン会話で同期APIを使う"
     ],
     "answer": 1,
     "explanation": "正解は、コスト削減のためMessage Batches APIを使い、1万件を超える本番実行の前にまず小サンプルでプロンプトを検証するプリバッチQAを行うことである。選択肢Aは同期APIのコスト効率が悪く、また strict modeはスキーマ準拠は保証するが意味的正しさは保証しないため誤り。選択肢Cはサンプリングを省略しており、大規模バッチにおけるリスクを軽視している。選択肢Dは誤りで、Batches APIはマルチターン会話をサポートしない。",
@@ -1158,6 +1564,13 @@
       "Use the Batches API for nightly integration analysis with Pass 2 receiving Pass 1 as context, and the Batches API for same-day blocking checks since it is cheaper",
       "Use the synchronous API for both, and skip Pass 2 for nightly PRs since the Batches API already resolves cross-file issues automatically"
     ],
+    "questionJa": "あるCI/CD自動化エンジニアは、潜在的な統合バグについて夜間に25件のマージ済みPR（平均12ファイル）のバッチをレビューするためにClaude Codeを使いたいと考えており、また別途、新規プルリクエストに対する即日のPRブロッキングチェックも望んでいる。正しい設計選択の組み合わせはどれか。",
+    "choicesJa": [
+      "夜間ジョブにはシングルパスレビューを伴うBatches APIを使い、ブロッキングチェックには2パス（ファイル単位、その後クロスファイル）レビューを伴う同期APIを使い、常に修正を書いたのと同じセッションで自己レビューを行う",
+      "夜間の12ファイルPR分析にはPass 1（ファイル単位）→Pass 2（Pass 1をコンテキストとして使うクロスファイル）の2パスレビューを伴うBatches APIを使い、即日のブロッキングチェックには同期APIを使う",
+      "夜間の統合分析にはPass 2がPass 1をコンテキストとして受け取るBatches APIを使い、より安価だからという理由で即日のブロッキングチェックにもBatches APIを使う",
+      "両方に同期APIを使い、Batches APIがすでにクロスファイル問題を自動的に解決するため、夜間PRのPass 2はスキップする"
+    ],
     "answer": 1,
     "explanation": "正解は、夜間の一括分析はリアルタイム性が不要なためBatches APIでPass1(ファイル単位)→Pass2(クロスファイル、Pass1をコンテキストに)の2段階レビューを行い、同日中のブロッキングチェックは即時性が必要なため同期APIを使うという組み合わせである。選択肢Aは同一セッションでの自己レビューという推論コンテキストバイアスのアンチパターンを含む。選択肢Cはブロッキングチェックにも安価だからとBatches APIを使っており、SLAなしでリアルタイム性が保証されない点を無視している。選択肢Dは同期APIのみで両方対応しコスト効率を無視し、さらにBatches APIが自動でクロスファイル問題を解決するという誤った前提も含む。",
     "tags": [
@@ -1177,6 +1590,13 @@
       "Run a two-pass review (Pass 1 per-file, Pass 2 cross-file with Pass 1 as context) in a session separate from the one that generated the code",
       "Run a single-pass review but double the max_tokens so the model has room to cover all 20 files in depth",
       "Have the generating session review its own work first, then run one additional pass focused only on style issues"
+    ],
+    "questionJa": "ある開発者生産性チームは、20ファイルのリファクタリングPRを確実にレビューさせたいと考えている。シングルパスの失敗モードと推論コンテキストバイアスの両方を最もよく回避する実践の組み合わせはどれか。",
+    "choicesJa": [
+      "リファクタリングを書いたのと同じセッションに、効率のため20ファイルすべてをまとめて1パスで直ちにレビューさせる",
+      "コードを生成したセッションとは別のセッションで、Pass 1（ファイル単位）、Pass 2（Pass 1をコンテキストとするクロスファイル）の2パスレビューを実行する",
+      "シングルパスレビューを行うが、モデルが20ファイルすべてを深くカバーできる余地を持てるようmax_tokensを2倍にする",
+      "生成したセッションにまず自分自身の作業をレビューさせ、その後スタイルの問題のみに焦点を当てた追加の1パスを実行する"
     ],
     "answer": 1,
     "explanation": "正解は、Pass 1でファイル単位、Pass 2でPass 1を文脈としたクロスファイル分析を行う2段階レビューを、コードを生成したセッションとは別のセッションで実施することであり、これによりシングルパスの失敗モードと推論コンテキストバイアスの両方を回避できる。選択肢Aは同一セッションでのシングルパスレビューであり両方の問題を抱えている。選択肢Cはmax_tokensを増やしても注意力の希薄化という構造的問題は解決しない。選択肢Dは自己レビューを行っている時点で推論コンテキストバイアスが残っており、スタイルのみの追加パスでは統合問題は捕捉できない。",
