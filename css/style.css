@@ -5,21 +5,21 @@
 /* ---------- CSS Custom Properties ---------- */
 :root {
   /* Colors: light (default) */
-  --color-bg: #f5f6f8;
-  --color-surface: #ffffff;
-  --color-surface-alt: #eef0f3;
-  --color-text: #1a1d23;
-  --color-text-muted: #5f6672;
-  --color-border: #dde1e6;
-  --color-primary: #3b5bdb;
-  --color-primary-contrast: #ffffff;
-  --color-accent: #7048e8;
-  --color-success: #2f9e44;
-  --color-success-bg: #e6f6ea;
-  --color-danger: #e03131;
-  --color-danger-bg: #fdecec;
-  --color-warning: #f08c00;
-  --color-warning-bg: #fff3e0;
+  --color-bg: #F7F3EA;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #F0E9D8;
+  --color-text: #2B241D;
+  --color-text-muted: #7C7264;
+  --color-border: #E3D9C6;
+  --color-primary: #CC785C;
+  --color-primary-contrast: #FFFFFF;
+  --color-accent: #C08A3E;
+  --color-success: #4F8B3B;
+  --color-success-bg: #EAF3E2;
+  --color-danger: #C1392B;
+  --color-danger-bg: #FBEAE7;
+  --color-warning: #B8860B;
+  --color-warning-bg: #FBF3DC;
 
   /* Spacing scale */
   --space-1: 4px;
@@ -57,21 +57,21 @@
 /* ---------- Dark mode: system preference ---------- */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-bg: #14161a;
-    --color-surface: #1e2126;
-    --color-surface-alt: #262a31;
-    --color-text: #eceef1;
-    --color-text-muted: #9aa1ac;
-    --color-border: #33383f;
-    --color-primary: #7c96ff;
-    --color-primary-contrast: #0d1020;
-    --color-accent: #b197fc;
-    --color-success: #51cf66;
-    --color-success-bg: #10321a;
-    --color-danger: #ff6b6b;
-    --color-danger-bg: #3a1414;
-    --color-warning: #ffa94d;
-    --color-warning-bg: #3a2a0f;
+    --color-bg: #1E1A15;
+    --color-surface: #29231D;
+    --color-surface-alt: #322B22;
+    --color-text: #F2EBDD;
+    --color-text-muted: #B0A594;
+    --color-border: #453B2F;
+    --color-primary: #E0906B;
+    --color-primary-contrast: #1E1A15;
+    --color-accent: #D9A441;
+    --color-success: #7FB06B;
+    --color-success-bg: #24301C;
+    --color-danger: #E27367;
+    --color-danger-bg: #3A1F1A;
+    --color-warning: #D9A441;
+    --color-warning-bg: #3A2E14;
 
     color-scheme: dark;
   }
@@ -79,40 +79,40 @@
 
 /* ---------- Explicit theme overrides (settings) ---------- */
 html[data-theme="light"] {
-  --color-bg: #f5f6f8;
-  --color-surface: #ffffff;
-  --color-surface-alt: #eef0f3;
-  --color-text: #1a1d23;
-  --color-text-muted: #5f6672;
-  --color-border: #dde1e6;
-  --color-primary: #3b5bdb;
-  --color-primary-contrast: #ffffff;
-  --color-accent: #7048e8;
-  --color-success: #2f9e44;
-  --color-success-bg: #e6f6ea;
-  --color-danger: #e03131;
-  --color-danger-bg: #fdecec;
-  --color-warning: #f08c00;
-  --color-warning-bg: #fff3e0;
+  --color-bg: #F7F3EA;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #F0E9D8;
+  --color-text: #2B241D;
+  --color-text-muted: #7C7264;
+  --color-border: #E3D9C6;
+  --color-primary: #CC785C;
+  --color-primary-contrast: #FFFFFF;
+  --color-accent: #C08A3E;
+  --color-success: #4F8B3B;
+  --color-success-bg: #EAF3E2;
+  --color-danger: #C1392B;
+  --color-danger-bg: #FBEAE7;
+  --color-warning: #B8860B;
+  --color-warning-bg: #FBF3DC;
   color-scheme: light;
 }
 
 html[data-theme="dark"] {
-  --color-bg: #14161a;
-  --color-surface: #1e2126;
-  --color-surface-alt: #262a31;
-  --color-text: #eceef1;
-  --color-text-muted: #9aa1ac;
-  --color-border: #33383f;
-  --color-primary: #7c96ff;
-  --color-primary-contrast: #0d1020;
-  --color-accent: #b197fc;
-  --color-success: #51cf66;
-  --color-success-bg: #10321a;
-  --color-danger: #ff6b6b;
-  --color-danger-bg: #3a1414;
-  --color-warning: #ffa94d;
-  --color-warning-bg: #3a2a0f;
+  --color-bg: #1E1A15;
+  --color-surface: #29231D;
+  --color-surface-alt: #322B22;
+  --color-text: #F2EBDD;
+  --color-text-muted: #B0A594;
+  --color-border: #453B2F;
+  --color-primary: #E0906B;
+  --color-primary-contrast: #1E1A15;
+  --color-accent: #D9A441;
+  --color-success: #7FB06B;
+  --color-success-bg: #24301C;
+  --color-danger: #E27367;
+  --color-danger-bg: #3A1F1A;
+  --color-warning: #D9A441;
+  --color-warning-bg: #3A2E14;
   color-scheme: dark;
 }
 
@@ -215,6 +215,12 @@ button {
   touch-action: manipulation;
 }
 
+.app-header__settings svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
 .app-header__settings:active {
   background: var(--color-surface-alt);
 }
@@ -251,6 +257,12 @@ button {
 .tab-bar__icon {
   font-size: 1.25rem;
   line-height: 1;
+}
+
+.tab-bar__icon svg {
+  display: block;
+  width: 22px;
+  height: 22px;
 }
 
 .tab-bar__item.is-active {

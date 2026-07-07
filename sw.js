@@ -2,7 +2,7 @@
 // Release procedure: bump CACHE_VERSION on every deploy that changes any
 // precached file. A stale CACHE_VERSION means users keep old assets forever.
 
-const CACHE_VERSION = "ccaf-v3";
+const CACHE_VERSION = "ccaf-v4";
 
 // Every relative URL that must be available offline. Keep this list in sync
 // with the filesystem — scripts/validate.mjs cross-checks it both directions.
