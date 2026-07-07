@@ -1031,22 +1031,22 @@
     "id": "context-040",
     "domain": "context",
     "difficulty": 1,
-    "question": "In a research synthesis system's provenance tracking design, which set of fields correctly maps a claim back to its supporting evidence?",
+    "question": "A research synthesis system logs `{claim: '...', evidence: '...'}` for each generated statement, but analysts still can't verify claims because they can't tell which document, or which time period, each claim came from. What is missing from the provenance design?",
     "choices": [
-      "claim, confidence, retry_after_ms, is_retryable",
-      "claim, evidence, source_url, document_name, publication_date, source_type",
-      "claim, timeout_duration_ms, partial_results, failure_type",
-      "claim, alternative_approaches, service, attempted_query"
+      "Nothing — pairing each claim with its evidence text is sufficient for verification",
+      "Structured source metadata alongside each claim (e.g. source_url, document_name, publication_date, source_type) so each claim can be traced to a specific, dated source",
+      "A confidence score field so analysts know how much to trust each claim",
+      "A retry/error-handling field so failed extractions can be automatically retried"
     ],
-    "questionJa": "あるリサーチ統合システムのprovenance（出所）追跡設計において、主張をその裏付けとなる証拠に正しく対応付けるフィールドの組はどれか。",
+    "questionJa": "ある研究統合システムは、生成した主張ごとに`{claim: '...', evidence: '...'}`をログに記録しているが、アナリストはどの文書や時期を情報源としたか判別できず、主張を検証できずにいる。プロベナンス設計に不足しているものは何か。",
     "choicesJa": [
-      "claim、confidence、retry_after_ms、is_retryable",
-      "claim、evidence、source_url、document_name、publication_date、source_type",
-      "claim、timeout_duration_ms、partial_results、failure_type",
-      "claim、alternative_approaches、service、attempted_query"
+      "何も不足していない。claimとevidenceの組だけで検証には十分である",
+      "各主張に付随する構造化された出典メタデータ(source_url、document_name、publication_dateなど)。これにより各主張を特定の日付付きの情報源まで追跡できる",
+      "各主張がどれだけ信頼できるかを示す信頼度スコアフィールド",
+      "抽出に失敗した際に自動リトライできるようにするエラーハンドリング用フィールド"
     ],
     "answer": 1,
-    "explanation": "provenance(出所)追跡では、claim・evidence・source_url・document_name・publication_date・source_type のセットが、主張とその根拠を対応付ける正しい構成です。他の選択肢はエラーコンテキストやリトライ関連のフィールドを混在させており、provenance の目的とは無関係です。",
+    "explanation": "プロベナンス(出所)追跡では、claimとevidenceのペアだけでなく、source_url・document_name・publication_date・source_type といった構造化された出典メタデータを各主張に付随させることで、初めて特定の日付付き文書まで遡って検証できるようになります。信頼度スコア(選択肢C)は「どれだけ信じてよいか」を示すだけで出典の追跡はできず、リトライ用フィールド(選択肢D)はエラー処理の関心事でありプロベナンスとは無関係です。",
     "tags": [
       "provenance",
       "claim-source-mapping"
@@ -1109,22 +1109,22 @@
     "id": "context-043",
     "domain": "context",
     "difficulty": 1,
-    "question": "Which set of fields is specifically designed to prevent \"period confusion\" when a research synthesis combines data pulled at different times?",
+    "question": "A research synthesis pipeline pulls data from multiple sources over several days. A stakeholder later discovers the report cited a statistic as \"current\" when it was actually published six months earlier and simply re-fetched last week. What design change would have prevented this confusion?",
     "choices": [
-      "failure_type, service, attempted_query",
-      "isError, errorCategory, isRetryable",
-      "claim, evidence, document_name",
-      "data_as_of, source_published, retrieved_on"
+      "Rely on the model's own judgment about whether cited data still feels current",
+      "Attach three separate timestamp fields to each source — the date the data applies to, when the source was published, and when it was retrieved — so each stage of the timeline is distinguishable",
+      "Always use the retrieval date as the single timestamp for every citation",
+      "Drop timestamps entirely and cite only the most recently retrieved sources"
     ],
-    "questionJa": "リサーチ統合が異なる時点で取得したデータを組み合わせる際の「期間の混同」を防ぐために特別に設計されているフィールドの組はどれか。",
+    "questionJa": "ある研究統合パイプラインは、複数の情報源から数日間にわたってデータを取得している。ステークホルダーは後になって、レポートがある統計を「最新」として引用していたが、実際にはそれは6か月前に公開されたもので、単に先週再取得しただけだったことに気づいた。この混乱を防ぐにはどのような設計変更が必要だったか。",
     "choicesJa": [
-      "failure_type、service、attempted_query",
-      "isError、errorCategory、isRetryable",
-      "claim、evidence、document_name",
-      "data_as_of、source_published、retrieved_on"
+      "そのデータが今も最新と言えるかどうかを、モデル自身の判断に委ねる",
+      "各情報源に3つの独立したタイムスタンプフィールドを付与する — データの対象時点、情報源が公開された時点、取得した時点 — これによりタイムラインの各段階を区別できるようにする",
+      "すべての引用に対して、取得日時のみを単一のタイムスタンプとして使う",
+      "タイムスタンプを一切使わず、直近に取得した情報源のみを引用する"
     ],
-    "answer": 3,
-    "explanation": "data_as_of・source_published・retrieved_on の三つの時間軸フィールドは、データの対象時点・公開時点・取得時点を区別し、期間の取り違えを防ぐために設計されています。他の選択肢はエラーコンテキストやツールのエラー応答、provenanceのclaim-source構造など、時系列管理とは別の目的のフィールドです。",
+    "answer": 1,
+    "explanation": "data_as_of(データの対象時点)・source_published(情報源の公開時点)・retrieved_on(取得時点)という3つの時間軸フィールドを分けて持つことで、「データがいつのものか」「いつ公開されたか」「いつ取得したか」を区別でき、期間の取り違えを防げます。取得日時だけを使う(選択肢C)と、古い情報源を再取得しただけなのに『最新のデータ』と誤認してしまいます。モデルの主観判断(選択肢A)や再取得のみへの依存(選択肢D)はどちらも決定論的な防止策にはなりません。",
     "tags": [
       "temporal-fields",
       "period-confusion"
