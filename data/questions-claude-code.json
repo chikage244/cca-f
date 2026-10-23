@@ -1603,5 +1603,132 @@
       "ci-cd"
     ],
     "ref": "D2 CI/CD flags"
+  },
+  {
+    "id": "claude-code-061",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "In a monorepo containing multiple packages, the root CLAUDE.md has grown to 1,500 lines. Database conventions are loaded even when working on the frontend, and instructions are increasingly not being followed. Which two approaches are appropriate for reorganizing it?",
+    "choices": [
+      "Move all conventions into each team member's `~/.claude/CLAUDE.md`",
+      "Delete the conventions from CLAUDE.md and rely on code review to catch violations",
+      "Have each package's CLAUDE.md use `@import` to pull in only the convention files that package needs",
+      "Turn every convention into a skill and invoke it manually for each task",
+      "Split the conventions by topic into multiple files under `.claude/rules/`"
+    ],
+    "questionJa": "複数のパッケージをまとめたモノレポで、ルートのCLAUDE.mdが1500行になった。フロントエンドを触るときにもデータベースの規約が読み込まれ、指示が守られにくくなっている。整理の方法として適切なものはどれか。",
+    "choicesJa": [
+      "すべての規約を各メンバーの`~/.claude/CLAUDE.md`に移す",
+      "規約をCLAUDE.mdから削除し、コードレビューで指摘するようにする",
+      "各パッケージのCLAUDE.mdから`@import`で、そのパッケージに必要な規約ファイルだけを読み込む",
+      "すべての規約をスキルにして、作業のたびに手で呼び出す",
+      "規約をテーマ別に分けて、`.claude/rules/`配下の複数のファイルにする"
+    ],
+    "answer": [
+      2,
+      4
+    ],
+    "explanation": "`@import`で各パッケージに必要な規約だけを読み込む方法と、`.claude/rules/`にテーマ別のファイルとして分ける方法が、肥大化したCLAUDE.mdを整理する正しいやり方です。どちらも、作業に関係のない規約で大事な指示が埋もれるのを防げます。「各メンバーの`~/.claude/CLAUDE.md`に移す」は、ユーザー個人の設定なのでチームに共有されなくなります。「CLAUDE.mdから消してレビューで指摘する」は、Claudeに規約が伝わらなくなります。「すべてスキルにする」も誤りで、常に守るべき規約はCLAUDE.mdやルールに置き、スキルは必要なときだけ呼び出す作業に使います。",
+    "tags": [
+      "claude-md",
+      "imports",
+      "rules"
+    ],
+    "ref": "試験ガイド v1.0 項目3.1（自作練習問題 ドメイン③ 問2）"
+  },
+  {
+    "id": "claude-code-062",
+    "domain": "claude-code",
+    "difficulty": 3,
+    "question": "You created a skill that analyzes the entire codebase. When it runs, a large volume of analysis output floods the main conversation and degrades the quality of subsequent work. In one run, it also accidentally modified files during the analysis. Which two settings should you add to the SKILL.md frontmatter?",
+    "choices": [
+      "`argument-hint`",
+      "`context: fork`",
+      "`paths`",
+      "`allowed-tools` restricted to read-only tools",
+      "`model` set to a larger model"
+    ],
+    "questionJa": "コードベース全体を分析するスキルを作成した。実行すると大量の分析結果がメインの会話に流れ込み、その後の作業の質が落ちる。また、分析の途中で誤ってファイルを書き換えたこともあった。SKILL.mdのフロントマターに追加する設定として適切なものはどれか。",
+    "choicesJa": [
+      "`argument-hint`",
+      "`context: fork`",
+      "`paths`",
+      "読み取り系のツールだけに絞った`allowed-tools`",
+      "より大きなモデルを指定する`model`"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explanation": "`context: fork`を指定すると、スキルは分離されたサブエージェントのコンテキストで実行され、大量の分析結果でメインの会話を散らかしません。`allowed-tools`を読み取り系のツールに絞ると、分析中の誤ったファイル書き換えを防げます。`argument-hint`は呼び出し時の引数の案内を表示するための設定で、この問題とは関係ありません。`paths`はどのファイルを扱うときにスキルを自動で使うかを指定する設定です。`model`で大きなモデルに変えても、会話が散らかる問題も書き換えの問題も解決しません。",
+    "tags": [
+      "skills",
+      "context-fork",
+      "allowed-tools"
+    ],
+    "ref": "試験ガイド v1.0 項目3.2（自作練習問題 ドメイン③ 問4）"
+  },
+  {
+    "id": "claude-code-063",
+    "domain": "claude-code",
+    "difficulty": 1,
+    "question": "A developer is deciding which tasks to begin in Claude Code's plan mode rather than with direct execution. Which two of the following tasks should start in plan mode?",
+    "choices": [
+      "Changing the authentication method (affects more than 30 files, with two candidate implementation approaches)",
+      "Fixing a bug in a single file where the failing line is already clearly identified",
+      "Adding one date-format validation check to an input field",
+      "Adding a new feature where there are several options for the database design",
+      "Fixing a typo in on-screen text"
+    ],
+    "questionJa": "開発者が、Claude Codeでどの作業を直接実行ではなくplan modeから始めるべきかを判断している。次の作業のうち、plan modeから始めるべきものはどれか。",
+    "choicesJa": [
+      "ログイン方式の変更（30以上のファイルに影響し、実装方法の候補が2つある）",
+      "エラーの出ている行がはっきりしている、1ファイルだけの不具合の修正",
+      "入力欄に、日付の形式チェックを1つ追加する作業",
+      "データベースの設計に複数の選択肢がある新機能の追加",
+      "画面の文言の誤字の修正"
+    ],
+    "answer": [
+      0,
+      3
+    ],
+    "explanation": "影響範囲が大きい、実装方法の候補が複数ある、設計の判断が必要、といった作業はplan modeから始め、方針を固めてから実装に入ります。ログイン方式の変更（30以上のファイル・候補が2つ）と、DB設計に選択肢がある新機能の追加がこれに当たります。原因の行が分かっている1ファイルだけの不具合修正、日付チェックを1つ追加する作業、誤字の修正は、範囲がはっきりした小さな変更なので、直接実行で十分です。",
+    "tags": [
+      "plan-mode",
+      "workflow"
+    ],
+    "ref": "試験ガイド v1.0 項目3.4（自作練習問題 ドメイン③ 問6）"
+  },
+  {
+    "id": "claude-code-064",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "You want Claude Code to review pull requests in CI, then have a program parse the results and automatically post them as inline comments on the relevant lines of each pull request. Which two settings are required?",
+    "choices": [
+      "Run non-interactively with the `-p` (`--print`) flag",
+      "Set the environment variable `CLAUDE_HEADLESS=true`",
+      "Add the `--batch` option",
+      "Have a person read the review output and manually copy it into comments",
+      "Use `--output-format json` together with `--json-schema` to produce results in a fixed structure"
+    ],
+    "questionJa": "CIでClaude Codeにプルリクエストをレビューさせ、その結果をプログラムで読み取って、プルリクエストの該当行にコメントとして自動投稿したい。必要な設定として正しいものはどれか。",
+    "choicesJa": [
+      "`-p`（`--print`）フラグをつけて、対話なしで実行する",
+      "環境変数`CLAUDE_HEADLESS=true`を設定する",
+      "`--batch`オプションをつける",
+      "レビュー結果を人が読んで、手でコメントに書き写す",
+      "`--output-format json`と`--json-schema`で、決まった構造の結果を出力させる"
+    ],
+    "answer": [
+      0,
+      4
+    ],
+    "explanation": "CIでは`-p`（`--print`）で対話なしに実行し、`--output-format json`と`--json-schema`でプログラムが読み取れる決まった形の結果を出させます。これで該当行へのコメント投稿を自動化できます。`CLAUDE_HEADLESS=true`という環境変数や`--batch`オプションは存在しません（公式の例題でも誤答として登場します）。人が読んで書き写す方法は、自動化になっていません。",
+    "tags": [
+      "ci-cd",
+      "headless",
+      "structured-output"
+    ],
+    "ref": "試験ガイド v1.0 項目3.6（自作練習問題 ドメイン③ 問9）"
   }
 ]

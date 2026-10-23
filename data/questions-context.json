@@ -1182,5 +1182,69 @@
       "synthesis-quality"
     ],
     "ref": "D5 synthesis quality content-type rendering"
+  },
+  {
+    "id": "context-046",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "In a multi-agent research system, the search tool returns about 40 fields per result, and just a few calls put heavy pressure on the context window. In addition, when all the collected results are passed to the synthesis agent at once, important findings located in the middle of the input are dropped from the final report. Which two improvements are appropriate?",
+    "choices": [
+      "Combine the collected results into one long block of prose before passing them on",
+      "Limit the agent to a single search tool call",
+      "Trim tool results down to only the needed fields before keeping them in the conversation",
+      "Clear the entire conversation history before each new search",
+      "Place a summary of key findings at the beginning of the input, and lay out the detailed results in sections with clear headings"
+    ],
+    "questionJa": "マルチエージェント型リサーチシステムで、検索ツールは1件あたり約40項目の情報を返し、数回呼ぶだけでコンテキストウィンドウが圧迫される。さらに、集めた結果をまとめて統合担当に渡すと、入力の真ん中あたりにある重要な発見が最終レポートから抜け落ちる。適切な改善はどれか。",
+    "choicesJa": [
+      "集めた結果を、1つの長い文章にまとめてから渡す",
+      "検索ツールの呼び出しを1回までに制限する",
+      "ツールの結果を、必要な項目だけに絞ってから会話に残す",
+      "次の検索の前に、毎回会話の履歴をすべて消す",
+      "重要な発見の要約を入力の冒頭に置き、詳しい結果は見出しで区切って並べる"
+    ],
+    "answer": [
+      2,
+      4
+    ],
+    "explanation": "ツールの結果は必要な項目だけに絞ってから会話に残すと、コンテキストの圧迫を防げます。また、長い入力の真ん中は見落とされやすい（lost in the middle）ので、重要な発見の要約を冒頭に置き、詳細は見出しで区切って整理します。「1つの長い文章にまとめる」は、真ん中の見落としをさらに起こりやすくします。「呼び出しを1回に制限する」は、必要な情報まで集められなくなります。「毎回履歴をすべて消す」は、それまでの文脈が失われます。",
+    "tags": [
+      "context-window",
+      "lost-in-the-middle",
+      "tool-results"
+    ],
+    "ref": "試験ガイド v1.0 項目5.1（自作練習問題 ドメイン⑤ 問2）"
+  },
+  {
+    "id": "context-047",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "For a customer support agent, which two of the following situations should be escalated to a human agent?",
+    "choices": [
+      "Company policy only covers price adjustments on the company's own website, but the customer asks the agent to match a competitor's price",
+      "The customer is expressing frustration, but the request is a standard return that the agent can handle",
+      "A customer lookup returns three customers with the same name",
+      "Despite repeated attempts, the agent cannot obtain the information it needs and has no way to move the case forward",
+      "The agent's self-reported confidence score is 6 out of 10"
+    ],
+    "questionJa": "カスタマーサポートのエージェントにおいて、次のうち人の担当者に引き継ぐべきケースはどれか。",
+    "choicesJa": [
+      "会社のルールは自社サイトでの値下げについてしか定めていないのに、お客様から他社の価格に合わせてほしいと求められた",
+      "お客様は不満を口にしているが、内容は通常の返品で、エージェントが対応できる",
+      "顧客を検索したところ、同じ名前の人が3人見つかった",
+      "何度調べても必要な情報にたどり着けず、対応を進めようがない",
+      "エージェント自身が出した自信度が10段階で6だった"
+    ],
+    "answer": [
+      0,
+      3
+    ],
+    "explanation": "ルールが想定していない要望（ポリシーの抜け）と、手を尽くしても対応を進められない場合は、人に引き継ぎます。お客様が不満を口にしていても、エージェントで対応できる通常の返品なら、気持ちに寄り添いつつ解決を提案します（それでもお客様が人を希望したら引き継ぎます）。同じ名前の顧客が複数見つかった場合は、推測で選ばず、生年月日や電話番号などの追加情報を聞いて特定します。AIの自己申告の自信度はあてにならないため、引き継ぎの判断基準には使えません。",
+    "tags": [
+      "escalation",
+      "human-handoff",
+      "customer-support"
+    ],
+    "ref": "試験ガイド v1.0 項目5.2（自作練習問題 ドメイン⑤ 問4）"
   }
 ]

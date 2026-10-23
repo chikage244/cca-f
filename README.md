@@ -15,7 +15,7 @@ Claude Certified Architect – Foundations (CCA-F) 認定試験の対策用に�
 - **設定** (`#/settings`) — テーマ切替、選択肢シャッフル、復習セッション件数、進捗のリセット/エクスポート/インポート
 - **PWA** — ホーム画面インストール、オフライン動作、アップデート通知トースト
 
-試験仕様: 60問 / 120分 / 合格720点 (1000点満点) / シナリオベース4択。ドメイン配分は Agentic Architecture 27% (16問) / Claude Code 20% (12問) / Prompt Engineering 20% (12問) / Tool Design & MCP 18% (11問) / Context Management 15% (9問)。
+試験仕様: 60問 / 120分 / 合格720点 (1000点満点) / シナリオベース (4択の単一選択に加え、「2つ選べ」のような複数選択あり)。模試では60問のうち4問が複数選択になります。ドメイン配分は Agentic Architecture 27% (16問) / Claude Code 20% (12問) / Prompt Engineering 20% (12問) / Tool Design & MCP 18% (11問) / Context Management 15% (9問)。
 
 ## ディレクトリ構成
 
@@ -53,11 +53,15 @@ cca-f/
 
 - `id` は `{domain}-{連番3桁}` (例: `agentic-001`) で **一度割り当てたら変更しない** こと。SRS の学習状態はこの id をキーに保存されているため、変更すると学習履歴が失われます。
 - `domain` は次のいずれか: `agentic` / `claude-code` / `prompting` / `mcp` / `context`。ファイル名のドメインと一致させること。
-- `choices` は必ず4つ、`answer` はその中の正解インデックス (0-3の整数)。表示時にシャッフルされ、採点は元インデックスで行われます。
+- `answer` が **整数** なら単一選択、**整数の配列** なら複数選択 (「2つ選べ」など) です。
+  - 単一選択: `choices` は必ず4つ、`answer` はその中の正解インデックス (0-3の整数)。
+  - 複数選択: `choices` は4つか5つ、`answer` は正解インデックスの配列 (2個以上・重複なし・選択肢の数より少ない。例: `"answer": [1, 3]`)。選ぶ数は `answer` の長さで決まり、問題文の下に「（2つ選べ）」と表示されます。全部合っているときだけ正解です (部分点なし)。
+  - どちらも表示時に選択肢がシャッフルされ、採点は元インデックスで行われます。
+- `questionJa` / `choicesJa` は任意の日本語訳。`choicesJa` は `choices` と同じ数にする。
 - `difficulty` は 1-3 の整数。
-- 選択肢は英語 (本番同様)、`explanation` は日本語で正解根拠+誤答理由まで書く。
+- 選択肢は英語 (本番同様)、`explanation` は日本語で正解根拠+誤答理由まで書く (選択肢はシャッフルされるので「選択肢B」ではなく内容で言及するのがおすすめ)。
 
-最終的な問題数の目標: agentic 81 / claude-code 60 / prompting 60 / mcp 54 / context 45 (計300問)。
+最終的な問題数の目標: 単一選択 agentic 81 / claude-code 60 / prompting 60 / mcp 54 / context 45 (計300問) + 複数選択 agentic 1 / claude-code 4 / prompting 2 / mcp 2 / context 2 (計11問)。
 
 ### フラッシュカードスキーマ (`data/flashcards.json`)
 
@@ -83,7 +87,7 @@ node scripts/validate.mjs          # スキーマ・ID一意性・SWプリキャ
 node scripts/validate.mjs --full   # 上記に加え、最終目標の問題数/カード数も検証
 ```
 
-`--full` は全300問+100カードが揃った状態でのみパスします (開発途中のシードデータでは意図的に失敗します)。
+`--full` は全311問 (単一選択300問+複数選択11問、ドメインごとに別枠で数える) +100カードが揃った状態でのみパスします (開発途中のシードデータでは意図的に失敗します)。複数選択の問題を追加したら `scripts/validate.mjs` の `fullMultiCount` も増やしてください。
 
 新しい JS/CSS/データファイルを追加した場合は `sw.js` の `PRECACHE_URLS` にも忘れずに追加してください。`validate.mjs` がファイルシステムとの整合性 (双方向) をチェックします。
 

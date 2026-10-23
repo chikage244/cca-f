@@ -40,21 +40,31 @@ function readJson(relPath) {
 
 // ---------- Question domains ----------
 
+// fullCount = single-answer questions (`answer` is an integer, 4 choices);
+// fullMultiCount = multi-answer "choose N" questions (`answer` is an array,
+// 4-5 choices). Counted separately so the original 300-question target
+// stays meaningful.
 const DOMAIN_FILES = [
-  { domain: "agentic", file: "data/questions-agentic.json", fullCount: 81 },
-  { domain: "claude-code", file: "data/questions-claude-code.json", fullCount: 60 },
-  { domain: "prompting", file: "data/questions-prompting.json", fullCount: 60 },
-  { domain: "mcp", file: "data/questions-mcp.json", fullCount: 54 },
-  { domain: "context", file: "data/questions-context.json", fullCount: 45 },
+  { domain: "agentic", file: "data/questions-agentic.json", fullCount: 81, fullMultiCount: 1 },
+  { domain: "claude-code", file: "data/questions-claude-code.json", fullCount: 60, fullMultiCount: 4 },
+  { domain: "prompting", file: "data/questions-prompting.json", fullCount: 60, fullMultiCount: 2 },
+  { domain: "mcp", file: "data/questions-mcp.json", fullCount: 54, fullMultiCount: 2 },
+  { domain: "context", file: "data/questions-context.json", fullCount: 45, fullMultiCount: 2 },
 ];
+
+const SINGLE_CHOICE_COUNT = 4;
+const MULTI_CHOICE_MIN = 4;
+const MULTI_CHOICE_MAX = 5;
 
 const FLASHCARDS_FULL_COUNT = 100;
 
 const allQuestionIds = new Map(); // id -> file it was first seen in
 
-function validateQuestionFile({ domain, file, fullCount }) {
+function validateQuestionFile({ domain, file, fullCount, fullMultiCount }) {
   const idPattern = new RegExp(`^${domain}-\\d{3}$`);
   let data;
+  let singleCount = 0;
+  let multiCount = 0;
 
   try {
     data = readJson(file);
@@ -102,9 +112,22 @@ function validateQuestionFile({ domain, file, fullCount }) {
       fail(`${where}: question must be a non-empty string`);
     }
 
+    // answer shape decides single vs multi ("choose N")
+    const isMulti = Array.isArray(item.answer);
+    if (isMulti) multiCount += 1;
+    else singleCount += 1;
+
     // choices
-    if (!Array.isArray(item.choices) || item.choices.length !== 4) {
-      fail(`${where}: choices must be an array of exactly 4 items`);
+    const choiceCountOk = Array.isArray(item.choices) &&
+      (isMulti
+        ? item.choices.length >= MULTI_CHOICE_MIN && item.choices.length <= MULTI_CHOICE_MAX
+        : item.choices.length === SINGLE_CHOICE_COUNT);
+    if (!choiceCountOk) {
+      fail(
+        isMulti
+          ? `${where}: choices must be an array of ${MULTI_CHOICE_MIN}-${MULTI_CHOICE_MAX} items for a multi-answer question`
+          : `${where}: choices must be an array of exactly ${SINGLE_CHOICE_COUNT} items`
+      );
     } else {
       item.choices.forEach((choice, choiceIndex) => {
         if (typeof choice !== "string" || choice.trim().length === 0) {
@@ -114,8 +137,17 @@ function validateQuestionFile({ domain, file, fullCount }) {
     }
 
     // answer
-    if (!Number.isInteger(item.answer) || item.answer < 0 || item.answer > 3) {
-      fail(`${where}: answer "${item.answer}" must be an integer 0-3`);
+    const maxIndex = (Array.isArray(item.choices) ? item.choices.length : SINGLE_CHOICE_COUNT) - 1;
+    if (isMulti) {
+      const inRange = item.answer.every((a) => Number.isInteger(a) && a >= 0 && a <= maxIndex);
+      const unique = new Set(item.answer).size === item.answer.length;
+      if (!inRange || !unique || item.answer.length < 2 || item.answer.length > maxIndex) {
+        fail(
+          `${where}: answer ${JSON.stringify(item.answer)} must be 2+ unique integers 0-${maxIndex}, fewer than the number of choices`
+        );
+      }
+    } else if (!Number.isInteger(item.answer) || item.answer < 0 || item.answer > maxIndex) {
+      fail(`${where}: answer "${item.answer}" must be an integer 0-${maxIndex} (or an array for multi-answer)`);
     }
 
     // explanation
@@ -141,8 +173,9 @@ function validateQuestionFile({ domain, file, fullCount }) {
       }
 
       if (hasChoicesJa) {
-        if (!Array.isArray(item.choicesJa) || item.choicesJa.length !== 4) {
-          fail(`${where}: choicesJa must be an array of exactly 4 items when present`);
+        const expectedJa = Array.isArray(item.choices) ? item.choices.length : SINGLE_CHOICE_COUNT;
+        if (!Array.isArray(item.choicesJa) || item.choicesJa.length !== expectedJa) {
+          fail(`${where}: choicesJa must be an array of exactly ${expectedJa} items (same as choices) when present`);
         } else {
           item.choicesJa.forEach((choiceJa, choiceIndex) => {
             if (typeof choiceJa !== "string" || choiceJa.trim().length === 0) {
@@ -156,8 +189,11 @@ function validateQuestionFile({ domain, file, fullCount }) {
     }
   });
 
-  if (FULL && data.length !== fullCount) {
-    fail(`${file}: expected exactly ${fullCount} questions in --full mode, found ${data.length}`);
+  if (FULL && singleCount !== fullCount) {
+    fail(`${file}: expected exactly ${fullCount} single-answer questions in --full mode, found ${singleCount}`);
+  }
+  if (FULL && multiCount !== fullMultiCount) {
+    fail(`${file}: expected exactly ${fullMultiCount} multi-answer questions in --full mode, found ${multiCount}`);
   }
 }
 

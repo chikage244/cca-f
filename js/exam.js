@@ -5,8 +5,12 @@
 //
 // exam.active persistence shape (ccaf.v1.exam.active):
 //   { startedAt: epoch ms, durationSec: 7200, questionIds: string[60],
-//     answers: (number|null)[60], flagged: string[] (question ids),
+//     answers: (number|number[]|null)[60], flagged: string[] (question ids),
 //     cursor: number, choiceOrders: number[][] }
+// answers[i] is the chosen original choice index for single-answer
+// questions, or an array of chosen original indices for multi-answer
+// ("choose N") questions (null when nothing is selected). Exams saved before
+// multi-answer support only contain numbers/null and load unchanged.
 // choiceOrders[i] is the per-question shuffled display order (array of
 // original choice indices), generated once at start and persisted so a
 // reload/resume keeps the same on-screen order.
@@ -15,12 +19,24 @@ import { el, formatTime, sampleWithoutReplacement, shuffle, todayStr } from "./u
 import { get, set, remove } from "./store.js";
 import { DOMAINS, loadQuestions } from "./data.js";
 import { applyAnswer } from "./srs.js";
-import { renderQuestionCard } from "./question-card.js";
+import {
+  renderQuestionCard,
+  renderChoiceContent,
+  renderSelectHint,
+  isMultiSelect,
+  answerIndices,
+  chosenIndices,
+  isAnswerComplete,
+  isAnswerCorrect,
+} from "./question-card.js";
 
 const DURATION_SEC = 7200; // 120 minutes
 const TOTAL_QUESTIONS = 60;
 const PASS_SCALED = 720;
 const HISTORY_CAP = 30;
+// Multi-answer ("choose N") items per mock exam, drawn from across domains
+// within the fixed per-domain split (16/12/12/11/9).
+const EXAM_MULTI_COUNT = 4;
 
 const DOMAIN_BY_ID = new Map(DOMAINS.map((d) => [d.id, d]));
 
@@ -71,7 +87,7 @@ function renderIntro(container) {
   card.appendChild(el("p", { class: "card__title" }, "模擬試験について"));
   card.appendChild(
     el("ul", { class: "exam-rules" }, [
-      el("li", {}, "60問 (シナリオ4択)"),
+      el("li", {}, `60問 (シナリオ形式。うち${EXAM_MULTI_COUNT}問は「2つ選べ」の複数選択)`),
       el("li", {}, "制限時間 120分"),
       el("li", {}, "開始後は中断できません (中止すると記録は残りません)"),
       el("li", {}, "合格ラインは 1000点満点中 720点"),
@@ -123,18 +139,26 @@ async function startNewExam(container) {
 
 /**
  * Sample per-domain counts (16/12/12/11/9) without replacement, then
- * interleave-shuffle the combined 60. Also pre-computes a stable per-question
- * choice display order (persisted so reload doesn't reshuffle choices).
+ * interleave-shuffle the combined 60. EXAM_MULTI_COUNT multi-answer items are
+ * picked first (from any domain) and count toward their domain's quota; the
+ * rest of each quota is filled with single-answer items. Also pre-computes a
+ * stable per-question choice display order (persisted so reload doesn't
+ * reshuffle choices).
  */
 async function buildExamQuestionSet() {
   const lists = await Promise.all(DOMAINS.map((d) => loadQuestions(d.id)));
   const byDomain = new Map(DOMAINS.map((d, i) => [d.id, lists[i]]));
 
+  const multiPool = lists.flat().filter(isMultiSelect);
+  const pickedMulti = sampleWithoutReplacement(multiPool, Math.min(EXAM_MULTI_COUNT, multiPool.length));
+
   let combined = [];
   for (const domain of DOMAINS) {
     const pool = byDomain.get(domain.id) || [];
-    const sampled = sampleWithoutReplacement(pool, domain.examCount);
-    combined.push(...sampled);
+    const forced = pickedMulti.filter((q) => q.domain === domain.id).slice(0, domain.examCount);
+    const singles = pool.filter((q) => !isMultiSelect(q));
+    const sampled = sampleWithoutReplacement(singles, domain.examCount - forced.length);
+    combined.push(...forced, ...sampled);
   }
   combined = shuffle(combined);
 
@@ -390,32 +414,72 @@ function renderQuestionAt(active, index, refs) {
     card.appendChild(el("p", { class: "question-card__text-ja" }, question.questionJa));
   }
 
+  const multi = isMultiSelect(question);
+  const requiredCount = answerIndices(question).length;
+  const selectCountLabel = el("p", { class: "text-muted question-card__select-count" });
+  if (multi) {
+    card.appendChild(renderSelectHint(question));
+    card.appendChild(selectCountLabel);
+  }
+
   const choiceList = el("div", { class: "question-card__choices" });
   const chosen = active.answers[clamped];
+  const buttons = [];
   choiceOrder.forEach((originalIndex) => {
-    const choiceJa = question.choicesJa && question.choicesJa[originalIndex];
-    const btnChildren = [el("span", { class: "choice__text" }, question.choices[originalIndex])];
-    if (choiceJa) {
-      btnChildren.push(el("span", { class: "choice__text-ja" }, choiceJa));
-    }
     const btn = el(
       "button",
       {
-        class: `choice${chosen === originalIndex ? " is-selected" : ""}`,
+        class: multi ? "choice choice--multi" : `choice${chosen === originalIndex ? " is-selected" : ""}`,
         type: "button",
+        role: multi ? "checkbox" : undefined,
         onclick: () => {
+          if (multi) {
+            toggleMulti(originalIndex);
+            return;
+          }
           active.answers[clamped] = originalIndex;
           set("exam.active", active);
           Array.from(choiceList.children).forEach((c) => c.classList.remove("is-selected"));
           btn.classList.add("is-selected");
         },
       },
-      btnChildren
+      renderChoiceContent(question, originalIndex, multi)
     );
+    buttons.push({ btn, originalIndex });
     choiceList.appendChild(btn);
   });
   card.appendChild(choiceList);
   refs.questionSlot.appendChild(card);
+  if (multi) syncMulti();
+
+  // Multi-answer: toggle a pick (at most requiredCount) and persist the
+  // selection as an array of original indices (null when emptied).
+  function toggleMulti(originalIndex) {
+    const picked = chosenIndices(active.answers[clamped]).slice();
+    const i = picked.indexOf(originalIndex);
+    if (i !== -1) {
+      picked.splice(i, 1);
+    } else if (picked.length < requiredCount) {
+      picked.push(originalIndex);
+    } else {
+      return;
+    }
+    active.answers[clamped] = picked.length > 0 ? picked : null;
+    set("exam.active", active);
+    syncMulti();
+  }
+
+  function syncMulti() {
+    const picked = chosenIndices(active.answers[clamped]);
+    const full = picked.length >= requiredCount;
+    buttons.forEach(({ btn, originalIndex }) => {
+      const isChecked = picked.includes(originalIndex);
+      btn.classList.toggle("is-checked", isChecked);
+      btn.setAttribute("aria-checked", isChecked ? "true" : "false");
+      btn.disabled = full && !isChecked;
+    });
+    selectCountLabel.textContent = `${picked.length} / ${requiredCount} 選択中`;
+  }
 }
 
 function moveTo(active, index, refs) {
@@ -445,8 +509,14 @@ function confirmAbort(container) {
   }
 }
 
+function isAnsweredAt(active, i) {
+  return isAnswerComplete(questionsById.get(active.questionIds[i]), active.answers[i]);
+}
+
 function confirmSubmit(container, active) {
-  const answeredCount = active.answers.filter((a) => a != null).length;
+  // A multi-answer question with fewer picks than required counts as
+  // unanswered here (it would be graded incorrect).
+  const answeredCount = active.questionIds.filter((_, i) => isAnsweredAt(active, i)).length;
   const unanswered = active.questionIds.length - answeredCount;
   const msg =
     unanswered > 0
@@ -475,7 +545,7 @@ function openGridSheet(active, refs) {
 
   const grid = el("div", { class: "exam-grid" });
   active.questionIds.forEach((qid, i) => {
-    const answered = active.answers[i] != null;
+    const answered = isAnsweredAt(active, i);
     const flagged = active.flagged.includes(qid);
     const cell = el(
       "button",
@@ -525,7 +595,7 @@ async function finishExam(container, active, opts = {}) {
   active.questionIds.forEach((qid, i) => {
     const question = questionsById.get(qid);
     const chosen = active.answers[i];
-    const isCorrect = chosen != null && chosen === question.answer;
+    const isCorrect = isAnswerCorrect(question, chosen);
 
     if (perDomain[question.domain]) {
       perDomain[question.domain].total += 1;

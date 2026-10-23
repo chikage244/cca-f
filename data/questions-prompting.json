@@ -1606,5 +1606,69 @@
       "single-pass-failure"
     ],
     "ref": "D3 combined multi-pass + reasoning context bias"
+  },
+  {
+    "id": "prompting-061",
+    "domain": "prompting",
+    "difficulty": 3,
+    "question": "An extraction pipeline receives documents without knowing in advance whether each one is an invoice, a contract, or a receipt, and there is a dedicated extraction tool for each type. Every document must produce a structured result through one of these tools. Occasionally, a document arrives that does not match any of the options in the \"document type\" field. Which two settings are appropriate?",
+    "choices": [
+      "Set `tool_choice` to `\"auto\"`",
+      "Set `tool_choice` to `\"any\"`",
+      "Make the \"document type\" field a free-form string",
+      "Add `\"other\"` to the \"document type\" enum, along with a string field for details",
+      "Merge the three extraction tools into a single general-purpose tool"
+    ],
+    "questionJa": "抽出パイプラインに届く文書が、請求書・契約書・領収書のどれなのかは事前に分からない。それぞれ専用の抽出ツールを用意している。どの文書でも必ずいずれかのツールで構造化された結果を出させたい。さらに、「書類の種類」欄の選択肢に当てはまらない文書もときどき届く。適切な設定はどれか。",
+    "choicesJa": [
+      "`tool_choice`を`\"auto\"`にする",
+      "`tool_choice`を`\"any\"`にする",
+      "「書類の種類」欄を自由記述の文字列にする",
+      "「書類の種類」の選択肢（enum）に`\"other\"`を加え、詳細を書く文字列の欄も用意する",
+      "3つの抽出ツールを1つの汎用ツールにまとめる"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explanation": "`tool_choice`を`\"any\"`にすると、どれかのツールが必ず呼ばれ（どのツールを使うかはClaudeが文書を見て判断）、構造化された結果が保証されます。また、enumに`\"other\"`と詳細を書く欄を用意すると、想定外の書類でも無理に既存の選択肢へ当てはめずに扱えます。`\"auto\"`ではツールを使わずに文章だけで返すことがあるため、構造化された結果が保証されません。自由記述の文字列にすると、値の表記がばらついてあとで集計しにくくなります。書類ごとに必要な項目が違うので、1つの汎用ツールにまとめるより専用ツールのほうが適しています。",
+    "tags": [
+      "tool-choice",
+      "json-schema",
+      "enum"
+    ],
+    "ref": "試験ガイド v1.0 項目4.3（自作練習問題 ドメイン④ 問6）"
+  },
+  {
+    "id": "prompting-062",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "A team is considering moving some workloads to the Message Batches API to cut costs by 50%. Which two workloads are good fits for batch processing?",
+    "choices": [
+      "Nightly classification of that day's customer inquiry logs",
+      "An automated check that must pass before every merge",
+      "A weekly audit report covering the previous week, read every Monday morning",
+      "Real-time replies to customers in a chat support window",
+      "An interactive agent that calls tools repeatedly and decides its next step based on the results"
+    ],
+    "questionJa": "コストを50%削減できるMessage Batches APIに、一部の処理を切り替えることを検討している。バッチ処理に向いているものはどれか。",
+    "choicesJa": [
+      "毎晩まとめて行う、その日の問い合わせログの分類",
+      "マージ前に必ず通す必要がある自動チェック",
+      "毎週月曜の朝に読む、先週分の監査レポート",
+      "チャット窓口での、お客様へのリアルタイムの返答",
+      "途中でツールを何度も呼び、結果を見ながら次の行動を決める対話型エージェント"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "Message Batches APIはコストが半分になる代わりに、処理に最大24時間かかり、完了時間の保証もありません。そのため、結果を待てる処理（夜間のログ分類、週次の監査レポート）に向いています。マージ前の必須チェックやチャット窓口のリアルタイム返答は、人が結果を待っているので向きません。ツールを呼んで結果を見ながら進むエージェントは、1回のリクエストの中でツールを実行して結果を返す往復がバッチではできないため向きません。",
+    "tags": [
+      "batch-api",
+      "cost",
+      "latency"
+    ],
+    "ref": "試験ガイド v1.0 項目4.5（自作練習問題 ドメイン④ 問8）"
   }
 ]

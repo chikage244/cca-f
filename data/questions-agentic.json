@@ -2172,5 +2172,37 @@
       "task-decomposition"
     ],
     "ref": "D1 decomposition breadth risk"
+  },
+  {
+    "id": "agentic-082",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "In a multi-agent research system, the synthesis subagent keeps responding that it \"cannot find any source material.\" The search subagents are correctly returning their results to the coordinator. Which two changes correctly address the cause?",
+    "choices": [
+      "Enable the synthesis subagent's setting that lets it read the coordinator's conversation history",
+      "Include the search subagents' results directly in the prompt the coordinator sends to the synthesis subagent",
+      "Add \"Recall the previous subagents' results before starting work\" to the synthesis subagent's system prompt",
+      "Pass the findings as structured data that keeps the content separate from its source metadata (URL, document name, page number)",
+      "Give the synthesis subagent its own web search tool so it can redo the research itself"
+    ],
+    "questionJa": "マルチエージェント型リサーチシステムで、統合担当のサブエージェントが「元になる情報が見つかりません」と返し続ける。検索担当のサブエージェントは、結果を正しくコーディネーターに返している。原因に対する対処として正しいものはどれか。",
+    "choicesJa": [
+      "統合担当の設定で「コーディネーターの会話履歴を参照する」機能を有効にする",
+      "検索担当の結果を、コーディネーターが統合担当に送る指示文（プロンプト）の中に直接含めて渡す",
+      "統合担当のシステムプロンプトに「作業の前に、前の担当の結果を思い出すこと」と書く",
+      "渡す情報を、内容と出典情報（URL・文書名・ページ番号）を分けた構造化データにする",
+      "統合担当にもWeb検索ツールを渡し、自分で調べ直させる"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explanation": "サブエージェントは親（コーディネーター）の会話履歴を自動では引き継ぎません。そのため、前の担当の結果は統合担当への指示文に直接書いて渡す必要があります。このとき内容と出典（URL・文書名・ページ番号）を分けた構造化データにすると、統合の過程で出典が失われません。「会話履歴を参照する機能を有効にする」は、そのような機能が存在しないため誤りです。「前の担当の結果を思い出すこと」と書いても、もともと渡されていない情報は思い出せません。統合担当にWeb検索ツールを渡して調べ直させるのは、役割外のツールを持たせることになり、誤用や重複作業のもとになります（項目2.3）。",
+    "tags": [
+      "subagents",
+      "context-passing",
+      "provenance"
+    ],
+    "ref": "試験ガイド v1.0 項目1.3（自作練習問題 ドメイン① 問5）"
   }
 ]

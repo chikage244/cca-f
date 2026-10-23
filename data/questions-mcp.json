@@ -1421,5 +1421,69 @@
       "tools-vs-resources"
     ],
     "ref": "D4 server primitives distinction"
+  },
+  {
+    "id": "mcp-055",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A system prompt says: \"For any question about documents, always analyze carefully before answering.\" As a result, the `analyze_document` tool is called whenever the word \"document\" appears, even when the agent is only organizing web search results. `analyze_document` is a general-purpose tool that handles extraction, summarization, and fact-checking all in one. Which two actions are appropriate?",
+    "choices": [
+      "Review the system prompt for wording that steers Claude toward a specific tool",
+      "Change `tool_choice` from `\"auto\"` to `\"any\"`",
+      "Split `analyze_document` into purpose-specific tools with well-defined inputs and outputs, such as `extract_data_points`, `summarize_content`, and `verify_claim_against_source`",
+      "Remove all tools and have Claude answer from its own knowledge only",
+      "Route every question containing the word \"document\" to a human"
+    ],
+    "questionJa": "システムプロンプトに「ドキュメントに関する質問には、必ず丁寧に分析して答えること」と書かれている。その結果、「ドキュメント」という言葉が出るたびに`analyze_document`ツールが呼ばれ、Web検索の結果を整理するだけの場面にまで使われてしまう。`analyze_document`は抜き出し・要約・事実確認を1つでこなす汎用ツールである。適切な対応はどれか。",
+    "choicesJa": [
+      "システムプロンプトの言い回しが、特定のツールの選択を誘導していないか見直す",
+      "`tool_choice`を`\"auto\"`から`\"any\"`に変える",
+      "`analyze_document`を、`extract_data_points`・`summarize_content`・`verify_claim_against_source`のように、目的と入出力が決まった複数のツールに分ける",
+      "すべてのツールを外し、Claude自身の知識だけで答えさせる",
+      "「ドキュメント」という言葉を含む質問は、すべて人に回す"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "システムプロンプトのキーワードがツールの選択を引っぱっていないかを見直すことと、何でもこなす汎用ツールを目的ごとに分けて、どの場面で使うかが明確なツールにすることの2つが、試験ガイドに沿った対応です。「`tool_choice`を`\"any\"`にする」は、どれかのツールを必ず使わせる設定なので、選び間違いは直らず、かえって不要なツール呼び出しを増やします。「すべてのツールを外す」「『ドキュメント』を含む質問をすべて人に回す」は、必要な機能まで失うだけで、問題の解決になっていません。",
+    "tags": [
+      "tool-descriptions",
+      "tool-selection",
+      "system-prompt"
+    ],
+    "ref": "試験ガイド v1.0 項目2.1（自作練習問題 ドメイン② 問2）"
+  },
+  {
+    "id": "mcp-056",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A team exposes its internal ticket management system and database schema information through MCP. However, Claude repeatedly makes many exploratory tool calls just to discover the list of tickets and the database table structure. It also sometimes uses the built-in `Grep` tool to look for information that a single MCP tool call would return, producing irrelevant results. Which two improvements are appropriate?",
+    "choices": [
+      "Disable all built-in tools",
+      "Expose ticket summaries and the database schema overview as MCP resources",
+      "Move the MCP server configuration into each developer's `~/.claude.json`",
+      "Merge the two MCP servers into a single server",
+      "Expand the MCP tool descriptions to explain in detail what each tool can do and what it returns"
+    ],
+    "questionJa": "社内のチケット管理とDB構造の情報をMCPで提供している。ところがClaudeは毎回、チケットの一覧やDBのテーブル構成を知るためだけに、手探りでツールを何度も呼び出している。また、MCPツールなら1回で分かる情報を組み込みの`Grep`で探し、的外れな結果を出すこともある。適切な改善はどれか。",
+    "choicesJa": [
+      "組み込みツールをすべて無効にする",
+      "チケットの要約やDB構造の一覧を、MCPのリソースとして公開する",
+      "MCPサーバーの設定を、各メンバーの`~/.claude.json`に移す",
+      "2つのMCPサーバーを1つに統合する",
+      "MCPツールの説明に、何ができて何を返すのかを詳しく書く"
+    ],
+    "answer": [
+      1,
+      4
+    ],
+    "explanation": "一覧的な情報（チケットの要約、DBの構造）をMCPのリソースとして公開すると、Claudeが最初から中身を把握できるので、手探りのツール呼び出しが減ります。また、MCPツールの説明を詳しくすると、Claudeがそのツールで何が分かるかを判断でき、組み込みの`Grep`が優先されにくくなります。「組み込みツールをすべて無効にする」は、ファイル検索など必要な機能まで使えなくなります。「設定を各自の`~/.claude.json`に移す」は置き場所が変わるだけで手探りや説明不足の問題は変わらず、チームでの共有もできなくなります。「2つのサーバーを統合する」も、手探りや説明不足という原因を解決しません。",
+    "tags": [
+      "mcp-resources",
+      "tool-descriptions",
+      "built-in-tools"
+    ],
+    "ref": "試験ガイド v1.0 項目2.4（自作練習問題 ドメイン② 問8）"
   }
 ]
