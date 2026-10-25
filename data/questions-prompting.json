@@ -1670,5 +1670,59 @@
       "latency"
     ],
     "ref": "試験ガイド v1.0 項目4.5（自作練習問題 ドメイン④ 問8）"
+  },
+  {
+    "id": "prompting-063",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "Your team runs two workflows on the Claude API: (1) generating suggested replies that support representatives see while a customer waits in a live chat, and (2) a weekly job that classifies all of the past week's support tickets for a trend report. A manager proposes moving both workflows to the Message Batches API to cut costs by 50%. How should you evaluate this proposal?",
+    "choices": [
+      "Move both workflows to the Batches API, and poll frequently for results so the live chat suggestions still arrive quickly",
+      "Move only the weekly ticket classification to the Batches API, and keep the live chat suggestions on real-time API calls",
+      "Keep both workflows on real-time calls, because the Batches API does not guarantee that results come back in the same order as the requests",
+      "Move both workflows to the Batches API, and fall back to real-time calls whenever a batch takes too long"
+    ],
+    "questionJa": "チームでは Claude API を使って、2つの処理を動かしている。(1) お客様がライブチャットで返事を待っている間に、サポート担当者の画面に返信の候補を表示する処理と、(2) 先週分のすべての問い合わせを分類して傾向レポートを作る週次の処理である。マネージャーから、費用を50%削減するために両方を Message Batches API に切り替えようという提案があった。この提案をどう評価すべきか。",
+    "choicesJa": [
+      "両方を Batches API に切り替え、結果を頻繁にポーリングして、ライブチャットの返信候補も早く届くようにする",
+      "週次の問い合わせ分類だけを Batches API に切り替え、ライブチャットの返信候補はリアルタイム呼び出しのままにする",
+      "Batches API は結果がリクエストと同じ順番で返ることを保証しないので、両方ともリアルタイム呼び出しのままにする",
+      "両方を Batches API に切り替え、バッチの処理に時間がかかりすぎたときはリアルタイム呼び出しに切り替える"
+    ],
+    "answer": 1,
+    "explanation": "Message Batches API は費用が半分になる代わりに、処理に最大24時間かかることがあり、完了時間の保証もありません。週次の分類のように結果を待てる処理には向いていますが、お客様が待っているライブチャットの返信候補には向きません。待てる処理だけをバッチにして、人が待っている処理はリアルタイム呼び出しのままにするのが正解です。頻繁にポーリングしても、バッチの処理そのものが速くなるわけではありません。結果の順番は `custom_id` で対応づけられるので、両方ともそのままにする理由にはなりません。遅いときにリアルタイム呼び出しへ切り替える方法は、お客様を待たせたあとで結局通常の料金を払うことになり、仕組みも複雑になります。",
+    "tags": [
+      "batch-api",
+      "latency",
+      "cost"
+    ],
+    "ref": "公式サンプル問題11（試験ガイド 9章）と同じ考え方（項目4.5）"
+  },
+  {
+    "id": "prompting-064",
+    "domain": "prompting",
+    "difficulty": 2,
+    "question": "An automated code review reviews each pull request in a single pass. For a pull request that changes 22 files in a user authentication and session management module, the review quality is inconsistent: some files get detailed feedback while others get only superficial comments, and some findings contradict each other, with a pattern flagged as a problem in one file but approved in another. How should you restructure the review?",
+    "choices": [
+      "Require developers to split large pull requests into smaller ones of no more than 5 files each",
+      "Switch to a larger model with a longer context window so all 22 files can be reviewed thoroughly in one pass",
+      "Run the same full review three times and report only the findings that appear in at least two of the runs",
+      "Review each file in its own focused pass, then run a separate pass that examines the interactions and data flow between files"
+    ],
+    "questionJa": "自動コードレビューでは、プルリクエスト全体を1回でレビューしている。ユーザー認証とセッション管理のモジュールで22ファイルを変更したプルリクエストでは、レビューの質がばらついた。詳しい指摘がつくファイルもあれば、表面的なコメントしかつかないファイルもある。さらに、ある書き方を一方のファイルでは問題として指摘し、別のファイルでは問題なしとする、矛盾した指摘も出ている。レビューをどう組み直すべきか。",
+    "choicesJa": [
+      "開発者に、大きなプルリクエストを1つあたり5ファイル以内の小さなものに分けさせる",
+      "コンテキストウィンドウの大きい、より大きなモデルに変えて、22ファイルを1回で丁寧にレビューさせる",
+      "同じ全体レビューを3回実行し、2回以上出た指摘だけを報告する",
+      "ファイルごとに焦点を絞ったパスでレビューし、そのうえでファイル間のやりとりやデータの流れを見る別のパスを実行する"
+    ],
+    "answer": 3,
+    "explanation": "一度に多くのファイルを見ると注意が分散し、ファイルによってレビューの深さがばらついたり、指摘が矛盾したりします。ファイルごとに焦点を絞ったパスで1つずつ丁寧に見て、ファイル間のつながりは別のパスでまとめて確認するのが正解です。開発者にプルリクエストを小さく分けさせる方法は、レビューの仕組みの問題を開発者の負担に置きかえているだけで、分けられない変更もあります。より大きなモデルにしても、一度に大量のファイルを見ることによる注意の分散は解消しません。3回レビューして2回以上出た指摘だけを残す方法は、毎回見落とされる問題を拾えないうえ、本当の問題まで落とすおそれがあります。",
+    "tags": [
+      "code-review",
+      "multi-pass",
+      "attention"
+    ],
+    "ref": "公式サンプル問題12（試験ガイド 9章）と同じ考え方（項目4.6）"
   }
 ]

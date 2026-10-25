@@ -42,14 +42,13 @@ function readJson(relPath) {
 
 // fullCount = single-answer questions (`answer` is an integer, 4 choices);
 // fullMultiCount = multi-answer "choose N" questions (`answer` is an array,
-// 4-5 choices). Counted separately so the original 300-question target
-// stays meaningful.
+// 4-5 choices). Counted separately per domain.
 const DOMAIN_FILES = [
-  { domain: "agentic", file: "data/questions-agentic.json", fullCount: 81, fullMultiCount: 1 },
-  { domain: "claude-code", file: "data/questions-claude-code.json", fullCount: 60, fullMultiCount: 4 },
-  { domain: "prompting", file: "data/questions-prompting.json", fullCount: 60, fullMultiCount: 2 },
-  { domain: "mcp", file: "data/questions-mcp.json", fullCount: 54, fullMultiCount: 2 },
-  { domain: "context", file: "data/questions-context.json", fullCount: 45, fullMultiCount: 2 },
+  { domain: "agentic", file: "data/questions-agentic.json", fullCount: 83, fullMultiCount: 1 },
+  { domain: "claude-code", file: "data/questions-claude-code.json", fullCount: 64, fullMultiCount: 4 },
+  { domain: "prompting", file: "data/questions-prompting.json", fullCount: 62, fullMultiCount: 2 },
+  { domain: "mcp", file: "data/questions-mcp.json", fullCount: 56, fullMultiCount: 2 },
+  { domain: "context", file: "data/questions-context.json", fullCount: 47, fullMultiCount: 2 },
 ];
 
 const SINGLE_CHOICE_COUNT = 4;

@@ -61,7 +61,7 @@ cca-f/
 - `difficulty` は 1-3 の整数。
 - 選択肢は英語 (本番同様)、`explanation` は日本語で正解根拠+誤答理由まで書く (選択肢はシャッフルされるので「選択肢B」ではなく内容で言及するのがおすすめ)。
 
-最終的な問題数の目標: 単一選択 agentic 81 / claude-code 60 / prompting 60 / mcp 54 / context 45 (計300問) + 複数選択 agentic 1 / claude-code 4 / prompting 2 / mcp 2 / context 2 (計11問)。
+最終的な問題数の目標: 単一選択 agentic 83 / claude-code 64 / prompting 62 / mcp 56 / context 47 (計312問) + 複数選択 agentic 1 / claude-code 4 / prompting 2 / mcp 2 / context 2 (計11問)。
 
 ### フラッシュカードスキーマ (`data/flashcards.json`)
 
@@ -87,7 +87,7 @@ node scripts/validate.mjs          # スキーマ・ID一意性・SWプリキャ
 node scripts/validate.mjs --full   # 上記に加え、最終目標の問題数/カード数も検証
 ```
 
-`--full` は全311問 (単一選択300問+複数選択11問、ドメインごとに別枠で数える) +100カードが揃った状態でのみパスします (開発途中のシードデータでは意図的に失敗します)。複数選択の問題を追加したら `scripts/validate.mjs` の `fullMultiCount` も増やしてください。
+`--full` は全323問 (単一選択312問+複数選択11問、ドメインごとに別枠で数える) +100カードが揃った状態でのみパスします (開発途中のシードデータでは意図的に失敗します)。問題を追加したら `scripts/validate.mjs` の `fullCount` (単一選択) / `fullMultiCount` (複数選択) も増やしてください。
 
 新しい JS/CSS/データファイルを追加した場合は `sw.js` の `PRECACHE_URLS` にも忘れずに追加してください。`validate.mjs` がファイルシステムとの整合性 (双方向) をチェックします。
 

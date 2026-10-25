@@ -1485,5 +1485,58 @@
       "built-in-tools"
     ],
     "ref": "試験ガイド v1.0 項目2.4（自作練習問題 ドメイン② 問8）"
+  },
+  {
+    "id": "mcp-057",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "A finance operations agent has two tools, `search_invoices` and `search_contracts`. Both tool descriptions say only \"Searches documents by keyword.\" When users ask about the payment terms agreed with a vendor, the agent often calls `search_invoices`, and when they ask how much a vendor actually billed last quarter, it often calls `search_contracts`. What is the most effective first step to improve tool selection?",
+    "choices": [
+      "Expand each tool's description with its input format, example questions it should handle, edge cases, and where its boundary lies relative to the other tool",
+      "Add few-shot examples to the system prompt that show the correct tool for several typical questions",
+      "Build a keyword-based pre-routing layer that selects the tool before the request reaches Claude",
+      "Merge the two tools into a single `search_documents` tool that searches both invoices and contracts"
+    ],
+    "questionJa": "経理業務を支援するエージェントに、`search_invoices` と `search_contracts` という2つのツールがある。どちらのツールの説明も「キーワードで文書を検索します」の一文だけである。取引先と取り決めた支払条件を聞かれると `search_invoices` を呼び、前四半期に実際に請求された金額を聞かれると `search_contracts` を呼ぶ、という選び間違いがよく起きる。ツールの選び方を改善する最初の一手として、最も効果的なものはどれか。",
+    "choicesJa": [
+      "各ツールの説明に、入力の形式、そのツールで答えるべき質問の例、例外的なケース、もう一方のツールとの使い分けの境界を書き足す",
+      "よくある質問ごとに正しいツールを示す few-shot の例を、システムプロンプトに追加する",
+      "Claude に届く前に、キーワードで使うツールを決める事前の振り分け層を作る",
+      "2つのツールを、請求書と契約書の両方を検索する1つの `search_documents` ツールに統合する"
+    ],
+    "answer": 0,
+    "explanation": "Claude はツールの説明を読んで、どのツールを使うかを決めます。説明が一文だけで、2つのツールの違いが書かれていないことが根本原因です。入力の形式、使う質問の例、例外的なケース、もう一方との使い分けの境界を説明に書き足すのが、最も手軽で効果の大きい最初の一手です。few-shot の例を足す方法は、根本原因である説明不足を残したまま、トークンを増やすことになります。キーワードによる事前の振り分け層は、Claude の言葉を理解する力を活かせない大がかりな仕組みで、言い回しが変わると外れます。2つのツールを1つに統合する方法は、設計の選択肢としてはありえますが、最初の一手としては手間が大きく、検索の精度が落ちるおそれもあります。",
+    "tags": [
+      "tool-descriptions",
+      "tool-selection"
+    ],
+    "ref": "公式サンプル問題2（試験ガイド 9章）と同じ考え方（項目2.1）"
+  },
+  {
+    "id": "mcp-058",
+    "domain": "mcp",
+    "difficulty": 2,
+    "question": "In a multi-agent code review system, the review agent frequently needs information about internal services. Each time, it sends a request through the coordinator to a service catalog agent, which adds several round trips and slows reviews down. Analysis shows that about 85% of these requests are simple lookups, such as checking whether an endpoint exists or who owns a service. The rest require deeper analysis of dependencies across multiple services. What is the most effective way to reduce latency?",
+    "choices": [
+      "Give the review agent a scoped `lookup_service` tool that handles only simple lookups, and keep routing complex dependency analyses through the coordinator",
+      "Have the review agent collect all of its service questions and send them to the coordinator together at the end of each review",
+      "Give the review agent all of the service catalog agent's tools so it never needs to go through the coordinator",
+      "Have the review agent proactively cache information about every internal service at the start of each review"
+    ],
+    "questionJa": "マルチエージェントのコードレビューシステムでは、レビューエージェントが社内サービスの情報を頻繁に必要とする。そのたびにコーディネーター経由でサービスカタログのエージェントに問い合わせており、ラウンドトリップが何度も発生してレビューが遅くなっている。調べてみると、問い合わせの約85%は「あるエンドポイントが存在するか」「あるサービスの担当者は誰か」といった簡単な確認で、残りは複数のサービスにまたがる依存関係の詳しい分析だった。待ち時間を減らす方法として、最も効果的なものはどれか。",
+    "choicesJa": [
+      "簡単な確認だけを扱う、スコープを限定した `lookup_service` ツールをレビューエージェントに渡し、複雑な依存関係の分析はこれまでどおりコーディネーター経由にする",
+      "サービスに関する質問をためておき、レビューの最後にまとめてコーディネーターに送る",
+      "サービスカタログのエージェントのツールをすべてレビューエージェントに渡し、コーディネーターを経由しなくて済むようにする",
+      "レビューの開始時に、すべての社内サービスの情報をレビューエージェントに先回りしてキャッシュさせる"
+    ],
+    "answer": 0,
+    "explanation": "問い合わせの大半を占める簡単な確認を、スコープを限定したツールとしてレビューエージェントに直接持たせれば、多くのラウンドトリップがなくなります。複雑な分析はこれまでどおりコーディネーター経由にするので、役割の分担も保てます。質問をためて最後にまとめて送る方法は、レビューの途中で答えが必要な確認に間に合わず、レビューの流れを壊します。すべてのツールを渡す方法は、レビューエージェントのツールが増えすぎて選び間違いが起きやすくなり、役割の分担もなくなります。すべてのサービスの情報を先回りしてキャッシュさせる方法は、使わない情報まで集めるので無駄が大きく、コンテキストも圧迫します。",
+    "tags": [
+      "scoped-tools",
+      "tool-distribution",
+      "latency"
+    ],
+    "ref": "公式サンプル問題9（試験ガイド 9章）と同じ考え方（項目2.3）"
   }
 ]

@@ -343,6 +343,7 @@ button {
   text-align: left;
   font-size: 0.95rem;
   line-height: 1.4;
+  overflow-wrap: anywhere; /* long flags / env var names in code spans */
   cursor: pointer;
   touch-action: manipulation;
 }

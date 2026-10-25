@@ -2204,5 +2204,59 @@
       "provenance"
     ],
     "ref": "試験ガイド v1.0 項目1.3（自作練習問題 ドメイン① 問5）"
+  },
+  {
+    "id": "agentic-083",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A utility company's customer service agent can change a customer's payment method using the `update_payment_method` tool. Company policy requires that the account holder's identity be confirmed with the `verify_account_holder` tool before any payment details are changed. Production logs show that the agent occasionally calls `update_payment_method` without verifying first, typically when the customer sounds confident and provides an account number up front. What is the most effective way to make sure verification always happens first?",
+    "choices": [
+      "Strengthen the system prompt to state that identity verification is mandatory before any payment change, and label it as the highest-priority rule",
+      "Add few-shot examples to the prompt that show the agent calling `verify_account_holder` before every payment change",
+      "Add a programmatic prerequisite that blocks `update_payment_method` until `verify_account_holder` has returned a successful verification for that account",
+      "Add a routing classifier that identifies each request type and limits which tools the agent can use for that request"
+    ],
+    "questionJa": "電力会社のカスタマーサービス用エージェントは、`update_payment_method` ツールでお客様の支払い方法を変更できる。社内ルールでは、支払い情報を変更する前に、必ず `verify_account_holder` ツールで契約者本人であることを確認しなければならない。ところが本番のログを見ると、エージェントがときどき本人確認をせずに `update_payment_method` を呼んでいる。多くは、お客様が自信のある口調で、最初から口座番号を伝えてきたケースである。本人確認を必ず先に行わせる方法として、最も効果的なものはどれか。",
+    "choicesJa": [
+      "システムプロンプトで、支払い方法を変える前の本人確認は必須だと強調し、最優先のルールとして明記する",
+      "支払い方法を変えるたびに先に `verify_account_holder` を呼んでいる様子を示す few-shot の例を、プロンプトに追加する",
+      "その契約について `verify_account_holder` が本人確認の成功を返すまで、`update_payment_method` を呼べないようにするプログラム上の前提条件を設ける",
+      "リクエストの種類を判定する振り分け用の分類器を置き、種類ごとにエージェントが使えるツールを絞る"
+    ],
+    "answer": 2,
+    "explanation": "お金や個人情報に関わる操作で「必ず先に本人確認を済ませる」ことが求められる場合は、プロンプトでのお願いではなく、プログラムで順番を強制するのが正解です。本人確認が成功するまで `update_payment_method` を呼べないようにすれば、エージェントの判断がぶれても確認が飛ばされることはありません。システムプロンプトで強調する方法や few-shot の例を足す方法は、守られる確率を上げるだけで、今回のように「ときどき飛ばす」ことを確実には防げません。リクエストの種類ごとにツールを絞る分類器は、どのツールを使えるかを決めるだけです。支払い方法の変更という正当なリクエストでは `update_payment_method` が使えるままなので、確認を飛ばす問題は解決しません。",
+    "tags": [
+      "prerequisites",
+      "tool-ordering",
+      "guardrails"
+    ],
+    "ref": "公式サンプル問題1（試験ガイド 9章）と同じ考え方（項目1.4）"
+  },
+  {
+    "id": "agentic-084",
+    "domain": "agentic",
+    "difficulty": 2,
+    "question": "A multi-agent research system is asked to analyze \"the impact of remote work on urban economies.\" The final report covers office vacancy rates and public transit ridership in depth, but says nothing about housing markets, local restaurants and retail, or city tax revenues. Every subagent completed its assigned task successfully. The coordinator's logs show that it split the topic into only two subtasks: \"office vacancy trends\" and \"changes in transit ridership.\" What is the most likely root cause?",
+    "choices": [
+      "The synthesis agent dropped the findings on housing, retail, and tax revenue when combining the results",
+      "The coordinator's task decomposition was too narrow, so entire areas of the topic were never assigned to any subagent",
+      "The search agent's queries were too narrow to find sources on housing, retail, and tax revenue",
+      "The document analysis agent filtered out sources that did not mention remote work directly"
+    ],
+    "questionJa": "マルチエージェントのリサーチシステムに「リモートワークが都市の経済に与える影響」の分析を依頼した。最終レポートは、オフィスの空室率と公共交通機関の利用者数については詳しく書かれているが、住宅市場、地元の飲食店や小売店、市の税収については何も触れていない。各サブエージェントは、割り当てられたタスクをすべて正常に完了している。コーディネーターのログを見ると、テーマを「オフィスの空室率の推移」と「公共交通機関の利用者数の変化」の2つのサブタスクにしか分けていなかった。最も考えられる根本原因はどれか。",
+    "choicesJa": [
+      "統合エージェントが結果をまとめる際に、住宅・小売・税収に関する発見を落とした",
+      "コーディネーターのタスク分解が狭すぎたため、テーマの一部の領域がどのサブエージェントにも割り当てられなかった",
+      "検索エージェントの検索クエリの範囲が狭く、住宅・小売・税収に関する情報源を見つけられなかった",
+      "文書分析エージェントが、リモートワークに直接触れていない情報源を除外した"
+    ],
+    "answer": 1,
+    "explanation": "ログから、コーディネーターがテーマを2つのサブタスクにしか分けていなかったことが分かります。住宅市場、地元の店、税収といった領域は、最初からどのサブエージェントにも割り当てられていません。根本原因は、コーディネーターのタスク分解が狭すぎたことです。各サブエージェントは割り当てられた範囲を正しく処理しているので、統合エージェントが発見を落とした、検索エージェントのクエリが狭かった、文書分析エージェントが情報源を除外した、といった下流のエージェントの問題ではありません。そもそも、その領域を調べる指示が出ていなかったのです。",
+    "tags": [
+      "coordinator",
+      "task-decomposition",
+      "multi-agent"
+    ],
+    "ref": "公式サンプル問題7（試験ガイド 9章）と同じ考え方（項目1.2）"
   }
 ]

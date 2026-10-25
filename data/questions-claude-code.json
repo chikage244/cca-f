@@ -1730,5 +1730,112 @@
       "structured-output"
     ],
     "ref": "試験ガイド v1.0 項目3.6（自作練習問題 ドメイン③ 問9）"
+  },
+  {
+    "id": "claude-code-065",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "Your team wants a custom `/changelog` slash command that drafts release notes from merged pull requests. It should be available to every developer automatically as soon as they clone or pull the repository. Where should you create this command?",
+    "choices": [
+      "In each developer's `~/.claude/commands/` directory",
+      "In the `.claude/commands/` directory at the root of the repository",
+      "In the root `CLAUDE.md`, under a heading that describes the command",
+      "In a `commands` array inside the project's `.claude/settings.json`"
+    ],
+    "questionJa": "チームで、マージ済みのプルリクエストからリリースノートの下書きを作る `/changelog` というカスタムのスラッシュコマンドを用意したい。開発者がリポジトリをクローンまたはプルした時点で、全員が自動的に使えるようにしたい。このコマンドはどこに作るべきか。",
+    "choicesJa": [
+      "各開発者の `~/.claude/commands/` ディレクトリ",
+      "リポジトリのルートにある `.claude/commands/` ディレクトリ",
+      "ルートの `CLAUDE.md` の中に、コマンドの内容を説明する見出しを作って書く",
+      "プロジェクトの `.claude/settings.json` の中の `commands` 配列"
+    ],
+    "answer": 1,
+    "explanation": "プロジェクトの `.claude/commands/` に置いたコマンドはリポジトリと一緒にバージョン管理されるので、クローンやプルをした全員がそのまま使えます。`~/.claude/commands/` はユーザー個人の場所で、リポジトリに入らないため、チームには共有されません。`CLAUDE.md` は常に読み込まれる指示を書くファイルで、スラッシュコマンドを定義する場所ではありません。`.claude/settings.json` に `commands` という設定項目は存在しません。なお、現在の Claude Code ではカスタムコマンドがスキルに統合されていて、`.claude/skills/` に置いても同じようにチームで共有できます。既存の `.claude/commands/` もそのまま使えます。",
+    "tags": [
+      "slash-commands",
+      "project-scope",
+      "team-sharing"
+    ],
+    "ref": "公式サンプル問題4（試験ガイド 9章）と同じ考え方（項目3.2）"
+  },
+  {
+    "id": "claude-code-066",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "Your team asks Claude Code to replace the ORM used throughout a large backend service. The change touches more than 60 files, and several design decisions are still open: how to handle transactions, how to migrate the existing schema, and whether to run both ORMs side by side during the transition. Which approach is most appropriate?",
+    "choices": [
+      "Start in plan mode to explore the codebase, understand the dependencies, and settle on an implementation plan before making changes",
+      "Use direct execution and change the code incrementally, one file at a time, deciding on the approach as you go",
+      "Use direct execution with detailed upfront instructions that specify exactly how every file should be changed",
+      "Start with direct execution, and switch to plan mode only if the changes turn out to be more complex than expected"
+    ],
+    "questionJa": "大規模なバックエンドサービス全体で使っている ORM を入れ替える作業を、Claude Code に依頼する。変更は60以上のファイルに及ぶ。トランザクションの扱い方、既存のスキーマの移行方法、移行期間中に新旧の ORM を併用するかどうか、といった設計上の判断もまだ決まっていない。最も適切な進め方はどれか。",
+    "choicesJa": [
+      "プランモードで始め、コードベースを調べて依存関係を把握し、実装計画を固めてから変更に入る",
+      "直接実行で1ファイルずつ少しずつ変更し、進めながらやり方を決めていく",
+      "すべてのファイルの変え方を細かく指定した事前の指示を渡して、直接実行する",
+      "直接実行で始め、思ったより複雑だと分かった時点でプランモードに切り替える"
+    ],
+    "answer": 0,
+    "explanation": "多数のファイルに影響し、設計上の判断も残っている大きな変更は、プランモードで始めるのが正解です。先にコードベースを調べて依存関係を把握し、方針を決めてから実装すれば、途中で大きな手戻りが起きるのを防げます。直接実行で少しずつ進める方法は、設計判断を後回しにするため、途中で方針が食い違って手戻りが増えます。細かい事前の指示を渡して直接実行する方法は、コードベースを調べる前に変更内容を決めてしまうので、調べて初めて分かる依存関係に対応できません。直接実行で始めて複雑になったら切り替える方法は、複雑になることが最初から分かっている作業では、無駄な手戻りを生むだけです。",
+    "tags": [
+      "plan-mode",
+      "large-refactor"
+    ],
+    "ref": "公式サンプル問題5（試験ガイド 9章）と同じ考え方（項目3.4）"
+  },
+  {
+    "id": "claude-code-067",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "In a frontend monorepo, Storybook files (`*.stories.tsx`) sit next to their components in dozens of different directories. The team has conventions specific to these files, such as how to name stories and which mock data helpers to use. They want Claude Code to apply these conventions automatically whenever it edits a story file, wherever the file lives. What is the most maintainable approach?",
+    "choices": [
+      "Add a \"Storybook conventions\" section to the root `CLAUDE.md` and rely on Claude to apply it to the right files",
+      "Package the conventions as a skill that developers invoke whenever they work on stories",
+      "Create a rule file in `.claude/rules/` with `paths` set to a glob pattern such as `**/*.stories.tsx`",
+      "Place a `CLAUDE.md` containing the Storybook conventions in every directory that has story files"
+    ],
+    "questionJa": "フロントエンドのモノレポでは、Storybook のファイル（`*.stories.tsx`）がそれぞれのコンポーネントの隣に置かれ、何十ものディレクトリに散らばっている。チームには、ストーリーの名前のつけ方や使うモックデータのヘルパーなど、このファイル専用の規約がある。ファイルがどこにあっても、Claude Code がストーリーのファイルを編集するときには、この規約を自動で当てはめてほしい。最も保守しやすい方法はどれか。",
+    "choicesJa": [
+      "ルートの `CLAUDE.md` に「Storybook の規約」という見出しを作ってまとめ、正しいファイルに当てはめるのは Claude に任せる",
+      "規約をスキルにして、ストーリーを作業するときに開発者が呼び出す",
+      "`.claude/rules/` にルールファイルを作り、`paths` に `**/*.stories.tsx` のような glob パターンを書く",
+      "ストーリーのファイルがあるすべてのディレクトリに、Storybook の規約を書いた `CLAUDE.md` を置く"
+    ],
+    "answer": 2,
+    "explanation": "`.claude/rules/` のルールファイルに `paths` で glob パターンを書くと、パターンに合うファイルを扱うときだけ、その規約が自動で読み込まれます。ファイルがどのディレクトリにあっても1つのファイルで管理できるので、最も保守しやすい方法です。ルートの `CLAUDE.md` に見出しでまとめる方法は、どのファイルに当てはめるかを Claude の推測に任せることになり確実ではないうえ、関係のない作業でも常に読み込まれます。スキルは呼び出されたときだけ使われるので、自動で確実に当てはめることはできません。すべてのディレクトリに `CLAUDE.md` を置く方法は、同じ内容のファイルを何十も管理することになり、ディレクトリが増えるたびに追加も必要です。",
+    "tags": [
+      "rules",
+      "path-scoped",
+      "claude-md"
+    ],
+    "ref": "公式サンプル問題6（試験ガイド 9章）と同じ考え方（項目3.3）"
+  },
+  {
+    "id": "claude-code-068",
+    "domain": "claude-code",
+    "difficulty": 2,
+    "question": "A nightly scheduled job runs `claude \"Summarize today's failing test logs and write the summary to report.md\"`. Instead of finishing, the job hangs until it times out, and the logs show that Claude Code is waiting for interactive input. What is the correct way to fix this?",
+    "choices": [
+      "Add the `--no-input` flag to the command",
+      "Set the environment variable `CLAUDE_CODE_NONINTERACTIVE=1` before running the command",
+      "Run the command with the `-p` (`--print`) flag",
+      "Redirect standard input from `/dev/null` so that Claude Code has nothing to wait for"
+    ],
+    "questionJa": "毎晩決まった時刻に動くジョブで、`claude \"Summarize today's failing test logs and write the summary to report.md\"`（今日失敗したテストのログを要約して report.md に書く）を実行している。ところがジョブは終わらず、タイムアウトするまで止まったままになる。ログを見ると、Claude Code が対話の入力を待っていた。正しい直し方はどれか。",
+    "choicesJa": [
+      "コマンドに `--no-input` フラグをつける",
+      "コマンドを実行する前に、環境変数 `CLAUDE_CODE_NONINTERACTIVE=1` を設定する",
+      "`-p`（`--print`）フラグをつけてコマンドを実行する",
+      "標準入力を `/dev/null` からリダイレクトして、Claude Code が入力を待たないようにする"
+    ],
+    "answer": 2,
+    "explanation": "`-p`（`--print`）フラグをつけると、Claude Code は対話モードに入らず、結果を出力して終了します。CI や定期実行のジョブのように、人が入力できない環境で Claude Code を動かすときの正しい方法です。`--no-input` というフラグや `CLAUDE_CODE_NONINTERACTIVE` という環境変数は、Claude Code には存在しません（公式の CLI リファレンスにも載っていません）。標準入力を `/dev/null` からリダイレクトする方法は Unix の回避策にすぎず、Claude Code を非対話モードで動かす公式の方法ではないので、確実な解決になりません。",
+    "tags": [
+      "ci-cd",
+      "headless",
+      "print-mode"
+    ],
+    "ref": "公式サンプル問題10（試験ガイド 9章）と同じ考え方（項目3.6）"
   }
 ]

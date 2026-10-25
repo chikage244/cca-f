@@ -1246,5 +1246,59 @@
       "customer-support"
     ],
     "ref": "試験ガイド v1.0 項目5.2（自作練習問題 ドメイン⑤ 問4）"
+  },
+  {
+    "id": "context-048",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A hotel reservation support agent escalates too many simple cases to human staff, such as date changes that fall within the standard change policy. At the same time, it tries to resolve complex cases on its own that actually require a policy exception, such as a request to refund a non-refundable rate because of a medical emergency. As a result, the first-contact resolution rate is low, and some customers receive incorrect answers. What is the most effective way to improve the agent's escalation decisions?",
+    "choices": [
+      "Have the agent report a confidence score from 1 to 10 for each case, and escalate whenever the score falls below a threshold",
+      "Train a separate classification model on past support tickets to predict which cases need a human",
+      "Add sentiment analysis, and escalate whenever the customer's frustration exceeds a set level",
+      "Write explicit escalation criteria in the system prompt, with few-shot examples of cases that should and should not be escalated"
+    ],
+    "questionJa": "ホテル予約の問い合わせ窓口のエージェントが、通常の変更ルールの範囲で済む日程変更のような簡単な案件まで、人のスタッフにエスカレーションしすぎている。その一方で、返金不可プランの料金を急病を理由に返金してほしい、といったルールの例外が必要な難しい案件を、自分だけで処理しようとする。その結果、初回対応での解決率が低く、誤った案内を受けるお客様も出ている。エージェントのエスカレーションの判断を改善する方法として、最も効果的なものはどれか。",
+    "choicesJa": [
+      "案件ごとに1〜10の確信度をエージェントに自己申告させ、しきい値を下回ったらエスカレーションする",
+      "過去の問い合わせ記録を使って、人が対応すべき案件を予測する別の分類モデルを学習させる",
+      "感情分析を加え、お客様の不満が一定の水準を超えたらエスカレーションする",
+      "エスカレーションすべき案件とすべきでない案件の具体例（few-shot の例）をつけて、明確なエスカレーション基準をシステムプロンプトに書く"
+    ],
+    "answer": 3,
+    "explanation": "判断がずれる根本原因は、どんな案件を人に回すべきかという基準があいまいなことです。「ルールの範囲内なら自分で対応し、ルールの例外が必要なら人に回す」といった明確な基準を、すべき例・すべきでない例の few-shot の例とあわせてシステムプロンプトに書くのが、最も直接的で効果的な改善です。確信度の自己申告は、難しい案件ほど自信を持って間違えることがあるため、あてになりません。別の分類モデルを学習させる方法は、まずプロンプトを改善するという段階を飛ばした、大がかりな対応です。感情分析はお客様の不満の強さを測るだけで、案件が複雑かどうかや、ルールの例外が必要かどうかとは関係がありません。",
+    "tags": [
+      "escalation",
+      "few-shot",
+      "customer-support"
+    ],
+    "ref": "公式サンプル問題3（試験ガイド 9章）と同じ考え方（項目5.2）"
+  },
+  {
+    "id": "context-049",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "In a multi-agent research system, a document analysis subagent is asked to extract key figures from 20 industry reports. It processes 17 of them successfully, but 3 are scanned, image-only PDFs that its text extraction tool cannot read. How should the subagent report this outcome to the coordinator?",
+    "choices": [
+      "Retry the failed files automatically several times, and if they still fail, return a generic message saying \"Document analysis failed\"",
+      "Return the results for the 17 processed reports as a complete success, without mentioning the 3 unreadable files",
+      "Raise an exception that stops the entire research workflow until someone fixes the 3 files",
+      "Return structured error context: the failure type (image-only PDFs whose text cannot be extracted), which files failed and what was attempted, the partial results from the 17 reports, and possible alternatives such as using an OCR tool"
+    ],
+    "questionJa": "マルチエージェントのリサーチシステムで、文書分析のサブエージェントに、業界レポート20本から主要な数値を抜き出すよう依頼した。17本は正常に処理できたが、3本は画像だけのスキャンPDFで、テキスト抽出ツールでは読み取れなかった。サブエージェントは、この結果をコーディネーターにどう伝えるべきか。",
+    "choicesJa": [
+      "失敗したファイルを自動で何度かリトライし、それでも失敗したら「文書分析に失敗しました」という汎用的なメッセージだけを返す",
+      "処理できた17本の結果だけを完全に成功したものとして返し、読めなかった3本には触れない",
+      "例外を発生させ、誰かが3本のファイルを直すまで、リサーチのワークフロー全体を止める",
+      "失敗の種類（画像だけのPDFでテキストを抽出できない）、失敗したファイルと試したこと、17本分の部分的な結果、OCR ツールを使うなどの代わりの方法を含む、構造化されたエラーコンテキストを返す"
+    ],
+    "answer": 3,
+    "explanation": "サブエージェントが失敗したときは、失敗の種類、試したこと、部分的な結果、考えられる代わりの方法をまとめた、構造化されたエラーコンテキストを返すのが正解です。コーディネーターはこれを見て、OCR で読み直す、レポートにその3本が抜けていると明記する、といった判断ができます。汎用的な失敗メッセージだけを返す方法では、17本分の結果まで失われ、コーディネーターは何が起きたのかを判断できません。読めなかった3本に触れずに成功として返す方法は失敗を隠しているので、レポートに抜けがあることに誰も気づけません。ワークフロー全体を止める方法は、一部の失敗のために、正常に得られた結果まで無駄にしてしまいます。",
+    "tags": [
+      "error-handling",
+      "partial-results",
+      "subagents"
+    ],
+    "ref": "公式サンプル問題8（試験ガイド 9章）と同じ考え方（項目5.3）"
   }
 ]
