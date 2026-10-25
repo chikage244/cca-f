@@ -10,15 +10,15 @@
       "Project (./CLAUDE.md), then user, then managed policy, then CLAUDE.local.md, then directory-level files",
       "Directory-level files first, then project, then user, then managed policy, then CLAUDE.local.md"
     ],
-    "questionJa": "プラットフォームチームは、プロジェクトディレクトリでセッションを開始する前にClaude CodeがどのようにCLAUDE.mdファイルを解決するかを理解したいと考えています。最も広いスコープから最も限定的なスコープへの読み込み階層を正しく説明しているのはどれですか。",
+    "questionJa": "プラットフォームチームが、プロジェクトのディレクトリでセッションを始める前に、Claude CodeがCLAUDE.mdファイルをどう解決するのかを把握しようとしています。最も広いスコープから最も限定的なスコープへの読み込み階層を、正しく表している順序はどれですか。",
     "choicesJa": [
-      "managed policy、次にuser（~/.claude/CLAUDE.md）、次にproject（./CLAUDE.mdまたは./.claude/CLAUDE.md）、次にCLAUDE.local.md、最後にオンデマンドで読み込まれるdirectory-levelファイルの順",
-      "user（~/.claude/CLAUDE.md）、次にmanaged policy、次にproject、次にdirectory-levelファイル、次にCLAUDE.local.mdの順",
-      "project（./CLAUDE.md）、次にuser、次にmanaged policy、次にCLAUDE.local.md、次にdirectory-levelファイルの順",
-      "directory-levelファイルが最初、次にproject、次にuser、次にmanaged policy、次にCLAUDE.local.mdの順"
+      "managed policy、user（~/.claude/CLAUDE.md）、project（./CLAUDE.mdまたは./.claude/CLAUDE.md）、CLAUDE.local.md、オンデマンドで読み込まれるディレクトリレベルのファイルの順",
+      "user（~/.claude/CLAUDE.md）、managed policy、project、ディレクトリレベルのファイル、CLAUDE.local.mdの順",
+      "project（./CLAUDE.md）、user、managed policy、CLAUDE.local.md、ディレクトリレベルのファイルの順",
+      "ディレクトリレベルのファイル、project、user、managed policy、CLAUDE.local.mdの順"
     ],
     "answer": 0,
-    "explanation": "正解は、managed policy（組織管理者による強制設定）が最も広いスコープで最初に適用され、次にuser、project、CLAUDE.local.md、最後にオンデマンドで読み込まれるdirectory-levelファイルという順序です。選択肢2はuserとmanaged policyの順序が逆で誤りです。選択肢3はprojectを最初に置いており、実際には最も広いスコープが最初に来るべきで誤りです。選択肢4はdirectory-levelを最初に置いていますが、これはオンデマンドで読み込まれる最も限定的なスコープであり誤りです。",
+    "explanation": "正解は、managed policy（組織の管理者が強制する設定）が最も広いスコープなので最初に適用され、そのあとuser、project、CLAUDE.local.mdと続き、最後にオンデマンドで読み込まれるディレクトリレベルのファイルが来る順序です。userとmanaged policyの順を逆にした選択肢は誤りです。projectを先頭に置いた選択肢も、最も広いスコープが最初に来るはずなので誤りです。ディレクトリレベルのファイルを先頭に置いた選択肢は、これがオンデマンドで読み込まれる最も限定的なスコープなので誤りです。",
     "tags": [
       "CLAUDE.md",
       "loading-hierarchy",
@@ -37,15 +37,15 @@
       "Create ./CLAUDE.local.md, which is designed to be personal and gitignored",
       "Put them in ~/.claude/CLAUDE.md so they apply across all projects on the machine"
     ],
-    "questionJa": "共有チームリポジトリで作業する開発者が、自分のローカルデバッグ環境に関する個人的なメモを追加し、チームの共有規約であるCLAUDE.mdはバージョン管理されたままにしつつ、このメモが決してコミットされないようにしたいと考えています。この開発者はこの個人メモをどこに置くべきですか。",
+    "questionJa": "チームで共有しているリポジトリで作業する開発者が、ローカルのデバッグ環境についての個人的なメモを書き足そうとしています。このメモは決してバージョン管理にコミットされないようにしたい一方で、チームの共有規約が書かれたCLAUDE.mdは、これまでどおりバージョン管理したままにしたいと考えています。この開発者がメモを置く場所はどれですか。",
     "choicesJa": [
-      "./CLAUDE.mdはプロジェクトの正規ファイルなので、そこに追記する",
+      "./CLAUDE.mdはプロジェクトの正規のファイルなので、そこに追記する",
       "./.claude/CLAUDE.mdを作成し、手動で.gitignoreに追加する",
-      "個人用でgitignore対象として設計されている./CLAUDE.local.mdを作成する",
-      "マシン上の全プロジェクトに適用されるように~/.claude/CLAUDE.mdに置く"
+      "個人用でgitignore対象になるよう設計された./CLAUDE.local.mdを作成する",
+      "マシン上のすべてのプロジェクトに適用されるよう、~/.claude/CLAUDE.mdに置く"
     ],
     "answer": 2,
-    "explanation": "正解はCLAUDE.local.mdで、これは個人用でgit管理対象外（gitignored）として設計されたファイルです。選択肢1のCLAUDE.mdはプロジェクト共有・バージョン管理対象のファイルであり個人メモには不適切です。選択肢2は.claude/CLAUDE.mdもプロジェクト共有ファイルであり、手動でgitignoreするのは意図された設計ではなく誤ったパターンです。選択肢4のuserレベルファイルは全プロジェクトに適用されてしまい、このプロジェクト固有のデバッグ設定には過剰なスコープです。",
+    "explanation": "正解はCLAUDE.local.mdです。個人用で、gitの管理対象外（gitignored）になるよう設計されたファイルだからです。./CLAUDE.mdに追記する方法は、このファイルがプロジェクトで共有されてバージョン管理されるので、個人メモには向きません。./.claude/CLAUDE.mdを作って手動でgitignoreする方法も、このファイルはやはりプロジェクトの共有ファイルで、手動でgitignoreするのは想定された設計ではない誤ったやり方です。~/.claude/CLAUDE.mdに置く方法は、userレベルのファイルがすべてのプロジェクトに適用されてしまい、このプロジェクト固有のデバッグ設定にはスコープが広すぎます。",
     "tags": [
       "CLAUDE.local.md",
       "gitignore",
@@ -64,15 +64,15 @@
       "Copy the contents of AGENTS.md into .claude/settings.json",
       "Create CLAUDE.md containing an @AGENTS.md import so Claude Code reads AGENTS.md as its single source of truth"
     ],
-    "questionJa": "あるチームは、複数のAIコーディングツールで使われるAGENTS.mdファイルをすでに管理しており、内容を重複させることなくClaude Codeにも同じ指示に従わせたいと考えています。これを実現する正しい方法はどれですか。",
+    "questionJa": "あるチームは、複数のAIコーディングツールが使うAGENTS.mdファイルをすでに管理しています。内容を重複させずに、Claude Codeにも同じ指示に従わせたいと考えています。これを実現する正しい方法はどれですか。",
     "choicesJa": [
-      "Claude CodeはAGENTS.mdを直接読み込めないため、AGENTS.mdをCLAUDE.mdにリネームする",
-      "Claude Codeは追加のファイルなしにAGENTS.mdを自動的に検出しネイティブに解析する",
+      "Claude CodeはAGENTS.mdを直接読めないので、AGENTS.mdをCLAUDE.mdにリネームする",
+      "Claude Codeは、追加のファイルがなくてもAGENTS.mdをネイティブに自動検出して解析する",
       "AGENTS.mdの内容を.claude/settings.jsonにコピーする",
-      "@AGENTS.mdインポートを含むCLAUDE.mdを作成し、Claude CodeがAGENTS.mdを唯一の情報源として読み込むようにする"
+      "@AGENTS.mdのインポートを書いたCLAUDE.mdを作成し、Claude CodeがAGENTS.mdを唯一の情報源として読むようにする"
     ],
     "answer": 3,
-    "explanation": "正解は、Claude CodeはCLAUDE.mdを読み込む仕組みであり、AGENTS.mdは直接読み込まないため、CLAUDE.md内で@AGENTS.mdインポートを使うことで単一の情報源を維持できるという点です。選択肢1はリネームすると他ツールとの共有ができなくなり本来の目的に反します。選択肢2はClaude CodeがAGENTS.mdをネイティブに解釈するという誤った前提です。選択肢3はsettings.jsonが設定ファイルであり指示文書の置き場所として不適切です。",
+    "explanation": "正解は、CLAUDE.mdの中で@AGENTS.mdをインポートする方法です。Claude Codeが読み込むのはCLAUDE.mdで、AGENTS.mdは直接読み込まないので、このインポートを使えば情報源をAGENTS.mdの1つにまとめておけます。リネームする方法は、他のツールと共有できなくなり、もともとの目的に反します。Claude CodeがAGENTS.mdをネイティブに解釈するとする方法は、前提そのものが誤っています。settings.jsonにコピーする方法は、settings.jsonが設定ファイルであり、指示文書の置き場所として不適切です。",
     "tags": [
       "AGENTS.md",
       "import",
@@ -91,15 +91,15 @@
       "Only the first import in any file is honored; subsequent @import lines in the same file are ignored",
       "Nested imports are disallowed entirely, so @docs/style.md importing further files would fail immediately"
     ],
-    "questionJa": "あるCLAUDE.mdファイルが@docs/style.mdを使ってルールファイルをインポートしており、そのファイルがさらに5つのファイルをインポートし、それぞれがまた別のファイルをインポートするという長いインポート連鎖を作っています。Claude Codeの@importの解決について、チームはどのような挙動を期待すべきですか。",
+    "questionJa": "あるCLAUDE.mdが@docs/style.mdでルールファイルをインポートしています。そのファイルは別の5つのファイルをインポートし、それらもそれぞれ別のファイルをインポートしていて、インポートの連鎖が長くなっています。Claude Codeの@importの解決について、チームが想定すべき挙動はどれですか。",
     "choicesJa": [
-      "インポートは最大深度5ホップに制限されているため、その深度を超えるチェーン内のファイルは読み込まれない",
-      "深度制限がないため、チェーンの長さに関わらず全てのインポートが解決される",
-      "各ファイル内で最初のインポートのみが有効になり、同一ファイル内のそれ以降の@import行は無視される",
-      "ネストされたインポートは完全に禁止されているため、@docs/style.mdがさらにファイルをインポートすると即座に失敗する"
+      "インポートは最大深度5ホップまでに制限されており、連鎖でそれより深い位置にあるファイルは読み込まれない",
+      "深度の制限はないので、連鎖がどれだけ長くても、すべてのインポートが解決される",
+      "各ファイルで有効になるのは最初のインポートだけで、同じファイル内の2つ目以降の@import行は無視される",
+      "ネストしたインポートはまったく認められておらず、@docs/style.mdがさらにファイルをインポートすると、すぐに失敗する"
     ],
     "answer": 0,
-    "explanation": "正解は、@importのネストは許可されているものの、最大深度5ホップという制限があり、それを超えるファイルは読み込まれないという点です。選択肢2は深度制限がないとする誤りです。選択肢3は同一ファイル内で複数の@importが可能であるにもかかわらず最初の1つしか有効にならないとする誤った制約です。選択肢4はネストされたインポート自体は許可されているため誤りです。",
+    "explanation": "正解は、@importのネストは認められているものの、最大深度が5ホップに制限されていて、それより深いファイルは読み込まれない、という挙動です。深度の制限がないとする選択肢は誤りです。各ファイルで最初のインポートしか有効にならないとする選択肢は、実際には同じファイルに複数の@importを書けるので、誤った制約を述べています。ネストしたインポートを禁止するとする選択肢は、ネスト自体は許可されているので誤りです。",
     "tags": [
       "import",
       "depth-limit",
@@ -118,15 +118,15 @@
       "Relative to the user's home directory",
       "Relative to the project root regardless of where the importing file lives"
     ],
-    "questionJa": "あるCLAUDE.mdファイルの中で、あるエンジニアが@~/shared-conventions.mdで始まるインポートを書きました。このインポートはどの場所を基準に解決されますか。",
+    "questionJa": "あるエンジニアが、CLAUDE.mdの中で@~/shared-conventions.mdから始まるインポートを書きました。このインポートの基準になる場所はどれですか。",
     "choicesJa": [
-      "Claude Codeが起動されたカレントワーキングディレクトリを基準に解決される",
-      "インポート元ファイル自身のディレクトリを基準に解決される",
-      "ユーザーのホームディレクトリを基準に解決される",
-      "インポート元ファイルの場所に関わらず、プロジェクトルートを基準に解決される"
+      "Claude Codeを起動したカレントワーキングディレクトリが基準になる",
+      "インポートを書いたファイル自身のディレクトリが基準になる",
+      "ユーザーのホームディレクトリが基準になる",
+      "インポートを書いたファイルの場所にかかわらず、プロジェクトルートが基準になる"
     ],
     "answer": 2,
-    "explanation": "正解は、@~/はホームディレクトリを指す特別な記法であるという点です。選択肢1と4は通常の相対パスの挙動と混同しており、@~/構文の意味を正しく反映していません。選択肢2は通常の相対importの挙動（インポート元ファイルからの相対パス）であり、@~/という特殊記法とは異なります。",
+    "explanation": "正解はユーザーのホームディレクトリです。@~/は、ホームディレクトリを指す特別な書き方です。カレントワーキングディレクトリやプロジェクトルートを基準にするとした選択肢は、通常の相対パスの挙動と混同しており、@~/という書き方の意味に合っていません。インポートを書いたファイル自身のディレクトリを基準にするとした選択肢も、通常の相対インポートの挙動であり、@~/という特別な書き方とは違います。",
     "tags": [
       "import",
       "home-directory",
@@ -145,15 +145,15 @@
       "It is loaded at session start regardless of which files are being touched",
       "It is loaded only when explicitly referenced via @import from CLAUDE.md"
     ],
-    "questionJa": "あるチームがfrontmatterを一切持たない.claude/rules/testing.mdを作成しました。このルールファイルの想定される読み込み挙動はどれですか。",
+    "questionJa": "あるチームが、frontmatterをまったく付けていない.claude/rules/testing.mdを作りました。このルールファイルの読み込みについて、想定される挙動はどれですか。",
     "choicesJa": [
-      "ルールファイルが認識されるにはpaths: frontmatterが必須であるため、決して読み込まれない",
-      "Claude Codeがテストファイルのglobパターンに一致するファイルを編集するときにのみ読み込まれる",
-      "どのファイルが触られているかに関わらず、セッション開始時に読み込まれる",
-      "CLAUDE.mdから@importで明示的に参照されたときのみ読み込まれる"
+      "ルールファイルとして認識されるにはpaths: frontmatterが必要なので、読み込まれることはない",
+      "Claude Codeがテストファイルのglobパターンに一致するファイルを編集するときだけ読み込まれる",
+      "どのファイルを扱っているかにかかわらず、セッション開始時に読み込まれる",
+      "CLAUDE.mdから@importで明示的に参照したときだけ読み込まれる"
     ],
     "answer": 2,
-    "explanation": "正解は、frontmatterがない.claude/rules/配下のファイルはセッション開始時に無条件で読み込まれるという点です。選択肢1はfrontmatterが必須であるという誤った前提です。選択肢2はpaths: globフロントマターがある場合の条件付き読み込みの説明であり、frontmatterなしのケースには当てはまりません。選択肢4は明示的なインポートが必要という誤った制約を追加しています。",
+    "explanation": "frontmatterがない.claude/rules/配下のファイルは、セッション開始時に無条件で読み込まれます。paths: frontmatterが必要だとする選択肢は、前提が誤っています。テストファイルを編集するときだけ読み込まれるとする選択肢は、paths:のglob frontmatterを付けた場合の条件付き読み込みの説明で、frontmatterがない場合には当てはまりません。@importでの明示的な参照が必要だとする選択肢は、存在しない制約を付け足しています。",
     "tags": [
       ".claude/rules",
       "frontmatter",
@@ -172,15 +172,15 @@
       "Create .claude/rules/testing.md with paths: [\"**/*.test.ts\"] frontmatter so it loads conditionally",
       "Create .claude/rules/testing.md with no frontmatter so it always loads"
     ],
-    "questionJa": "あるチームは、Claude CodeがTypeScriptのテストファイルを実際に扱っているときにのみコンテキストに読み込まれるルールファイルを作り、無関係な作業でコンテキストが汚染されるのを避けたいと考えています。これを実現する設定はどれですか。",
+    "questionJa": "あるチームは、Claude CodeがTypeScriptのテストファイルを実際に扱っているときだけ、コンテキストに読み込まれるルールファイルがほしいと考えています。関係のない作業でコンテキストが散らかるのを避けるためです。これを実現する設定はどれですか。",
     "choicesJa": [
-      "ルールの内容をルートのCLAUDE.mdファイルに直接追加する",
-      "テストファイルを含む全てのフォルダ内にディレクトリレベルのCLAUDE.mdを作成する",
-      "paths: [\"**/*.test.ts\"] というfrontmatterを付けた.claude/rules/testing.mdを作成し、条件付きで読み込まれるようにする",
-      "常に読み込まれるように、frontmatterなしの.claude/rules/testing.mdを作成する"
+      "ルールの内容をルートのCLAUDE.mdに直接追加する",
+      "テストファイルがあるすべてのフォルダに、ディレクトリレベルのCLAUDE.mdを作成する",
+      "paths: [\"**/*.test.ts\"]というfrontmatterを付けた.claude/rules/testing.mdを作成し、条件付きで読み込まれるようにする",
+      "常に読み込まれるように、frontmatterを付けない.claude/rules/testing.mdを作成する"
     ],
     "answer": 2,
-    "explanation": "正解は、paths: glob frontmatterを使うことで、指定したパターンにマッチするファイルを扱う際にのみ条件付きで読み込まれるという点です。選択肢1はルートCLAUDE.mdに書くと常に読み込まれてしまい条件付きにならないため誤りです。選択肢2はディレクトリ単位のCLAUDE.mdを大量に作る必要があり非効率で、テストファイルが散在する場合に対応できません。選択肢4はfrontmatterなしだと常にセッション開始時に読み込まれてしまい、条件付き読み込みにはなりません。",
+    "explanation": "正解は、paths:のglob frontmatterを使う方法です。指定したパターンに一致するファイルを扱うときだけ、条件付きで読み込まれます。ルートのCLAUDE.mdに書く方法は、常に読み込まれてしまい、条件付きになりません。テストファイルがあるフォルダごとにディレクトリレベルのCLAUDE.mdを作る方法は、大量に作る必要があって非効率で、テストファイルが散らばっている場合にも対応できません。frontmatterなしのルールファイルは、常にセッション開始時に読み込まれてしまい、条件付き読み込みにはなりません。",
     "tags": [
       ".claude/rules",
       "paths-glob",
@@ -199,15 +199,15 @@
       "Neither approach works for cross-directory conventions; only the root CLAUDE.md can apply rules across folders",
       "Directory-level CLAUDE.md per folder, because rules files cannot use glob patterns spanning multiple directories"
     ],
-    "questionJa": "あるモノレポには、多数の無関係なディレクトリ（api/、services/、tools/）にまたがって**/*.graphqlに一致する全ファイルに適用される規約があります。チームは、関連する各フォルダにディレクトリレベルのCLAUDE.mdを作成する方法と、paths frontmatterを持つ単一の.claude/rules/graphql.mdを使う方法のどちらかを検討しています。どちらのアプローチがより保守しやすく、それはなぜですか。",
+    "questionJa": "あるモノレポには、api/、services/、tools/など互いに関係のない多数のディレクトリにまたがる、**/*.graphqlに一致するすべてのファイルに適用したい規約があります。チームは、関係するフォルダごとにディレクトリレベルのCLAUDE.mdを作る方法と、paths frontmatterを付けた.claude/rules/graphql.mdを1つだけ作る方法のどちらにするか迷っています。より保守しやすいアプローチと、その理由を述べているのはどれですか。",
     "choicesJa": [
-      "フォルダごとのディレクトリレベルCLAUDE.mdの方が、指示をそれが説明するコードの近くに保てるため良い",
-      ".claude/rules/によるpath-specificなルールの方が良い。単一のglobスコープのルールファイルで、フォルダごとに重複させることなく一致する全ディレクトリの規約をカバーできるため",
-      "クロスディレクトリな規約にはどちらのアプローチも機能せず、ルートのCLAUDE.mdのみがフォルダ横断でルールを適用できる",
-      "ルールファイルは複数ディレクトリにまたがるglobパターンを使えないため、フォルダごとのディレクトリレベルCLAUDE.mdの方が良い"
+      "フォルダごとにディレクトリレベルのCLAUDE.mdを作る。指示を、それが対象とするコードの一番近くに置けるから",
+      ".claude/rules/によるパス固有のルールを使う。glob指定の1つのルールファイルで、一致するすべてのディレクトリに規約が及ぶので、フォルダごとに重複させずにすむから",
+      "ディレクトリをまたぐ規約には、どちらの方法も使えない。フォルダをまたいでルールを適用できるのは、ルートのCLAUDE.mdだけだから",
+      "フォルダごとにディレクトリレベルのCLAUDE.mdを作る。ルールファイルでは、複数のディレクトリにまたがるglobパターンを使えないから"
     ],
     "answer": 1,
-    "explanation": "正解は、クロスディレクトリな規約にはpath-specificなrulesファイルの方が適しているという点です。1つのglobパターンで全ての該当ディレクトリをカバーでき、重複を避けられます。選択肢1はディレクトリごとにCLAUDE.mdを複製する必要があり保守性が低く、これは名指しされたアンチパターンです。選択肢3はルートCLAUDE.mdでは全ファイルに適用されてしまい特定パターンへの絞り込みができないため誤りです。選択肢4はrulesファイルのpaths frontmatterが複数ディレクトリにまたがるglobパターンをサポートしないという誤った制約です。",
+    "explanation": "正解は、ディレクトリをまたぐ規約にはパス固有のルールファイルが向いている、という点です。1つのglobパターンで該当するすべてのディレクトリをカバーでき、重複を避けられます。指示をコードの近くに置けることを理由にした、フォルダごとのCLAUDE.mdの選択肢は、同じ内容をフォルダの数だけ複製する必要があって保守しにくく、これは名指しされているアンチパターンです。ルートのCLAUDE.mdだけが使えるとする選択肢は、ルートのCLAUDE.mdではすべてのファイルに適用されてしまい、特定のパターンに絞り込めないので誤りです。ルールファイルでは複数ディレクトリにまたがるglobが使えないとする選択肢は、paths frontmatterがそれをサポートしているので、誤った制約を述べています。",
     "tags": [
       "path-specific-rules",
       "directory-CLAUDE.md",
@@ -226,15 +226,15 @@
       "The file was cached from a previous session and only appeared to load late",
       "Directory-level CLAUDE.md files require an explicit --add-dir flag to load at all"
     ],
-    "questionJa": "ある開発者は、./src/api/CLAUDE.mdに配置されたファイルが、セッション開始時ではなく、Claudeがそのフォルダ内のファイルの編集を始めた後になって初めて読み込まれたことに気づきました。この挙動を説明するものはどれですか。",
+    "questionJa": "ある開発者は、./src/api/CLAUDE.mdにあるCLAUDE.mdファイルが、セッションの開始時ではなく、Claudeがそのフォルダ内のファイルを編集し始めてから読み込まれたことに気づきました。この挙動を説明しているのはどれですか。",
     "choicesJa": [
-      "ディレクトリレベルのCLAUDE.mdファイルは、Claude Codeがそのディレクトリ内のファイルに触れたときにオンデマンドで読み込まれる",
-      "これはバグであり、全てのCLAUDE.mdファイルはセッション開始時に読み込まれるべきである",
-      "このファイルは以前のセッションからキャッシュされており、遅れて読み込まれたように見えただけである",
-      "ディレクトリレベルのCLAUDE.mdファイルは、そもそも読み込まれるために明示的な--add-dirフラグを必要とする"
+      "ディレクトリレベルのCLAUDE.mdは、Claude Codeがそのディレクトリのファイルに触れたときにオンデマンドで読み込まれる",
+      "これはバグで、CLAUDE.mdファイルはすべてセッション開始時に読み込まれるべきである",
+      "ファイルは前のセッションからキャッシュされていて、読み込みが遅れたように見えただけである",
+      "ディレクトリレベルのCLAUDE.mdは、読み込まれるために明示的な--add-dirフラグが必要である"
     ],
     "answer": 0,
-    "explanation": "正解は、ディレクトリ単位のCLAUDE.mdはそのディレクトリ内のファイルにClaudeが触れた時点でオンデマンドに読み込まれる、という仕様通りの挙動です。選択肢1(誤答2)はこれをバグとしていますが、これは意図された設計です。選択肢3はキャッシュの話にすり替えており誤りです。選択肢4は--add-dirフラグが必須という誤った前提で、これはmonorepoでの追加ディレクトリ探索に関するフラグであり直接の関係はありません。",
+    "explanation": "正解は、ディレクトリ単位のCLAUDE.mdは、Claudeがそのディレクトリ内のファイルに触れた時点でオンデマンドに読み込まれる、という仕様どおりの挙動です。バグだとする選択肢は誤りで、これは意図された設計です。キャッシュの話にすり替えた選択肢も誤りです。--add-dirフラグが必須だとする選択肢は前提が誤っています。このフラグはモノレポで追加のディレクトリを探索するためのもので、ここでの挙動とは直接関係がありません。",
     "tags": [
       "directory-level-CLAUDE.md",
       "on-demand-loading"
@@ -252,15 +252,15 @@
       "It was hallucinated based on typical debugging patterns",
       "It came from CLAUDE.local.md, which persists debugging notes automatically"
     ],
-    "questionJa": "何度か長いセッションを行った後、ある開発者は、現在のセッションのCLAUDE.mdに明示的に再記載されていないにもかかわらず、Claude Codeが以前のデバッグ作業に関する事実を思い出していることに気づきました。この情報は最も可能性が高い場合、どこから来ていますか。",
+    "questionJa": "何度か長いセッションを重ねたあと、ある開発者は、現在のセッションのCLAUDE.mdに改めて書かれていないのに、Claude Codeが以前のデバッグ作業についての事実を覚えていることに気づきました。この情報の出どころとして最も考えられるのはどれですか。",
     "choicesJa": [
-      "Claudeがリポジトリのgit履歴全体を自動的に再読み込みした",
-      "~/.claude/projects/<project>/memory/配下にあるauto memoryのMEMORY.mdファイルが、セッション開始時に読み込まれた",
-      "典型的なデバッグパターンに基づいてハルシネーションを起こした",
-      "デバッグメモを自動的に永続化するCLAUDE.local.mdから来た"
+      "Claudeがリポジトリのgit履歴全体を自動的に読み直した",
+      "~/.claude/projects/<project>/memory/にあるauto memoryのMEMORY.mdが、セッション開始時に読み込まれた",
+      "典型的なデバッグのパターンから推測して、ハルシネーションで作り出した",
+      "デバッグメモを自動的に保存してくれるCLAUDE.local.mdから来た"
     ],
     "answer": 1,
-    "explanation": "正解は、自動メモリ機能により~/.claude/projects/<project>/memory/MEMORY.mdがセッション開始時に読み込まれ、過去の発見事項が保持されているという点です。選択肢1はgit履歴の自動読み込みという誤った仕組みです。選択肢3はハルシネーションとしていますが、実際には正規の永続化機構によるものです。選択肢4のCLAUDE.local.mdは手動で書く個人メモファイルであり、自動的にデバッグ内容を記録する機能ではありません。",
+    "explanation": "自動メモリ機能によって、~/.claude/projects/<project>/memory/MEMORY.mdがセッション開始時に読み込まれ、過去に見つけたことが引き継がれています。git履歴を自動で読み込んだとする選択肢は、存在しない仕組みを述べています。ハルシネーションだとする選択肢は誤りで、実際には正規の永続化の仕組みによるものです。CLAUDE.local.mdは手動で書く個人用のメモファイルで、デバッグ内容を自動で記録する機能はありません。",
     "tags": [
       "auto-memory",
       "MEMORY.md",
@@ -279,15 +279,15 @@
       "Only the first 200 lines or 25 KB of MEMORY.md, whichever limit is hit first",
       "Only the last 200 lines of MEMORY.md, since recent entries are considered most relevant"
     ],
-    "questionJa": "あるプロジェクトの自動生成されたMEMORY.mdファイルは、多くのセッションを経て40KBまで成長しました。Claude Codeのauto memoryシステムがセッション開始時にこのファイルを読み込む方法によれば、実際にコンテキストに読み込まれるのはどれですか。",
+    "questionJa": "あるプロジェクトの自動生成されたMEMORY.mdが、何度ものセッションを経て40KBまで大きくなりました。Claude Codeのauto memoryがセッション開始時にこのファイルを読み込む仕組みに従うと、実際にコンテキストに読み込まれる内容はどれですか。",
     "choicesJa": [
-      "40KBのファイル全体が常に完全な形でセッション開始時に読み込まれる",
-      "何も自動的には読み込まれず、開発者が手動でMEMORY.mdを@importする必要がある",
-      "MEMORY.mdの先頭200行または25KBのうち、先に達した方の上限までしか読み込まれない",
-      "最近のエントリが最も関連性が高いとみなされるため、MEMORY.mdの末尾200行のみが読み込まれる"
+      "40KBのファイル全体が、セッション開始時に常にそのまま読み込まれる",
+      "自動では何も読み込まれず、開発者が手動でMEMORY.mdを@importしなければならない",
+      "MEMORY.mdの先頭200行か25KBのうち、先に達したほうの上限までだけが読み込まれる",
+      "最近の項目ほど関連性が高いとみなされるので、MEMORY.mdの末尾200行だけが読み込まれる"
     ],
     "answer": 2,
-    "explanation": "正解は、MEMORY.mdの読み込みは先頭200行または25KBのいずれか早い方の上限で制限されるという点です。選択肢1は40KB全体を読み込むとしており、実際の上限を超えているため誤りです。選択肢2はauto importが不要な自動機構であるにもかかわらず手動インポートが必要としており誤りです。選択肢4は「末尾200行」としていますが、実際には先頭からの制限であり誤りです。",
+    "explanation": "正解は、MEMORY.mdの読み込みが、先頭200行か25KBのどちらか先に達したほうの上限で制限される、という点です。40KB全体を読み込むとする選択肢は、実際の上限を超えているので誤りです。手動で@importする必要があるとする選択肢は、auto memoryが自動で読み込む仕組みで、手動のインポートは不要なので誤りです。「末尾200行」とする選択肢は、実際の制限は先頭からなので誤りです。",
     "tags": [
       "MEMORY.md",
       "auto-memory",
@@ -306,15 +306,15 @@
       "This indicates a misconfiguration; auto memory is designed to sync across all worktrees of the same project regardless of machine",
       "Topic files only exist for managed-policy scoped configurations, not for individual project work"
     ],
-    "questionJa": "あるチームは、同じプロジェクトディレクトリ構造を参照する2台の異なるマシンで、それぞれ独自のローカルクローンを持ちながら単一のClaude Codeワークツリー設定を共有しています。同じプロジェクトを参照しているにもかかわらず、debugging.mdのようなauto memoryのトピックファイルが両マシン間で共有されていないことに驚いています。これを最もよく説明するものはどれですか。",
+    "questionJa": "あるチームでは、別々のマシンで作業する2人のエンジニアが、Claude Codeのワークツリーの設定を1つ共有しています。2人はそれぞれ自分のローカルクローンを持ち、どちらも同じプロジェクトのディレクトリ構造につながっています。同じプロジェクトを参照しているのに、debugging.mdのようなauto memoryのトピックファイルが2台のマシンのあいだで共有されていないことがわかり、2人は驚きました。この理由を最もよく説明しているのはどれですか。",
     "choicesJa": [
-      "auto memoryはマシンローカルであるため、あるマシンの~/.claude/projects/<project>/memory/に作成されたトピックファイルは別のマシンには現れない",
-      "auto memoryのトピックファイルはプロジェクトのgitリポジトリでバージョン管理されており、自動的に同期されるはずである",
-      "これは設定ミスを示している。auto memoryはマシンに関わらず同一プロジェクトの全ワークツリー間で同期するよう設計されている",
-      "トピックファイルはmanaged policyスコープの設定にのみ存在し、個々のプロジェクト作業には存在しない"
+      "auto memoryはマシンローカルなので、一方のマシンの~/.claude/projects/<project>/memory/に作られたトピックファイルは、もう一方のマシンには現れない",
+      "auto memoryのトピックファイルはプロジェクトのgitリポジトリでバージョン管理されているので、自動的に同期されるはずである",
+      "これは設定ミスを示している。auto memoryは、マシンにかかわらず同じプロジェクトのすべてのワークツリーで同期されるよう設計されている",
+      "トピックファイルはmanaged policyスコープの設定にしか存在せず、個々のプロジェクトの作業には存在しない"
     ],
     "answer": 0,
-    "explanation": "正解は、auto memoryはmachine-local（マシンローカル）であるため、別マシンの~/.claude/projects/<project>/memory/には反映されないという点です。同一マシン内のworktree間では共有されますが、マシンをまたいだ共有はされません。選択肢2はgitでバージョン管理されるという誤った前提です。選択肢3はマシンをまたいで同期されるべきという誤った期待です。選択肢4はmanaged policyスコープ限定という無関係な誤った制約です。",
+    "explanation": "正解は、auto memoryがmachine-local（マシンローカル）なので、別のマシンの~/.claude/projects/<project>/memory/には反映されない、という点です。同じマシンの中のworktree間では共有されますが、マシンをまたいでは共有されません。gitでバージョン管理されるとする選択肢は、前提が誤っています。マシンをまたいで同期されるはずだとする選択肢も、期待が誤っています。managed policyスコープに限られるとする選択肢は、無関係で誤った制約です。",
     "tags": [
       "auto-memory",
       "machine-local",
@@ -333,15 +333,15 @@
       "Set claudeMdExcludes to match all file patterns",
       "Set autoMemoryEnabled: false in the appropriate settings scope"
     ],
-    "questionJa": "あるチームリーダーが、コンプライアンス上の理由からプロジェクト全体でClaude Codeの自動メモリ機能を完全に無効化したいと考えています。どの設定を使うべきですか。",
+    "questionJa": "あるチームリーダーが、コンプライアンス上の理由から、プロジェクト全体でClaude Codeの自動メモリ機能を完全に無効にしたいと考えています。使うべき設定はどれですか。",
     "choicesJa": [
-      ".claude/rules/ディレクトリを完全に削除する",
+      ".claude/rules/ディレクトリを丸ごと削除する",
       "プロジェクトからCLAUDE.local.mdを削除する",
-      "全てのファイルパターンに一致するようclaudeMdExcludesを設定する",
+      "すべてのファイルパターンに一致するようにclaudeMdExcludesを設定する",
       "適切な設定スコープでautoMemoryEnabled: falseを設定する"
     ],
     "answer": 3,
-    "explanation": "正解は、autoMemoryEnabled: falseを設定することでauto memory機能自体を無効化できるという点です。選択肢1の.claude/rules/削除はauto memoryとは無関係な別の仕組みです。選択肢2のCLAUDE.local.mdは個人メモ用ファイルでauto memory機能とは異なります。選択肢3のclaudeMdExcludesはmonorepoでCLAUDE.mdの読み込み対象から特定パスを除外する設定であり、auto memoryの無効化とは無関係です。",
+    "explanation": "正解は、autoMemoryEnabled: falseを設定する方法です。これでauto memory機能そのものを無効にできます。.claude/rules/を削除する方法は、auto memoryとは無関係の別の仕組みです。CLAUDE.local.mdは個人メモ用のファイルで、auto memory機能とは別物です。claudeMdExcludesは、モノレポでCLAUDE.mdの読み込み対象から特定のパスを除外する設定で、auto memoryの無効化とは関係ありません。",
     "tags": [
       "autoMemoryEnabled",
       "settings",
@@ -360,15 +360,15 @@
       "--add-dir flag passed at every session start",
       "autoMemoryDirectory to relocate where memory files are written"
     ],
-    "questionJa": "ある組織は、全てのauto memoryファイルを、デフォルトの~/.claude/projects/<project>/memory/パスの代わりに、カスタムの共有ネットワークの場所に書き込みたいと考えています。これをサポートする設定はどれですか。",
+    "questionJa": "ある組織が、auto memoryのファイルをすべて、デフォルトの~/.claude/projects/<project>/memory/ではなく、共有ネットワーク上の独自の場所に書き込ませたいと考えています。これに対応している設定はどれですか。",
     "choicesJa": [
       "新しい場所を指すclaudeMdExcludes",
       "CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD環境変数",
-      "セッション開始のたびに渡す--add-dirフラグ",
+      "セッションを始めるたびに渡す--add-dirフラグ",
       "メモリファイルの書き込み先を変更するautoMemoryDirectory"
     ],
     "answer": 3,
-    "explanation": "正解は、autoMemoryDirectory設定によってauto memoryファイルの保存先を変更できるという点です。選択肢1のclaudeMdExcludesはCLAUDE.md読み込み対象からの除外設定であり、メモリの保存場所とは無関係です。選択肢2の環境変数はmonorepoでの追加ディレクトリのCLAUDE.md読み込みに関するものです。選択肢3の--add-dirはセッションに追加ディレクトリを含める機能であり、メモリの保存先変更には使えません。",
+    "explanation": "正解は、autoMemoryDirectory設定でauto memoryファイルの保存先を変更できる、という点です。claudeMdExcludesはCLAUDE.mdの読み込み対象から除外する設定で、メモリの保存場所とは無関係です。環境変数は、モノレポで追加ディレクトリのCLAUDE.mdを読み込むためのものです。--add-dirはセッションに追加のディレクトリを含める機能で、メモリの保存先の変更には使えません。",
     "tags": [
       "autoMemoryDirectory",
       "settings",
@@ -387,15 +387,15 @@
       "--permission-mode plan to restrict file exploration scope",
       "claudeMdExcludes with glob patterns to exclude specific CLAUDE.md files from loading"
     ],
-    "questionJa": "ある大規模なモノレポには数十個のパッケージレベルのCLAUDE.mdファイルがありますが、payments/パッケージのみで作業している開発者は、無関係なパッケージのCLAUDE.mdの内容が読み込まれてコンテキストを肥大化させていることに気づきました。無関係なCLAUDE.mdファイルの読み込みをスコープ外にできる設定はどれですか。",
+    "questionJa": "大規模なモノレポに、パッケージレベルのCLAUDE.mdファイルが数十個あります。payments/パッケージだけで作業している開発者は、無関係なパッケージのCLAUDE.mdの内容まで読み込まれて、コンテキストが膨らんでいることに気づきました。これらの無関係なCLAUDE.mdファイルを読み込みの対象から外せる設定はどれですか。",
     "choicesJa": [
-      "メモリファイルがコンテキストに寄与しないようにするautoMemoryEnabled: false",
-      "payments/CLAUDE.mdのみを指すルートでの単一の@import",
-      "ファイル探索範囲を制限する--permission-mode plan",
-      "不要なCLAUDE.mdファイルを読み込み対象から除外するglobパターン付きのclaudeMdExcludes"
+      "autoMemoryEnabled: falseを設定して、メモリファイルがコンテキストに加わらないようにする",
+      "ルートに、payments/CLAUDE.mdだけを指す@importを1つ置く",
+      "--permission-mode planを指定して、ファイルの探索範囲を制限する",
+      "claudeMdExcludesにglobパターンを指定して、特定のCLAUDE.mdファイルを読み込みから除外する"
     ],
     "answer": 3,
-    "explanation": "正解は、claudeMdExcludes設定にglobパターンを指定することで、不要なCLAUDE.mdファイルを読み込み対象から除外できるという点です。選択肢1のautoMemoryEnabledはauto memory機能に関する設定であり、CLAUDE.md読み込みとは別物です。選択肢2は@importで代替しようとしていますが、これはmonorepo全体のCLAUDE.md読み込み制御の正式な仕組みではありません。選択肢3の--permission-modeは権限モードの切り替えであり、CLAUDE.md読み込みの除外とは無関係です。",
+    "explanation": "正解は、claudeMdExcludes設定にglobパターンを指定して、不要なCLAUDE.mdファイルを読み込み対象から除外する方法です。autoMemoryEnabledはauto memory機能の設定で、CLAUDE.mdの読み込みとは別物です。ルートに@importを1つ置く方法は、@importで代替しようとしたものですが、モノレポ全体のCLAUDE.mdの読み込みを制御する正式な仕組みではありません。--permission-modeは権限モードの切り替えで、CLAUDE.mdの読み込みの除外とは無関係です。",
     "tags": [
       "claudeMdExcludes",
       "monorepo",
@@ -414,15 +414,15 @@
       "Set autoMemoryDirectory to the sibling directory's path",
       "Use --add-dir <path> to include the sibling directory, combined with CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 so its CLAUDE.md is also read"
     ],
-    "questionJa": "あるCI/CDパイプラインがモノレポに対してClaude Codeを実行していますが、作業ディレクトリはサブパッケージであり、共有ユーティリティコードはデフォルトのプロジェクトルートのスキャン範囲外の兄弟ディレクトリにあります。チームは、セッション中にそのCLAUDE.mdもその兄弟ディレクトリから読み込ませる必要があります。これに対応するオプションの組み合わせはどれですか。",
+    "questionJa": "CI/CDパイプラインで、モノレポに対してClaude Codeを実行しています。作業ディレクトリはサブパッケージで、共有ユーティリティのコードは、デフォルトのプロジェクトルートのスキャン範囲の外にある兄弟ディレクトリにあります。チームは、セッション中にその兄弟ディレクトリのCLAUDE.mdファイルもClaudeに読み込ませる必要があります。これに対応するオプションの組み合わせはどれですか。",
     "choicesJa": [
-      "より多くのファイルが含まれるように、claudeMdExcludesをより広いglobに設定するだけ",
-      "自動的に読み込まれるように、兄弟ディレクトリのCLAUDE.mdをCLAUDE.local.mdにリネームする",
+      "claudeMdExcludesをより広いglobに設定して、含まれるファイルを増やすだけにする",
+      "兄弟ディレクトリのCLAUDE.mdをCLAUDE.local.mdにリネームして、自動的に拾われるようにする",
       "autoMemoryDirectoryを兄弟ディレクトリのパスに設定する",
-      "--add-dir <path>を使ってその兄弟ディレクトリをセッションに含め、CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1と組み合わせて、そのCLAUDE.mdも読み込まれるようにする"
+      "--add-dir <path>で兄弟ディレクトリを含め、CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1と組み合わせて、そのCLAUDE.mdも読み込まれるようにする"
     ],
     "answer": 3,
-    "explanation": "正解は、--add-dirで追加ディレクトリをセッションに含め、CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1を組み合わせることで、そのディレクトリのCLAUDE.mdも読み込まれるようになる点です。選択肢1のclaudeMdExcludesは除外設定であり、対象を広げるための機能ではなく、そもそも用途が逆です。選択肢2はCLAUDE.local.mdへのリネームが自動的に別ディレクトリを読み込む仕組みにはならず誤りです。選択肢3のautoMemoryDirectoryはauto memoryの保存先設定であり、CLAUDE.md読み込み対象の追加とは無関係です。",
+    "explanation": "正解は、--add-dirで追加ディレクトリをセッションに含め、CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1を組み合わせて、そのディレクトリのCLAUDE.mdも読み込ませる方法です。claudeMdExcludesは除外のための設定で、対象を広げる機能ではなく、用途が逆です。CLAUDE.local.mdにリネームすれば別のディレクトリが自動で読み込まれる、という仕組みはないので誤りです。autoMemoryDirectoryはauto memoryの保存先の設定で、CLAUDE.mdの読み込み対象を増やすこととは無関係です。",
     "tags": [
       "--add-dir",
       "monorepo",
@@ -441,15 +441,15 @@
       "The workflow forgot --resume, which CI must always pass on the first run of a job",
       "GitHub Actions runners cannot execute Claude Code at all, so a self-hosted runner is required"
     ],
-    "questionJa": "あるチームが、新しいIssueを自動トリアージするためにGitHub Actionsのワークフローで非対話的にCLIを呼び出すようClaude Codeを追加しました。ジョブが無期限にハングし、最終的にタイムアウトしてしまいます。最も可能性の高い原因と対処法はどれですか。",
+    "questionJa": "あるチームが、新しいIssueを自動でトリアージするために、GitHub ActionsのワークフローにClaude Codeを追加し、CLIを非対話モードで呼び出しています。ジョブがいつまでも終わらず、最終的にタイムアウトします。最も考えられる原因と対処はどれですか。",
     "choicesJa": [
-      "-p/--printを指定せずにCLIが呼び出されたため、インタラクティブなREPLが起動してCIでハングしてしまった。これはCIでハングを避けるために必須である",
-      "ワークフローが--permission-mode bypassPermissionsを設定し忘れており、これは全ての非対話実行に必須である",
-      "ワークフローが--resumeを設定し忘れており、CIはジョブの初回実行時に必ずこれを渡す必要がある",
-      "GitHub ActionsのランナーはそもそもClaude Codeを実行できないため、セルフホストランナーが必要である"
+      "CLIを-p/--printなしで呼び出している。-p/--printは、インタラクティブなREPLが起動してCIで止まってしまうのを避けるために必要である",
+      "ワークフローで--permission-mode bypassPermissionsを設定し忘れている。これはすべての非対話実行に必要である",
+      "ワークフローで--resumeを付け忘れている。CIでは、ジョブの初回実行時に必ずこれを渡さなければならない",
+      "GitHub ActionsのランナーではClaude Codeをそもそも実行できないので、セルフホストランナーが必要である"
     ],
     "answer": 0,
-    "explanation": "正解は、-p/--print(プリントモード)を指定しないとインタラクティブなREPLが起動してしまい、CI環境では入力待ちでハングしてしまうという、CI/CDにおける典型的な罠です。選択肢2のbypassPermissionsは危険な権限モードであり非対話実行に必須ではありません。選択肢3の--resumeは既存セッションを再開する機能で初回実行には無関係かつ不要です。選択肢4はGitHub Actions上でClaude Codeが実行できないという誤った制約で、実際にはホスト型ランナーでも動作します。",
+    "explanation": "正解は、-p/--print（プリントモード）を付けないとインタラクティブなREPLが起動してしまい、CI環境では入力待ちで止まってしまう、というCI/CDでよくある落とし穴です。bypassPermissionsは危険な権限モードで、非対話実行に必須ではありません。--resumeは既存のセッションを再開する機能で、初回実行には無関係で不要です。GitHub ActionsでClaude Codeを実行できないとする選択肢は、誤った制約です。実際にはホスト型ランナーでも動作します。",
     "tags": [
       "CI/CD",
       "-p/--print",
@@ -468,15 +468,15 @@
       "Only the project-root CLAUDE.md survives /compact; directory-level ones are permanently dropped for the rest of the session",
       "CLAUDE.md content is summarized like other context during /compact, so exact wording may be lost"
     ],
-    "questionJa": "あるサポートツールチームは、プロジェクトの./CLAUDE.mdと、オンデマンドの./src/billing/CLAUDE.mdの両方を持っています。セッション中の/compactイベントの後、開発者はこれらのファイルのうちどちらがその後も正確に反映され続けるかを知りたいと考えています。どのような結果を予想すべきですか。",
+    "questionJa": "サポートツールを担当するチームに、プロジェクトの./CLAUDE.mdと、オンデマンドで読み込まれる./src/billing/CLAUDE.mdの両方があります。セッションの途中で/compactを実行したあと、開発者は、この2つのファイルのうちどれがその後も正確に反映されたままになるのかを知りたいと考えています。想定すべき結果はどれですか。",
     "choicesJa": [
-      "両方のファイルが/compact後に失われ、手動で再度与え直す必要がある",
-      "CLAUDE.mdファイルは/compact後にディスクから再読み込みされるため、ディレクトリのスコープに関わらずその内容は正確に保たれる",
-      "プロジェクトルートのCLAUDE.mdのみが/compactを生き延び、ディレクトリレベルのものはセッションの残り全体で永久に失われる",
-      "CLAUDE.mdの内容は/compact中に他のコンテキストと同様に要約されるため、正確な文言が失われる可能性がある"
+      "/compactのあと、両方のファイルが失われ、手動で渡し直す必要がある",
+      "CLAUDE.mdファイルは/compactのあとにディスクから読み直されるので、ディレクトリのスコープにかかわらず、内容は正確なまま保たれる",
+      "/compactのあとも残るのはプロジェクトルートのCLAUDE.mdだけで、ディレクトリレベルのものは、セッションの残りのあいだずっと破棄されたままになる",
+      "CLAUDE.mdの内容は/compactのときにほかのコンテキストと同じように要約されるので、正確な文言は失われることがある"
     ],
     "answer": 1,
-    "explanation": "正解は、CLAUDE.mdはディスクから再読込されるため、/compact後もその内容は正確に保たれるという点です（プロジェクトルートでもディレクトリレベルでも同様）。選択肢1は両方失われるとしており誤りです。選択肢3はプロジェクトルートのみ生き残るという誤った区別です。選択肢4はCLAUDE.mdが要約対象になるとしていますが、実際にはディスクから再読込されるため要約による劣化は起きません。",
+    "explanation": "正解は、CLAUDE.mdはディスクから読み直されるので、/compactのあとも内容が正確に保たれる、という点です（プロジェクトルートでもディレクトリレベルでも同じです）。両方とも失われるとする選択肢は誤りです。プロジェクトルートのものだけが残るとする選択肢は、誤った区別をしています。CLAUDE.mdが要約の対象になるとする選択肢は、実際にはディスクから読み直されるので、要約による劣化は起きません。",
     "tags": [
       "compact",
       "CLAUDE.md",
@@ -495,15 +495,15 @@
       "@~/docs/style-guide.md, since imports always resolve from the home directory",
       "#include \"docs/style-guide.md\" using C-style include syntax"
     ],
-    "questionJa": "ある開発者は、自分のプロジェクトのCLAUDE.mdファイルから、共有チームのスタイルガイド文書docs/style-guide.mdを@importの仕組みを使って参照したいと考えています。両方のファイルがプロジェクトルートにあると仮定すると、このインポートはどのように書くべきですか。",
+    "questionJa": "ある開発者が、プロジェクトのCLAUDE.mdから、チーム共有のスタイルガイド文書docs/style-guide.mdを、@importの仕組みで参照したいと考えています。2つのファイルはどちらもプロジェクトルートにあるものとして、このインポートの書き方はどれですか。",
     "choicesJa": [
-      "関数呼び出しのような構文を使う@import(docs/style-guide.md)",
-      "インポート元のCLAUDE.mdファイルの場所を基準に解決される@docs/style-guide.md",
-      "インポートは常にホームディレクトリを基準に解決されるので@~/docs/style-guide.md",
-      "C言語風のインクルード構文を使う#include \"docs/style-guide.md\""
+      "関数呼び出しの構文を使った@import(docs/style-guide.md)",
+      "インポートを書いたCLAUDE.mdファイルの場所を基準に解決される@docs/style-guide.md",
+      "インポートは常にホームディレクトリを基準に解決されるので、@~/docs/style-guide.md",
+      "C言語風のインクルード構文を使った#include \"docs/style-guide.md\""
     ],
     "answer": 1,
-    "explanation": "正解は、@docs/style-guide.mdという記法で、これはインポート元ファイルからの相対パスとして解決されるという点です。選択肢1のfunction-call構文は実際のimport記法ではありません。選択肢3の@~/はホームディレクトリ基準の特殊な記法であり、プロジェクトルートにあるファイルの参照には不適切です。選択肢4のC言語風の#include構文はClaude Codeのimport構文ではありません。",
+    "explanation": "正解は、@docs/style-guide.mdという書き方です。これはインポートを書いたファイルからの相対パスとして解決されます。関数呼び出しの構文は、実際のインポートの書き方ではありません。@~/はホームディレクトリを基準にする特別な書き方なので、プロジェクトルートにあるファイルの参照には不適切です。C言語風の#include構文は、Claude Codeのインポート構文ではありません。",
     "tags": [
       "import",
       "relative-path",
@@ -522,15 +522,15 @@
       "Claude Code throws a fatal configuration error and refuses to start the session",
       "The command file wins because /project:deploy legacy namespacing always takes priority over skills"
     ],
-    "questionJa": "あるプロジェクトには、プロジェクトレベルのスキルである.claude/skills/deploy/SKILL.mdと、古い設定からのコマンドファイルである.claude/commands/deploy.mdの両方があり、どちらも同じ/deployスラッシュコマンドを実現することを意図しています。2026年のskills/commandsマージのもとで、開発者が/deployを実行したときに何が起こりますか。",
+    "questionJa": "あるプロジェクトに、プロジェクトレベルのスキル.claude/skills/deploy/SKILL.mdと、古い設定から残っているコマンドファイル.claude/commands/deploy.mdの両方があります。どちらも同じ/deployスラッシュコマンドを担う想定です。2026年のskillsとcommandsの統合のもとで、開発者が/deployを実行したときに起こることはどれですか。",
     "choicesJa": [
-      "両方の定義が順番に、まずコマンドファイル、次にスキルの順に実行される",
-      "コマンドとスキルは単一の名前空間に統合されたため、名前の衝突時にはスキルが優先される",
-      "Claude Codeは致命的な設定エラーを投げ、セッションの開始を拒否する",
-      "/project:deployというレガシーな名前空間指定は常にスキルより優先されるため、コマンドファイルが優先される"
+      "2つの定義が順番に実行される。先にコマンドファイル、次にスキルの順である",
+      "名前が衝突した場合は、スキルが優先される。コマンドとスキルは1つの名前空間に統合されていて、スキルのほうが優先されるからである",
+      "Claude Codeが致命的な設定エラーを出し、セッションの開始を拒否する",
+      "/project:deployという従来の名前空間指定は常にスキルより優先されるので、コマンドファイルが優先される"
     ],
     "answer": 1,
-    "explanation": "正解は、2026年のskills/commandsマージにより、.claude/commands/deploy.mdと.claude/skills/deploy/SKILL.mdは同一の/deployとして扱われ、名前が衝突した場合はskillが優先されるという仕様です。選択肢1は両方が順に実行されるとしていますが、実際には衝突時にどちらか一方（skill）のみが有効になります。選択肢3は致命的エラーになるという誤った想定です。選択肢4は/project:name形式の旧来の名前空間で、これは廃止されており優先されることはありません。",
+    "explanation": "正解は、2026年のskillsとcommandsの統合により、.claude/commands/deploy.mdと.claude/skills/deploy/SKILL.mdが同じ/deployとして扱われ、名前が衝突した場合はスキルが優先される、という仕様です。両方が順に実行されるとする選択肢は誤りで、衝突した場合は一方（スキル）だけが有効になります。致命的なエラーになるとする選択肢は、誤った想定です。コマンドファイルが優先されるとする選択肢が挙げている/project:name形式の従来の名前空間は、廃止されていて、優先されることはありません。",
     "tags": [
       "skills-commands-merger",
       "name-collision",
@@ -549,15 +549,15 @@
       "The skill version in .claude/skills/deploy/SKILL.md wins on collision",
       "Both are merged into a single combined prompt before execution"
     ],
-    "questionJa": "ある開発者が2026年に自分のClaude Codeプロジェクトに新しいスラッシュコマンド`/deploy`を追加しようとしています。`.claude/commands/deploy.md`と`.claude/skills/deploy/SKILL.md`の両方が同じ名前で存在します。ユーザーが`/deploy`と入力すると何が起こりますか。",
+    "questionJa": "ある開発者が、2026年にClaude Codeのプロジェクトへ新しいスラッシュコマンド`/deploy`を追加しようとしています。`.claude/commands/deploy.md`と`.claude/skills/deploy/SKILL.md`が、同じ名前で両方とも存在しています。ユーザーが`/deploy`と入力したときに起こることはどれですか。",
     "choicesJa": [
-      "Claude Codeは致命的な設定エラーを投げ、起動を拒否する",
-      ".claude/commands/deploy.mdのコマンド版が常に優先される",
-      ".claude/skills/deploy/SKILL.mdのスキル版が衝突時に優先される",
-      "実行前に両方が1つの結合プロンプトにマージされる"
+      "Claude Codeが致命的な設定エラーを出し、起動を拒否する",
+      ".claude/commands/deploy.mdにあるコマンド版が、常に優先される",
+      ".claude/skills/deploy/SKILL.mdにあるスキル版が、衝突時に優先される",
+      "実行前に、両方が1つのプロンプトに統合される"
     ],
     "answer": 2,
-    "explanation": "2026年のskills/commands統合仕様では、`.claude/commands/x.md` は `.claude/skills/x/SKILL.md` と等価に扱われますが、同名で衝突した場合はskill側が優先されます。選択肢0のような致命的エラーにはなりません。選択肢1は優先順位が逆です。選択肢3のようなマージも行われません。",
+    "explanation": "2026年のskillsとcommandsの統合仕様では、`.claude/commands/x.md`は`.claude/skills/x/SKILL.md`と同等に扱われますが、同じ名前で衝突した場合はスキル側が優先されます。致命的なエラーにはなりません。コマンド版が常に優先されるとする選択肢は、優先順位が逆です。両方が統合されることもありません。",
     "tags": [
       "skills",
       "commands-merger",
@@ -576,15 +576,15 @@
       "Enterprise-managed skills are the only ones that can override personal skills",
       "Personal skills rank above plugin skills in the location priority order"
     ],
-    "questionJa": "あるプラットフォームチームが内部プラグイン経由で共有スキルを提供していますが、開発者たちは、プラグインの`lint`スキルの代わりに自分自身の個人用`~/.claude/skills/lint/SKILL.md`版が実際に実行されていると報告しています。名前衝突の処理に問題がないと仮定すると、これはスキルの場所の優先順位について何を示していますか。",
+    "questionJa": "あるプラットフォームチームが、社内プラグインを通じて共有スキルを配布しています。ところが開発者から、プラグインの`lint`スキルではなく、自分の個人用の`~/.claude/skills/lint/SKILL.md`のほうが実際に実行されている、という報告が上がっています。名前の衝突の扱いには問題がないものとすると、スキルの場所の優先順位について、この状況から言えることはどれですか。",
     "choicesJa": [
-      "プラグインのスキルは順序に関わらず常に個人用スキルより優先される",
-      "プロジェクトレベルのスキルは常に個人用スキルとプラグインスキルの両方より優先される",
-      "エンタープライズ管理のスキルのみが個人用スキルを上書きできる",
-      "個人用スキルは場所の優先順位においてプラグインスキルより上位にランクされる"
+      "プラグインのスキルは、順序にかかわらず常に個人用スキルより優先される",
+      "プロジェクトレベルのスキルは、個人用スキルとプラグインスキルの両方より常に優先される",
+      "個人用スキルを上書きできるのは、エンタープライズ管理のスキルだけである",
+      "場所の優先順位で、個人用スキルはプラグインスキルより上に位置する"
     ],
     "answer": 3,
-    "explanation": "スキルの場所の優先順位は Enterprise → Personal → Project → Plugin の順であり、Personal（`~/.claude/skills/`）はPluginより優先されます。したがって個人のスキルが実行されるのは仕様通りの挙動です。選択肢0と1は優先順位の方向が誤りで、選択肢2はEnterpriseだけが上書きできるという誤った限定です。",
+    "explanation": "スキルの場所の優先順位は、Enterprise、Personal、Project、Pluginの順で、Personal（`~/.claude/skills/`）はPluginより優先されます。したがって、個人用スキルが実行されるのは仕様どおりの挙動です。プラグインのスキルが優先されるとする選択肢と、プロジェクトレベルのスキルが常に優先されるとする選択肢は、優先順位の向きが誤っています。Enterpriseだけが上書きできるとする選択肢は、誤った限定です。",
     "tags": [
       "skills",
       "location-priority"
@@ -602,7 +602,7 @@
       "context: fork",
       "user-invocable: false"
     ],
-    "questionJa": "あるチームは、関連性があるときにClaudeが自動的に呼び出せるスキルにしたいものの、人間向けの`/`スラッシュコマンドメニューを乱雑にはしたくないと考えています。これを実現するSKILL.mdのfrontmatterフィールドはどれですか。",
+    "questionJa": "あるチームは、関連があるときにClaudeが自動で呼び出せるスキルにしたい一方で、人が使う`/`スラッシュコマンドのメニューには、そのスキルを並べたくないと考えています。これを実現するSKILL.mdのfrontmatterフィールドはどれですか。",
     "choicesJa": [
       "disable-model-invocation: true",
       "allowed-tools: []",
@@ -610,7 +610,7 @@
       "user-invocable: false"
     ],
     "answer": 3,
-    "explanation": "`user-invocable: false` はそのスキルを / メニューから隠しつつ、Claudeによるモデル駆動の自動呼び出しは許可します。逆に `disable-model-invocation: true` はユーザーのみが呼べるようにし、モデルからの自動呼び出しを禁止するため要件と逆です。`allowed-tools` はツールアクセス制限、`context: fork` は実行コンテキストの分離に関するもので、可視性とは無関係です。",
+    "explanation": "`user-invocable: false`は、そのスキルを/メニューから隠しつつ、Claudeがモデル主導で自動的に呼び出すことは許可します。逆に`disable-model-invocation: true`は、ユーザーだけが呼び出せるようにして、モデルによる自動呼び出しを禁止するので、要件と正反対です。`allowed-tools`はツールへのアクセスの制限、`context: fork`は実行コンテキストの分離に関するもので、メニューへの表示とは無関係です。",
     "tags": [
       "skill-frontmatter",
       "user-invocable"
@@ -628,7 +628,7 @@
       "effort",
       "model"
     ],
-    "questionJa": "特定のユーザーリクエストに対してスキルを自動読み込みするかどうかをClaude Codeが判断する際の主な手がかりとなるSKILL.mdのfrontmatterフィールドはどれですか。",
+    "questionJa": "ユーザーのリクエストに対してスキルを自動で読み込むかどうかをClaude Codeが判断するときの、主な手がかりになるSKILL.mdのfrontmatterフィールドはどれですか。",
     "choicesJa": [
       "description",
       "argument-hint",
@@ -636,7 +636,7 @@
       "model"
     ],
     "answer": 0,
-    "explanation": "`description`（および `when_to_use` と合わせて最大1,536文字）がスキルの自動読み込みを駆動する主要フィールドです。`argument-hint` は引数のヒント表示、`effort` は思考努力レベル、`model` は使用モデルの指定であり、いずれも自動発火の判断基準ではありません。",
+    "explanation": "`description`（`when_to_use`と合わせて最大1,536文字）が、スキルの自動読み込みを左右する主なフィールドです。`argument-hint`は引数のヒントの表示、`effort`は思考の努力レベル、`model`は使うモデルの指定で、どれも自動で呼び出すかどうかの判断基準ではありません。",
     "tags": [
       "skill-frontmatter",
       "description",
@@ -655,7 +655,7 @@
       "effort: low",
       "disable-model-invocation: true"
     ],
-    "questionJa": "あるCI/CDスキルが、数千行ものノイズの多いログ出力を生成するデプロイを実行します。チームは、CLAUDE.mdを読み込む機能は維持しつつ、この出力がメインの会話のコンテキストウィンドウを汚染しないように隔離したいと考えています。追加すべきSKILL.mdのfrontmatter設定はどれですか。",
+    "questionJa": "あるCI/CDスキルが、デプロイを実行すると、数千行にもなるノイズの多いログを出力します。チームは、この出力を隔離して、メインの会話のコンテキストウィンドウを汚さないようにしたいと考えています。ただし、スキルがCLAUDE.mdを読めることは維持したいとします。追加すべきSKILL.mdのfrontmatter設定はどれですか。",
     "choicesJa": [
       "context: fork",
       "hooks: PostToolUse",
@@ -663,7 +663,7 @@
       "disable-model-invocation: true"
     ],
     "answer": 0,
-    "explanation": "`context: fork` はスキルを隔離されたサブエージェントとして実行し、CLAUDE.mdは読み込まれますが会話履歴は継承しないため、デプロイのようなノイズの多い操作に適しています。`hooks` はイベントフックの設定、`effort` は思考量の調整、`disable-model-invocation` は呼び出し主体の制限であり、コンテキスト隔離の目的には合致しません。",
+    "explanation": "`context: fork`は、スキルを隔離されたサブエージェントとして実行します。CLAUDE.mdは読み込まれますが、会話履歴は引き継がないので、デプロイのようにノイズの多い操作に向いています。`hooks`はイベントフックの設定、`effort`は思考量の調整、`disable-model-invocation`は誰が呼び出せるかの制限で、コンテキストを隔離する目的には合いません。",
     "tags": [
       "context-fork",
       "noisy-ops"
@@ -681,15 +681,15 @@
       "The full argument string: \"memory leak in worker pool\"",
       "The session ID, since $ARGUMENTS is an alias for ${CLAUDE_SESSION_ID}"
     ],
-    "questionJa": "あるスキルテンプレートに`Fix the bug described in: $ARGUMENTS`という行が含まれています。ある開発者がこれを`/fixbug memory leak in worker pool`として呼び出しました。レンダリングされたスキル本文の中で$ARGUMENTSは何に解決されますか。",
+    "questionJa": "あるスキルのテンプレートに、`Fix the bug described in: $ARGUMENTS`という行があります。開発者が`/fixbug memory leak in worker pool`と入力してスキルを呼び出しました。レンダリングされたスキル本文の中で、$ARGUMENTSの値になるのはどれですか。",
     "choicesJa": [
-      "最初の単語のみ: \"memory\"",
-      "$ARGUMENTSは名前付き引数を必要とするため、空文字列",
-      "引数文字列全体: \"memory leak in worker pool\"",
-      "$ARGUMENTSは${CLAUDE_SESSION_ID}のエイリアスであるため、セッションID"
+      "最初の単語だけの\"memory\"",
+      "空文字列。$ARGUMENTSは名前付き引数を必要とするため",
+      "引数の文字列全体の\"memory leak in worker pool\"",
+      "セッションID。$ARGUMENTSは${CLAUDE_SESSION_ID}の別名であるため"
     ],
     "answer": 2,
-    "explanation": "`$ARGUMENTS` はスラッシュコマンド呼び出し時に渡された引数全体の文字列に置換されます。個々の単語だけを取り出すには `$1` などの位置引数を使う必要があり、`$ARGUMENTS` 自体が空文字になることはありません。またセッションIDとは無関係の別の変数です。",
+    "explanation": "`$ARGUMENTS`は、スラッシュコマンドの呼び出し時に渡された引数全体の文字列に置き換わります。単語を1つずつ取り出したいときは、`$1`などの位置引数を使う必要があります。`$ARGUMENTS`自体が空文字列になることはありません。また、セッションIDとは無関係の別の変数です。",
     "tags": [
       "substitution-variables",
       "ARGUMENTS"
@@ -707,7 +707,7 @@
       "$2 and ${CLAUDE_SESSION_ID}",
       "${CLAUDE_SKILL_DIR} and $0"
     ],
-    "questionJa": "あるスキルは、自身に渡された2番目の位置引数の値を参照する必要があり、また後で相関付けを行うために生成したログファイルに現在のセッションの一意な識別子でタグ付けする必要があります。このスキル本文が使うべき置換変数のペアはどれですか。",
+    "questionJa": "あるスキルで、渡された2番目の位置引数の値を参照する必要があります。さらに、あとで関連づけられるように、生成するログファイルに現在のセッションの一意な識別子を付ける必要もあります。スキル本文で使うべき置換変数の組み合わせはどれですか。",
     "choicesJa": [
       "$ARGUMENTSと${CLAUDE_SKILL_DIR}",
       "$1と${CLAUDE_SESSION_ID}",
@@ -715,7 +715,7 @@
       "${CLAUDE_SKILL_DIR}と$0"
     ],
     "answer": 1,
-    "explanation": "位置引数は0始まりのインデックスで、`$0`（`$ARGUMENTS[0]`）が1番目、`$1`（`$ARGUMENTS[1]`）が2番目の引数を指します。現在のセッションの一意な識別子には `${CLAUDE_SESSION_ID}` を使います。`$2` は3番目の引数を指すため2番目には誤り、`${CLAUDE_SKILL_DIR}` はスキル自身のディレクトリパスで引数ともセッションIDとも異なり、`$ARGUMENTS` は引数全体の文字列であり2番目だけを取り出せません。",
+    "explanation": "位置引数は0から数えるインデックスで、`$0`（`$ARGUMENTS[0]`）が1番目、`$1`（`$ARGUMENTS[1]`）が2番目の引数を指します。現在のセッションの一意な識別子には`${CLAUDE_SESSION_ID}`を使います。`$2`は3番目の引数を指すので、2番目を取るには誤りです。`${CLAUDE_SKILL_DIR}`はスキル自身のディレクトリのパスで、引数ともセッションIDとも別物です。`$ARGUMENTS`は引数全体の文字列なので、2番目だけを取り出すことはできません。",
     "tags": [
       "substitution-variables",
       "session-id"
@@ -733,15 +733,15 @@
       "Remove the hooks field from all SKILL.md files",
       "Switch all skills to user-invocable: false"
     ],
-    "questionJa": "あるスキルファイルには、バックティック+感嘆符構文を使って`` !`git diff --stat` ``を実行し、その出力をレンダリングされたプロンプトに注入する前処理ブロックが含まれています。セキュリティを重視するチームは、スキル自体を削除することなく、どのスキルもプリプロセッシング中にシェルコマンドを実行できないようにしたいと考えています。何を設定すべきですか。",
+    "questionJa": "あるスキルファイルに、バッククォートと感嘆符の構文を使って`` !`git diff --stat` ``を実行し、その出力をレンダリング後のプロンプトに差し込む前処理ブロックがあります。セキュリティを重視するチームは、スキル自体は削除せずに、どのスキルも前処理中にシェルコマンドを実行できないようにしたいと考えています。チームが設定すべきものはどれですか。",
     "choicesJa": [
-      "全てのSKILL.mdでallowed-tools: []を設定する",
+      "すべてのSKILL.mdでallowed-tools: []を設定する",
       "設定でdisableSkillShellExecution: trueを設定する",
-      "全てのSKILL.mdファイルからhooksフィールドを削除する",
-      "全てのスキルをuser-invocable: falseに切り替える"
+      "すべてのSKILL.mdファイルからhooksフィールドを削除する",
+      "すべてのスキルをuser-invocable: falseに切り替える"
     ],
     "answer": 1,
-    "explanation": "`disableSkillShellExecution: true` を設定すると、スキルのプリプロセッシング段階でのシェルコマンド実行（`` !`cmd` `` や ` ```! ` フェンス）を無効化でき、スキル自体を削除する必要はありません。`allowed-tools: []` はスキル実行後のツール利用を制限するもので前処理のシェル実行とは別物、`hooks` の削除やuser-invocableの変更もこの目的には直接対応しません。",
+    "explanation": "`disableSkillShellExecution: true`を設定すると、スキルの前処理の段階でのシェルコマンド実行（`` !`cmd` ``の形式や、バッククォート3つに!を続けたフェンス）を無効にできます。スキル自体を削除する必要はありません。`allowed-tools: []`はスキルの実行後のツール利用を制限するもので、前処理でのシェル実行とは別物です。`hooks`の削除や`user-invocable`の変更も、この目的には直接対応しません。",
     "tags": [
       "dynamic-context-injection",
       "disableSkillShellExecution"
@@ -759,15 +759,15 @@
       "The allowed-tools frontmatter field",
       "The paths: glob frontmatter field"
     ],
-    "questionJa": "SKILL.mdファイルが、呼び出し時に`@src/config.ts`のようなファイルの内容をレンダリングされたスキル本文に直接注入できるようにする仕組みはどれですか。",
+    "questionJa": "SKILL.mdファイルが、呼び出し時に`@src/config.ts`のようなファイルの内容を、レンダリングされたスキル本文へ直接差し込めるようにする仕組みはどれですか。",
     "choicesJa": [
-      "context: fork frontmatterフィールド",
-      "@path形式のファイル読み込み構文",
-      "allowed-tools frontmatterフィールド",
-      "paths: glob frontmatterフィールド"
+      "context: forkというfrontmatterフィールド",
+      "@pathというファイル取り込みの構文",
+      "allowed-toolsというfrontmatterフィールド",
+      "paths: globというfrontmatterフィールド"
     ],
     "answer": 1,
-    "explanation": "`@path` 構文はファイル内容をスキル本文に直接挿入する動的コンテキスト注入の一種です。`context: fork` は実行コンテキストの隔離、`allowed-tools` はツール利用制限、`paths:` frontmatterはルールファイルなどの条件付き読み込みグロブであり、いずれもファイル内容の直接挿入機能ではありません。",
+    "explanation": "`@path`構文は、ファイルの内容をスキル本文に直接挿入する、動的コンテキスト注入の一種です。`context: fork`は実行コンテキストの隔離、`allowed-tools`はツール利用の制限、`paths:`のfrontmatterはルールファイルなどを条件付きで読み込むためのglobで、どれもファイルの内容を直接挿入する機能ではありません。",
     "tags": [
       "dynamic-context-injection",
       "file-inclusion"
@@ -785,15 +785,15 @@
       "Skill bodies persist verbatim forever once loaded, so this is a bug unrelated to skill lifecycle",
       "Compaction always drops all skills permanently, so skills should never contain standing instructions"
     ],
-    "questionJa": "ある長いClaude Codeセッションで、序盤にリサーチ用スキルが呼び出されます。50ターン後、何度か自動compactionが行われた後、開発者はそのスキルが元々指示していた内容を再確認するようClaudeに依頼します。Claudeは、そのスキル本文にあった恒常的な指示を忘れてしまったように見えます。これを最もよく説明するものと正しい対処法はどれですか。",
+    "questionJa": "長いClaude Codeのセッションの序盤で、リサーチ用のスキルが呼び出されました。50ターン後、自動compactionが何度か行われたあとで、開発者は、そのスキルが当初指示していた内容をもう一度確認するようClaudeに頼みました。ところがClaudeは、そのスキル本文にあった恒常的な指示を忘れているように見えます。これを最もよく説明していて、対処としても正しいものはどれですか。",
     "choicesJa": [
-      "スキルはcompaction後に再アタッチされることは決してないため、全く同じ引数でスキルを手動で再度呼び出す必要がある",
-      "スキル本文は1つのメッセージとして会話に入り、以降のターンで再読込されるわけではない。compaction時には直近使用の最大5スキル（合計25,000トークンの予算内）のみが再アタッチされるため、恒常的な指示は永続化されたファイルに直接書くべきである",
-      "一度読み込まれるとスキル本文は永久にそのまま保持されるため、これはスキルのライフサイクルとは無関係のバグである",
-      "compactionは常に全てのスキルを永久に破棄するため、スキルに恒常的な指示を含めるべきではない"
+      "スキルはcompactionのあとで再アタッチされることがないので、まったく同じ引数でスキルを手動で呼び出し直す必要がある",
+      "スキル本文は1つのメッセージとして会話に入り、以降のターンで読み直されることはない。compactionで再アタッチされるのは、最近使った5つのスキルだけで、合計25,000トークンの予算の範囲内に限られる。そのため、恒常的な指示は代わりに、永続的なファイルに直接書くべきである",
+      "スキル本文は、一度読み込まれれば永久にそのまま残るので、これはスキルのライフサイクルとは関係のないバグである",
+      "compactionはすべてのスキルを必ず永久に破棄するので、スキルに恒常的な指示を入れるべきではない"
     ],
     "answer": 1,
-    "explanation": "スキル本文は1つのメッセージとして会話に入り、以降のターンで自動的に再読込されるわけではありません。compaction時には直近使用の最大5スキル（各先頭5,000トークン、合計25,000トークン上限）のみが再アタッチされるため、恒久的な指示はCLAUDE.mdやメモリファイルのような永続化された場所に書くべきです。選択肢0は再アタッチの仕組みを無視しており、選択肢2は再読込されないという事実に反し、選択肢3は「常に完全に失われる」という誤りです。",
+    "explanation": "スキル本文は1つのメッセージとして会話に入り、以降のターンで自動的に読み直されることはありません。compactionで再アタッチされるのは、最近使った最大5つのスキル（それぞれ先頭5,000トークン、合計25,000トークンが上限）だけです。そのため、恒久的な指示はCLAUDE.mdやメモリファイルのような、永続的な場所に書くべきです。スキルは再アタッチされないと断言して手動での呼び出し直しを求める選択肢は、再アタッチの仕組みを無視していて誤りです。スキル本文が永久にそのまま残るとする選択肢は、以降のターンで読み直されないという事実に反します。compactionがすべてのスキルを必ず破棄するとする選択肢は、「常に完全に失われる」としている点が誤りです。",
     "tags": [
       "skill-lifecycle",
       "compaction",
@@ -812,7 +812,7 @@
       "dontAsk",
       "acceptEdits"
     ],
-    "questionJa": "ある開発者がClaude Codeを対話的に実行していて、ファイル編集ごとの確認プロンプトなしに全てのファイル編集をすぐに適用してほしい一方で、Claudeがbashコマンドを実行したり他のツールを使ったりする前には確認を求められたいと考えています。どの権限モードを選ぶべきですか。",
+    "questionJa": "ある開発者が、Claude Codeを対話的に使っています。ファイルの編集は、1回ごとの確認プロンプトなしですぐに適用してほしい一方で、ClaudeがBashコマンドを実行するときやほかのツールを使うときには、事前に確認してほしいと考えています。選ぶべき権限モードはどれですか。",
     "choicesJa": [
       "bypassPermissions",
       "plan",
@@ -820,7 +820,7 @@
       "acceptEdits"
     ],
     "answer": 3,
-    "explanation": "`acceptEdits` モードはファイル編集を自動承認しつつ、それ以外のツール（Bashなど）については通常通り確認を求めます。`bypassPermissions` は全ての確認をスキップする危険なモード、`plan` は実装前に計画提示のみを行うモード、`dontAsk` は編集以外も含め確認を省略する挙動であり、要件に合致しません。",
+    "explanation": "`acceptEdits`モードは、ファイル編集を自動で承認し、それ以外のツール（Bashなど）については通常どおり確認を求めます。`bypassPermissions`はすべての確認を省略する危険なモード、`plan`は実装の前に計画を示すだけのモード、`dontAsk`は編集以外も含めて確認を省く挙動で、どれも要件に合いません。",
     "tags": [
       "permission-modes",
       "acceptEdits"
@@ -838,15 +838,15 @@
       "This is a bug; plan mode should never trigger unless bypassPermissions is disabled",
       "This is correct; plan mode is only for changes touching 45+ files, so it should never have triggered here regardless of clarity"
     ],
-    "questionJa": "ある開発者がClaude Codeに、1つのファイル内の未使用の変数1つのリネームを依頼しました。Claudeはプランモードに入り、調査結果の要約を作成し、1行の変更を行う前に承認を求めます。このワークフローの最良の評価はどれですか。",
+    "questionJa": "ある開発者が、Claude Codeに、1つのファイルの中にある使われていない変数1つの名前を変えるよう頼みました。Claudeはプランモードに入り、探索の要約を作ってから、1行の変更を加える前に承認を求めてきました。この進め方に対する評価として最も適切なのはどれですか。",
     "choicesJa": [
-      "これは正しい。プランモードは変更のスコープに関わらず、あらゆるコード変更で必須である",
-      "これは不要なオーバーヘッドである。プランモードはマルチファイル、アーキテクチャ上の変更、スコープが曖昧な変更に有効であり、単一ファイルの低リスクで曖昧さのない修正には不要",
-      "これはバグである。プランモードはbypassPermissionsが無効化されていない限り発動すべきではない",
-      "これは正しい。プランモードは45ファイル以上に触れる変更専用であるため、明確さに関わらずここでは発動すべきではなかった"
+      "これは正しい。プランモードは、変更の範囲にかかわらず、あらゆるコード変更で必須である",
+      "これは不要な手間である。プランモードが妥当なのは、複数ファイルにまたがる変更、アーキテクチャ上の変更、範囲が曖昧な変更であり、単一ファイルで低リスクの、曖昧さのない修正ではない",
+      "これはバグである。プランモードは、bypassPermissionsが無効になっていない限り、発動すべきではない",
+      "これは正しい。プランモードは45以上のファイルに触れる変更にしか使わないものなので、明確さにかかわらず、ここで発動すべきではなかった"
     ],
     "answer": 1,
-    "explanation": "プランモードはマルチファイル変更、アーキテクチャ上の意思決定、複数の妥当なアプローチ、大規模スコープ、要件の曖昧さがある場合に有効ですが、単一ファイルの明確で低リスクな修正には不要なオーバーヘッドです。選択肢0は「常に必須」という誤った一般化、選択肢2は無関係な条件付け、選択肢3は「45ファイル以上のみ」という閾値の誤解です。",
+    "explanation": "プランモードが有効なのは、複数ファイルにまたがる変更、アーキテクチャ上の判断、妥当なアプローチが複数ある場合、規模が大きい場合、要件が曖昧な場合です。単一ファイルの、明確で低リスクな修正には、不要な手間になるだけです。「常に必須」とする選択肢は、誤った一般化です。bypassPermissionsに結びつける選択肢は、無関係な条件を持ち込んでいます。「45ファイル以上だけ」とする選択肢は、閾値を誤解しています。",
     "tags": [
       "plan-mode",
       "direct-execution"
@@ -864,15 +864,15 @@
       "Large-scope, multi-file changes with multiple valid architectural approaches are exactly the case where plan mode's explore-design-approve workflow prevents costly rework from an unreviewed wrong direction",
       "Plan mode only matters for CI/CD pipelines, not interactive sessions"
     ],
-    "questionJa": "あるチームが、複数のサービスにまたがる45以上のファイルに触れる移行作業を計画しており、選択できる妥当なアーキテクチャ上のアプローチがいくつかあります。ある若手エンジニアが、時間を節約するためにプランモードを飛ばしてClaude Codeに直接ファイル編集を始めさせることを提案しています。この提案に対する最も強力な反論はどれですか。",
+    "questionJa": "あるチームが、複数のサービスにまたがる45以上のファイルに手を入れる移行作業を計画しています。選べるアーキテクチャ上妥当なアプローチも、いくつかあります。ある若手エンジニアが、時間を節約するために、プランモードを使わず、Claude Codeにいきなりファイルを編集させればよいと提案しました。この提案に対する最も強力な反論はどれですか。",
     "choicesJa": [
-      "直接実行はスコープに関わらず常にプランモードより遅い",
-      "プランモードはデフォルトで必須であり、Claude Codeでは無効化できない",
-      "複数の妥当なアーキテクチャ上のアプローチがある大規模スコープ・マルチファイルの変更こそ、プランモードの探索・設計・承認のワークフローが、レビューされないまま誤った方向に進んで高コストな手戻りが発生するのを防ぐ、まさにそのケースである",
-      "プランモードはCI/CDパイプラインにのみ関係し、対話的セッションには関係ない"
+      "直接実行は、スコープにかかわらず、常にプランモードより遅い",
+      "プランモードはデフォルトで必須であり、Claude Codeでは無効にできない",
+      "アーキテクチャ上妥当なアプローチが複数ある、大規模で複数ファイルにわたる変更は、まさにプランモードの探索・設計・承認のワークフローが役に立つ場面である。レビューされていない誤った方向に進んで、高くつく手戻りが生じるのを防げるからである",
+      "プランモードが関係するのはCI/CDパイプラインだけで、対話的なセッションには関係しない"
     ],
     "answer": 2,
-    "explanation": "大規模スコープ・複数ファイル・複数の妥当なアーキテクチャ選択肢がある状況はプランモードが推奨される典型例であり、探索→設計→計画提示→承認後実装というワークフローによって、誤った方向性のまま実装が進み手戻りが発生するリスクを防げます。選択肢0は一般化しすぎ、選択肢1はプランモードがデフォルト必須かつ無効化不可という誤り、選択肢3はCI/CD限定という誤った限定です。",
+    "explanation": "大規模で、複数のファイルにまたがり、アーキテクチャ上妥当な選択肢が複数ある状況は、プランモードが推奨される典型例です。探索、設計、計画の提示、承認後に実装、というワークフローによって、誤った方向のまま実装が進んで手戻りが生じるリスクを防げます。直接実行が常に遅いとする選択肢は、一般化しすぎです。プランモードがデフォルトで必須で、無効にできないとする選択肢は誤りです。CI/CDだけが対象だとする選択肢は、誤った限定です。",
     "tags": [
       "plan-mode",
       "large-migration"
@@ -890,15 +890,15 @@
       "The acceptEdits mode, which auto-applies edits during exploration",
       "Raising --max-turns so more files can be read in one turn"
     ],
-    "questionJa": "ある開発者は、Claude Codeに未知の200ファイルのコードベースを探索させて認証ロジックがどこにあるかを特定させたいものの、その過程で読み込む全ファイルの内容でメインの会話のコンテキストを溢れさせたくないと考えています。何を使うべきですか。",
+    "questionJa": "ある開発者が、200ファイルからなる、なじみのないコードベースをClaude Codeに探索させて、認証ロジックがどこにあるかを突き止めたいと考えています。ただし、その途中で読んだすべてのファイルの内容で、メインの会話のコンテキストがあふれないようにしたいとも考えています。使うべきものはどれですか。",
     "choicesJa": [
-      "冗長な探索を隔離し、簡潔な要約を返すExploreサブエージェント",
-      "読み込みの確認をスキップして高速化するbypassPermissionsモード",
-      "探索中に編集を自動適用するacceptEditsモード",
-      "1ターンでより多くのファイルを読めるように--max-turnsを上げる"
+      "Exploreサブエージェント。冗長な探索を隔離し、簡潔な要約を返す",
+      "bypassPermissionsモード。確認を省略して、読み込みを速くする",
+      "acceptEditsモード。探索中の編集を自動で適用する",
+      "--max-turnsを引き上げて、1ターンでより多くのファイルを読めるようにする"
     ],
     "answer": 0,
-    "explanation": "Explore サブエージェントは冗長なコードベース探索をメインコンテキストから隔離し、簡潔な要約のみを返す仕組みです。`bypassPermissions` や `acceptEdits` は権限モードであり探索のコンテキスト隔離とは無関係、`--max-turns` はCLIのターン数上限でありコンテキスト消費を減らす仕組みではありません。",
+    "explanation": "Exploreサブエージェントは、冗長なコードベースの探索をメインのコンテキストから隔離し、簡潔な要約だけを返す仕組みです。`bypassPermissions`や`acceptEdits`は権限モードで、探索のコンテキストの隔離とは無関係です。`--max-turns`はCLIのターン数の上限で、コンテキストの消費を減らす仕組みではありません。",
     "tags": [
       "explore-subagent",
       "context-isolation"
@@ -916,15 +916,15 @@
       "Because the main session automatically re-reads all 60 files during the next /compact",
       "Because the 60 raw file reads would consume most of the main context window, while the subagent's concise summary preserves what's actually needed for the main session to keep working"
     ],
-    "questionJa": "ある開発者は、あるサービスが遅い理由を調査するようClaude Codeに依頼した後、コーディネーターがその調査をExploreサブエージェントに委任し、リポジトリ全体で60ファイルを読み込んでいることに気づきました。その後、メインセッションは調査結果の短い要約だけを引き継いで続行します。これが情報の損失ではなく良いプラクティスとみなされる理由はどれですか。",
+    "questionJa": "ある開発者が、次のような流れに気づきました。サービスが遅い原因を調べるようClaude Codeに依頼すると、コーディネーターがその調査をExploreサブエージェントに任せ、サブエージェントはリポジトリ全体で60個のファイルを読み込みます。メインセッションは、調査結果の短いまとめだけを受け取って作業を続けます。これが情報の損失ではなく、良い進め方とされる理由はどれですか。",
     "choicesJa": [
-      "Exploreサブエージェントが読み込んだ後にファイルを削除するから",
-      "ExploreサブエージェントはReadツールを10回を超えて使うことが許可されていないから",
-      "メインセッションが次の/compact時に60ファイル全てを自動的に再読み込みするから",
-      "60ファイルの生の読み込みはメインのコンテキストウィンドウの大部分を消費してしまうが、サブエージェントの簡潔な要約はメインセッションが作業を続けるために実際に必要な情報を保持しているから"
+      "Exploreサブエージェントが、読み終えたファイルを削除するから",
+      "Exploreサブエージェントは、Readツールを10回を超えて使えないから",
+      "メインセッションが、次の/compactで60個のファイルをすべて自動的に読み直すから",
+      "60個のファイルを生のまま読むと、メインのコンテキストウィンドウの大半を使ってしまうが、サブエージェントの簡潔なまとめには、メインセッションが作業を続けるのに本当に必要な内容が残っているから"
     ],
     "answer": 3,
-    "explanation": "Explore サブエージェントによる隔離は、大量のファイル読み込みがメインコンテキストを圧迫するのを防ぎつつ、必要な要点だけを簡潔な要約として返すことで実務上有用な情報密度を保ちます。ファイルを削除するわけではなく（選択肢0は誤り）、Read回数に10回のような制限もなく（選択肢1は誤り）、compact時に全ファイルを再読込することもありません（選択肢2は誤り）。",
+    "explanation": "Exploreサブエージェントに任せると、大量のファイル読み込みでメインコンテキストが埋まるのを防げます。しかも、サブエージェントは必要な要点だけを簡潔なまとめにして返すので、実務で役に立つ情報はきちんと残ります。サブエージェントがファイルを削除するわけではありません。Readの回数に10回のような上限もありません。また、/compactのときに60個のファイルを全部読み直すこともありません。",
     "tags": [
       "explore-subagent",
       "context-management"
@@ -942,15 +942,15 @@
       "The project-level .claude/skills/release/SKILL.md, because on a same-name collision the skill wins, and Project outranks Plugin in location priority",
       "Whichever file was created most recently on disk"
     ],
-    "questionJa": "あるチームが、自分たちのリポジトリの`.claude/skills/release/SKILL.md`に共有スキルを保存しています。同じプロジェクトには`.claude/commands/release.md`という別のコマンドファイルも存在し、さらに内部プラグインが別の`release`スキルを提供しています。2026年のskills/commandsマージと場所の優先順位ルールを踏まえると、開発者がこのプロジェクトで`/release`を実行したときにどれが優先されますか。",
+    "questionJa": "あるチームが、リポジトリの`.claude/skills/release/SKILL.md`に共有スキルを置いています。同じプロジェクトには`.claude/commands/release.md`というコマンドファイルもあり、さらに社内プラグインも別の`release`スキルを提供しています。2026年のskillsとcommandsの統合と、場所ごとの優先順位のルールにしたがうと、開発者がこのプロジェクトで`/release`を実行したとき、優先して実行されるのはどれですか。",
     "choicesJa": [
-      "プラグインは常にプロジェクトファイルより優先されるため、プラグインのreleaseスキル",
-      "同じ場所ではコマンドがスキルより優先されるため、.claude/commands/release.mdファイル",
-      "同名衝突時にはスキルが優先され、場所の優先順位でProjectがPluginを上回るため、プロジェクトレベルの.claude/skills/release/SKILL.md",
-      "ディスク上で最も最近作成されたファイル"
+      "プラグインは常にプロジェクトのファイルより優先されるため、プラグインのreleaseスキルが実行される。",
+      "同じ場所ではコマンドがスキルより優先されるため、.claude/commands/release.mdが実行される。",
+      "同名の衝突ではスキルが優先され、場所の優先順位ではProjectがPluginより上のため、プロジェクトの.claude/skills/release/SKILL.mdが実行される。",
+      "ディスク上で最後に作られたファイルが実行される。"
     ],
     "answer": 2,
-    "explanation": "同名衝突時はスキルがコマンドより優先され、さらに場所の優先順位は Enterprise → Personal → Project → Plugin なので、プロジェクトのスキルがプラグインのスキルより優先されます。したがって `.claude/skills/release/SKILL.md` が採用されます。選択肢0はPluginが常に最優先という誤り、選択肢1はコマンドがスキルに勝つという逆の誤り、選択肢3はファイル作成日時という無関係な基準です。",
+    "explanation": "同名で衝突した場合は、スキルがコマンドより優先されます。さらに、場所の優先順位はEnterprise → Personal → Project → Pluginの順なので、ProjectのスキルがPluginのスキルより優先されます。そのため、`.claude/skills/release/SKILL.md`が使われます。「Pluginが常に最優先」という説明は誤りです。「コマンドがスキルに勝つ」という説明は、優先関係が逆です。ファイルの作成日時は、このルールとは無関係な基準です。",
     "tags": [
       "skills-commands-merger",
       "location-priority",
@@ -969,7 +969,7 @@
       "dontAsk",
       "auto"
     ],
-    "questionJa": "ある構造化データ抽出パイプラインが、無人のClaude Code CIジョブとして動作します。人間が立ち会っていないため、チームは完全にロックダウンするのでも完全にオープンにするのでもなく、Claudeにリクエストごとに動的にツール権限の判断をさせたいと考えています。この説明に合う権限モードはどれですか。",
+    "questionJa": "構造化データ抽出のパイプラインを、無人のClaude Code CIジョブとして動かしています。人が立ち会っていないので、チームは、権限を完全に制限するのでも完全に開放するのでもなく、リクエストごとにClaudeが自分でツール権限を判断する形にしたいと考えています。この条件に合う権限モードはどれですか。",
     "choicesJa": [
       "plan",
       "acceptEdits",
@@ -977,7 +977,7 @@
       "auto"
     ],
     "answer": 3,
-    "explanation": "`auto` モードは分類器（classifier）がリクエストごとに許可・拒否を動的に判断する権限モードで、無人環境での柔軟な自動判断に適しています。`plan` は実装前の計画提示に特化、`acceptEdits` は編集のみ自動承認、`dontAsk` はすべての確認を省略するため、動的判断という要件には合致しません。",
+    "explanation": "`auto`は、分類器（classifier）がリクエストごとに許可するか拒否するかを動的に判断する権限モードで、無人の環境でも柔軟に自動判断できます。`plan`は実装の前に計画を示すことに特化したモード、`acceptEdits`は編集だけを自動承認するモード、`dontAsk`はすべての確認を省くモードです。どれも「動的に判断する」という条件には合いません。",
     "tags": [
       "permission-modes",
       "auto-mode",
@@ -996,15 +996,15 @@
       "Neither is needed; disable-model-invocation: true on the refund skill achieves the same guarantee",
       "The CLAUDE.md instruction, because PreToolUse hooks can only run after a tool has already executed, not before"
     ],
-    "questionJa": "ある金融サービスチームは、`process_refund`が、セッション内で先に`get_customer`検証呼び出しが既に成功していない限り決して実行されないという、100%の信頼性で強制されるべきルールを求めています。彼らは、これをCLAUDE.mdの強い表現の指示として書く方法と、検証が既に実行されていない限り`process_refund`ツール呼び出しをブロックするPreToolUseフックを組み込む方法のどちらにするか検討しています。どちらのアプローチを選ぶべきで、その理由は何ですか。",
+    "questionJa": "金融サービスのチームが、あるルールを100%確実に守らせたいと考えています。そのルールとは、同じセッションの前の段階で`get_customer`による検証の呼び出しが成功するまで、`process_refund`を決して実行しない、というものです。方法として、CLAUDE.mdに強い表現の指示として書くか、検証がまだなら`process_refund`のツール呼び出しをブロックするPreToolUseフックを組み込むかで迷っています。選ぶべき方法とその理由の組み合わせはどれですか。",
     "choicesJa": [
-      "CLAUDE.mdの指示。プロンプトベースの指示は毎ターン再読み込みされるため、フックと同程度に信頼できるから",
-      "PreToolUseフック。プログラム的な強制は決定論的（100%）であるのに対し、プロンプトによる指示は確率的なベストエフォートに過ぎず、これは安全性が重要なルールにとって重要だから",
-      "どちらも不要。refundスキルにdisable-model-invocation: trueを設定すれば同じ保証が得られるから",
-      "CLAUDE.mdの指示。PreToolUseフックはツールが既に実行された後にしか実行できず、実行前には実行できないから"
+      "CLAUDE.mdの指示を選ぶ。プロンプトによる指示は毎ターン読み直されるので、フックと同じくらい確実だから。",
+      "PreToolUseフックを選ぶ。プログラムによる強制は決定論的（100%）だが、プロンプトによる指示は確率的なベストエフォートにすぎず、この違いは安全性が重要なルールで大きな意味を持つから。",
+      "どちらも選ばない。refundスキルにdisable-model-invocation: trueを設定すれば、同じ保証が得られるから。",
+      "CLAUDE.mdの指示を選ぶ。PreToolUseフックはツールの実行後にしか動かず、実行前には動かせないから。"
     ],
     "answer": 1,
-    "explanation": "安全性・金融クリティカルなルールはプロンプト指示（確率的・ベストエフォート）ではなく、フックのようなプログラム的強制（決定論的・100%保証）で実現すべきというのが本試験で強調される原則の典型例（`process_refund`を`get_customer`検証完了までブロックするPreToolUseフック）です。選択肢0は「同等の信頼性」という誤り、選択肢2はdisable-model-invocationが呼び出し主体（人間のみ）の制限であり検証順序の保証にはならない誤り、選択肢3はPreToolUseがツール実行「前」に介入するフックであるという定義に反する誤りです。",
+    "explanation": "安全性や金融面で重要なルールは、プロンプトの指示（確率的でベストエフォート）ではなく、フックのようなプログラムによる強制（決定論的で100%確実）で実現するべきです。検証が終わるまで`process_refund`をブロックするPreToolUseフックは、本試験で強調されるこの原則の典型例です。「プロンプトの指示もフックと同じくらい確実」という説明は誤りです。`disable-model-invocation`は呼び出せる主体を人だけに限る設定で、検証の順序は保証できません。PreToolUseはツール実行の「前」に介入するフックなので、「実行後にしか動かない」という説明も定義に反します。",
     "tags": [
       "hooks",
       "programmatic-enforcement",
@@ -1023,7 +1023,7 @@
       "default",
       "acceptEdits"
     ],
-    "questionJa": "全てのツールと編集の確認プロンプトをスキップするため危険とされ、通常は完全にサンドボックス化された使い捨て環境のためだけに使うべきとされる権限モードはどれですか。",
+    "questionJa": "すべてのツールと編集で確認プロンプトを省略するため危険とされ、ふつうは、完全にサンドボックス化された環境か使い捨ての環境に限って使うべきとされる権限モードはどれですか。",
     "choicesJa": [
       "bypassPermissions",
       "plan",
@@ -1031,7 +1031,7 @@
       "acceptEdits"
     ],
     "answer": 0,
-    "explanation": "`bypassPermissions` は全てのツール利用と編集の確認プロンプトを完全にスキップする危険なモードで、サンドボックス化された使い捨て環境などでのみ使うべきとされています。`plan` は実装前の計画提示、`default` は通常の逐次確認、`acceptEdits` は編集のみ自動承認であり、いずれも「全確認をスキップする危険なモード」には該当しません。",
+    "explanation": "`bypassPermissions`は、すべてのツール利用と編集で確認プロンプトを完全に省略する危険なモードで、サンドボックス化された使い捨ての環境などでだけ使うべきとされています。`plan`は実装の前に計画を示すモード、`default`は通常どおり都度確認するモード、`acceptEdits`は編集だけを自動承認するモードです。どれも「すべての確認を省略する危険なモード」ではありません。",
     "tags": [
       "permission-modes",
       "bypassPermissions"
@@ -1049,7 +1049,7 @@
       "context: fork",
       "effort: high"
     ],
-    "questionJa": "あるカスタマーサポート自動化スキルを構築している開発者は、エスカレーションは常に意図的な人間の行動であるべきなので、Claudeが会話の途中で自律的にこのスキルを呼び出すことは決してなく、`/escalate`による明示的な呼び出しのみでClaudeが呼び出せるようにしたいと考えています。これを強制するSKILL.mdのfrontmatter設定はどれですか。",
+    "questionJa": "カスタマーサポートの自動化スキルを作っている開発者がいます。エスカレーションは必ず人が意図的に実行する操作であるべきなので、このスキルは`/escalate`で明示的に呼び出したときだけ動くようにし、Claudeが会話の途中で自分の判断で呼び出すことは決してないようにしたいと考えています。これを強制するSKILL.mdのfrontmatterの設定はどれですか。",
     "choicesJa": [
       "disable-model-invocation: true",
       "user-invocable: false",
@@ -1057,7 +1057,7 @@
       "effort: high"
     ],
     "answer": 0,
-    "explanation": "`disable-model-invocation: true` はスキルをユーザーのみが明示的に呼び出せるようにし、モデルが自律的に呼び出すことを禁止します。これは「常に人間の意図的な操作であるべき」という要件に一致します。`user-invocable: false` は逆にユーザーから隠しモデルのみが呼べる設定であり要件と真逆、`context: fork` は実行コンテキストの隔離、`effort: high` は思考努力レベルの調整であり、呼び出し主体の制御とは無関係です。",
+    "explanation": "`disable-model-invocation: true`を設定すると、スキルをユーザーだけが明示的に呼び出せるようになり、モデルが自分の判断で呼び出すことはなくなります。これは「常に人の意図的な操作にしたい」という条件に合います。`user-invocable: false`は逆に、ユーザーからは隠してモデルだけが呼べるようにする設定で、条件とは正反対です。`context: fork`は実行コンテキストを分離する設定、`effort: high`は思考の努力レベルを調整する設定で、どちらも誰が呼び出すかの制御とは関係ありません。",
     "tags": [
       "skill-frontmatter",
       "disable-model-invocation"
@@ -1075,15 +1075,15 @@
       "The job needs `--max-turns` set or Claude Code will loop forever",
       "The job needs `--no-session-persistence` or the session file lock blocks the process"
     ],
-    "questionJa": "ある開発者が、新しいIssueを自動トリアージするために`claude`を呼び出すGitHub Actionsジョブを追加しました。このジョブはローカルテスト（対話型端末）では正常に実行されますが、CIランナーではジョブがタイムアウトするまで無期限にハングします。最も可能性の高い原因はどれですか。",
+    "questionJa": "開発者が、新しいIssueを自動でトリアージするために`claude`を呼び出すGitHub Actionsのジョブを追加しました。このジョブは、ローカルでのテスト（対話型のターミナル）では問題なく動きましたが、CIランナーではタイムアウトするまで延々とハングします。最も考えられる原因はどれですか。",
     "choicesJa": [
-      "`--output-format stream-json`が指定されていないため、Claude Codeが何の出力も出せない",
-      "`-p`/`--print`が指定されていないため、CIが決して提供できない対話的な入力をClaude Codeが待ち続けている",
-      "ジョブに`--max-turns`の設定が必要で、そうしないとClaude Codeが無限にループしてしまう",
-      "ジョブに`--no-session-persistence`が必要で、そうしないとセッションファイルのロックがプロセスをブロックしてしまう"
+      "`--output-format stream-json`が付いていないため、Claude Codeが何も出力できない",
+      "`-p`/`--print`が付いていないため、Claude CodeがCIでは決して得られない対話的な入力を待ち続けている",
+      "`--max-turns`を設定していないため、Claude Codeが永久にループする",
+      "`--no-session-persistence`が付いていないため、セッションファイルのロックがプロセスをブロックする"
     ],
     "answer": 1,
-    "explanation": "CIでハングする典型的な原因は `-p`/`--print` の付け忘れです。これがないとClaude Codeは対話モードで待機し、非対話環境のCIでは永久にハングします。output-formatは出力形式の指定であり無指定でもハングの原因にはなりません。max-turnsはターン数上限で無限ループ防止には有効ですが今回の典型トラップではありません。no-session-persistenceはセッション保存の制御でハングの原因ではありません。",
+    "explanation": "CIでハングする典型的な原因は、`-p`/`--print`の付け忘れです。これがないとClaude Codeは対話モードのまま入力を待ち続け、対話できないCIでは永久にハングします。`--output-format`は出力形式の指定にすぎず、指定がなくてもハングの原因にはなりません。`--max-turns`はターン数の上限で、無限ループの防止には有効ですが、今回のようなよくある落とし穴ではありません。`--no-session-persistence`はセッションを保存するかどうかの制御で、ハングの原因ではありません。",
     "tags": [
       "ci-cd",
       "flags",
@@ -1102,7 +1102,7 @@
       "`-p --max-turns 1`",
       "`-p --output-format stream-json --json-schema '{...}'`"
     ],
-    "questionJa": "ある構造化データ抽出パイプラインがClaude Codeをヘッドレスで呼び出しており、デバッグ用の途中のツール呼び出しイベントを含め、後段のPythonスクリプトが確実にパースできる出力が必要です。このニーズに最も適したフラグの組み合わせはどれですか。",
+    "questionJa": "構造化データ抽出のパイプラインから、Claude Codeをヘッドレスで呼び出しています。出力は、後段のPythonスクリプトが確実にパースできる形でなければならず、デバッグ用に途中のツール呼び出しイベントも含める必要があります。この要件に最も合うフラグの組み合わせはどれですか。",
     "choicesJa": [
       "`-p --output-format text`",
       "`--output-format json --max-budget-usd 5`",
@@ -1110,7 +1110,7 @@
       "`-p --output-format stream-json --json-schema '{...}'`"
     ],
     "answer": 3,
-    "explanation": "stream-json形式は逐次イベント(ツール呼び出し等)をJSONとして流すためデバッグに適し、json-schemaで最終出力の形式を保証できるため今回の要件に合致します。text形式は構造化パースに不向きです。output-format jsonだけでは中間のツール呼び出しイベントが見えず、さらに`-p`も欠けており非対話環境でハングします。max-turns 1は複雑な抽出作業を1ターンに制限してしまい実用的ではありません。",
+    "explanation": "stream-json形式は、ツール呼び出しなどの途中のイベントを順にJSONとして流すので、デバッグに向いています。さらに、`--json-schema`で最終出力の形式を保証できるので、今回の要件に合います。text形式は、構造化されたデータのパースには向きません。`--output-format json`だけでは途中のツール呼び出しイベントが見えず、しかも`-p`がないので、非対話の環境ではハングします。`--max-turns 1`は、複雑な抽出作業を1ターンに制限してしまい、実用的ではありません。",
     "tags": [
       "output-format",
       "json-schema",
@@ -1129,7 +1129,7 @@
       "`--no-session-persistence`",
       "`--setting-sources user,project,local`"
     ],
-    "questionJa": "あるチームは、CIがトリガーするClaude Codeの各実行を完全に独立したステートレスな呼び出しとし、共有CIランナー間でのデータ漏洩を避けるため、実行後にセッションファイルをディスクに一切書き込まないようにしたいと考えています。これを実現するフラグはどれですか。",
+    "questionJa": "共有のCIランナーのあいだでデータが漏れるのを避けるため、あるチームは、CIから起動するClaude Codeの実行を、毎回完全に独立したステートレスな呼び出しにしたいと考えています。実行後にセッションファイルをディスクに一切書き込まないようにする必要があります。これを実現するフラグはどれですか。",
     "choicesJa": [
       "`--fork-session`",
       "`--continue`",
@@ -1137,7 +1137,7 @@
       "`--setting-sources user,project,local`"
     ],
     "answer": 2,
-    "explanation": "`--no-session-persistence` はセッション状態をディスクに保存しないため、共有CIランナー間でのデータ漏洩を防ぐという要件に合致します。fork-sessionは既存セッションから分岐する機能で無関係です。continueは直前セッションの継続用で今回の「毎回独立」という要件と逆です。setting-sourcesは設定ファイルの読み込み元を制御するもので永続化とは別の話です。",
+    "explanation": "`--no-session-persistence`はセッションの状態をディスクに保存しないので、共有CIランナー間でのデータ漏洩を防ぐという要件に合います。`--fork-session`は既存のセッションから分岐する機能で、関係ありません。`--continue`は直前のセッションを続けるためのもので、「毎回独立させる」という要件とは逆です。`--setting-sources`は設定ファイルの読み込み元を制御するもので、セッションの保存とは別の話です。",
     "tags": [
       "session-persistence",
       "ci-cd",
@@ -1156,7 +1156,7 @@
       "`--max-budget-usd`",
       "`--session-id`"
     ],
-    "questionJa": "あるCIパイプラインは非対話的にClaude Codeを実行しますが、人間が「許可」をクリックすることなく、カスタム組織の権限ルール（例えば破壊的なbashコマンドのブロック）を強制する必要があります。パイプラインに自動化された許可判断者を提供させるフラグはどれですか。",
+    "questionJa": "CIパイプラインでClaude Codeを非対話モードで動かしています。それでも、組織独自の権限ルール（たとえば破壊的なbashコマンドのブロック）は守らせる必要があり、「許可」をクリックする人もいません。パイプラインが、権限を自動で判断する仕組みを渡せるフラグはどれですか。",
     "choicesJa": [
       "`--permission-prompt-tool <mcp>`",
       "`--permission-mode bypassPermissions`",
@@ -1164,7 +1164,7 @@
       "`--session-id`"
     ],
     "answer": 0,
-    "explanation": "`--permission-prompt-tool` はMCPツールなどをパーミッション判定に接続し、人間不在でも自動的に許可/拒否の判断を行わせる仕組みで、要件に合致します。bypassPermissionsは全て無条件許可してしまう危険なモードでカスタムルールの強制にはなりません。max-budget-usdはコスト上限でパーミッションとは無関係です。session-idはセッション識別子の指定であり許可判定機構ではありません。",
+    "explanation": "`--permission-prompt-tool`は、MCPツールなどを権限の判定に接続し、人がいなくても自動で許可・拒否を判断させる仕組みで、要件に合います。`--permission-mode bypassPermissions`はすべてを無条件に許可してしまう危険なモードで、独自ルールの強制にはなりません。`--max-budget-usd`はコストの上限で、権限とは関係ありません。`--session-id`はセッションの識別子を指定するもので、許可を判定する仕組みではありません。",
     "tags": [
       "permission-prompt-tool",
       "ci-cd",
@@ -1183,7 +1183,7 @@
       "`--fallback-model claude-haiku`",
       "`--output-format json`"
     ],
-    "questionJa": "コストを意識するあるプラットフォームチームは、CI内のヘッドレスなClaude Code実行が誤って高コストなツール呼び出しループに陥った場合に強制停止させ、1件のプルリクエストチェックからの高額請求の暴走を防ぎたいと考えています。ターン数ではなく支出額で直接実行を制限するフラグはどれですか。",
+    "questionJa": "コストを気にしているプラットフォームチームが、CIで動かすヘッドレスのClaude Codeを、高くつくツール呼び出しのループに誤って陥ったときには強制的に止めたいと考えています。1回のプルリクエストチェックで請求額が際限なく膨らむのを防ぐためです。ターン数ではなく、支出額で直接実行を制限するフラグはどれですか。",
     "choicesJa": [
       "`--max-turns 10`",
       "`--max-budget-usd 2.00`",
@@ -1191,7 +1191,7 @@
       "`--output-format json`"
     ],
     "answer": 1,
-    "explanation": "`--max-budget-usd` はドル建てで支出上限を設定するため、暴走した場合の請求額を直接的に制限できます。max-turnsはターン回数の上限であり、1ターンあたりのコストが高ければ予算超過を防げません。fallback-modelはモデル障害時の代替指定でコスト上限とは無関係です。output-formatは出力形式の指定でコスト制御には関与しません。",
+    "explanation": "`--max-budget-usd`はドル建てで支出の上限を設定するので、暴走したときの請求額を直接制限できます。`--max-turns`はターン数の上限で、1ターンあたりのコストが高いと、予算超過は防げません。`--fallback-model`はモデルが使えないときの代替を指定するもので、コスト上限とは関係ありません。`--output-format`は出力形式の指定で、コスト制御には関わりません。",
     "tags": [
       "max-budget-usd",
       "cost-control",
@@ -1210,7 +1210,7 @@
       "`--setting-sources project`",
       "`--resume <session-id>`"
     ],
-    "questionJa": "インシデント対応中、あるエンジニアが、キックオフ時にログに記録された同じセッション識別子を再利用して、中断されたヘッドレスなClaude Code CI実行をまさに中断した箇所から再開したいと考えています。これを目的として設計されているフラグはどれですか。",
+    "questionJa": "インシデント対応中に、あるエンジニアが、中断されたヘッドレスのClaude Code CI実行を、中断した箇所からそのまま再開したいと考えています。開始時にログに記録されたセッション識別子を、同じものとして再利用します。このために設計されたフラグはどれですか。",
     "choicesJa": [
       "`--continue`",
       "`--fork-session`",
@@ -1218,7 +1218,7 @@
       "`--resume <session-id>`"
     ],
     "answer": 3,
-    "explanation": "`--resume <session-id>` は指定したセッションIDのセッションを明示的に再開するための機能で、ログに残ったIDから正確に復元する今回の要件に合致します。continueは直近セッションを暗黙的に継続するもので特定IDの指定はできません。fork-sessionは既存セッションから分岐した新しい独立ブランチを作る機能で「続きから再開」ではありません。setting-sourcesは設定ファイルの読み込み元制御で再開機能とは無関係です。",
+    "explanation": "`--resume <session-id>`は、指定したセッションIDのセッションを明示的に再開するための機能で、ログに残ったIDから正確に復元するという今回の要件に合います。`--continue`は直近のセッションを暗黙のうちに続けるもので、特定のIDは指定できません。`--fork-session`は既存のセッションから分岐して新しい独立した枝を作る機能で、「続きから再開」ではありません。`--setting-sources`は設定ファイルの読み込み元を制御するもので、再開とは関係ありません。",
     "tags": [
       "resume",
       "session-id",
@@ -1237,7 +1237,7 @@
       "`--permission-prompt-tool`",
       "`--json-schema`"
     ],
-    "questionJa": "あるセキュリティを重視するチームが、使い捨てのCIコンテナでClaude Codeを実行しており、（どのみちコンテナ内には存在しない）マシンローカルやユーザーレベルの設定が暗黙のうちに期待されることがないよう保証し、設定をバージョン管理されたプロジェクト設定のみに制限したいと考えています。使うべきフラグはどれですか。",
+    "questionJa": "セキュリティを重視するチームが、使い捨てのCIコンテナでClaude Codeを動かしています。マシンローカルやユーザーレベルの設定（コンテナにはもともと存在しません）を知らないうちに前提にしてしまうことが絶対にないよう、設定をバージョン管理されたプロジェクト設定だけに限定したいと考えています。使うべきフラグはどれですか。",
     "choicesJa": [
       "`--setting-sources project`",
       "`--no-session-persistence`",
@@ -1245,7 +1245,7 @@
       "`--json-schema`"
     ],
     "answer": 0,
-    "explanation": "`--setting-sources` はどの設定ソース（user/project/local）を読み込むか制御でき、projectのみを指定すればバージョン管理された設定だけに限定できます。no-session-persistenceはセッション永続化の制御で設定ソースとは無関係です。permission-prompt-toolは許可判定の委譲先指定であり設定ソース制御ではありません。json-schemaは出力スキーマの指定であり設定ファイルの読み込みには関与しません。",
+    "explanation": "`--setting-sources`は、どの設定ソース（user/project/local）を読み込むかを制御できます。projectだけを指定すれば、バージョン管理された設定だけに限定できます。`--no-session-persistence`はセッションの永続化の制御で、設定ソースとは関係ありません。`--permission-prompt-tool`は権限判定の委譲先を指定するもので、設定ソースの制御ではありません。`--json-schema`は出力スキーマの指定で、設定ファイルの読み込みには関わりません。",
     "tags": [
       "setting-sources",
       "ci-cd",
@@ -1264,15 +1264,15 @@
       "Message Batches API, because it offers a 50% cost discount for asynchronous, non-blocking workloads like this",
       "Message Batches API, because it supports multi-turn conversations needed for ticket classification"
     ],
-    "questionJa": "あるデータチームは、5万件のサポートチケットの夜間バルク分類をClaudeで実行する必要があり、レイテンシーに敏感ではなく、APIコストを最小化したいと考えています。最も適したアプローチはどれで、それはなぜですか。",
+    "questionJa": "データチームが、5万件のサポートチケットの分類を、毎晩まとめてClaudeで実行する必要があります。レイテンシーは問題にならず、APIコストはできるだけ抑えたいと考えています。最も合う方法とその理由の組み合わせはどれですか。",
     "choicesJa": [
-      "Batches APIは分類タスクをサポートしていないため、タイトなループでの同期API呼び出し",
-      "1時間以内の結果をSLAで保証するため、Message Batches API",
-      "このような非同期・非ブロッキングのワークロードに対して通常料金の50%割引を提供するため、Message Batches API",
-      "チケット分類に必要なマルチターン会話をサポートするため、Message Batches API"
+      "同期APIを、ループで次々に呼び出す。Batches APIは分類タスクをサポートしていないから。",
+      "Message Batches APIを使う。1時間以内の結果をSLAで保証しているから。",
+      "Message Batches APIを使う。このような非同期でブロックしないワークロードには、50%のコスト割引があるから。",
+      "Message Batches APIを使う。チケットの分類に必要なマルチターン会話をサポートしているから。"
     ],
     "answer": 2,
-    "explanation": "Message Batches APIは非同期・非ブロッキングのバルク処理に適し、通常のAPI料金の50%割引という明確なコストメリットがあるため、夜間の大量分類タスクに最適です。分類タスク自体はBatches APIで問題なく実行できるため同期呼び出しに固執する理由はありません。BatchesAPIには24時間以内の処理という目安はありますがSLA保証はありません。Batches APIはマルチターン会話をサポートしていません（各リクエストは独立）。",
+    "explanation": "Message Batches APIは、非同期でブロックしない大量処理に向いています。通常のAPI料金の50%割引という明確なコスト面の利点もあるので、夜間の大量分類タスクに最適です。分類タスクはBatches APIで問題なく実行できるので、同期呼び出しにこだわる理由はありません。Batches APIには24時間以内に処理するという目安はありますが、SLAによる保証はありません。また、Batches APIはマルチターン会話をサポートしていません（各リクエストは独立しています）。",
     "tags": [
       "batches-api",
       "cost-optimization",
@@ -1291,15 +1291,15 @@
       "Bad idea: Batches API has no SLA and can take up to 24 hours, which is incompatible with a blocking pre-merge check",
       "Bad idea: Batches API cannot process code review prompts at all"
     ],
-    "questionJa": "あるマージ前のCIチェックは、各プルリクエストをレビューするためにClaudeを使用しており、問題が見つかった場合は2分以内にマージをブロックする必要があります。あるエンジニアが、コストを50%節約するためにこのチェックをMessage Batches APIに切り替えることを提案しています。正しい評価はどれですか。",
+    "questionJa": "マージ前のCIチェックで、Claudeに各プルリクエストをレビューさせています。問題が見つかったら、2分以内にマージをブロックしなければなりません。あるエンジニアが、コストを50%減らすために、このチェックをMessage Batches APIに切り替えようと提案しました。正しい評価はどれですか。",
     "choicesJa": [
-      "良い案である。Batches APIは小さいペイロードであれば常に2分以内に結果を返す",
-      "良い案である。PRの追跡に`custom_id`の相関付けが必要な場合、Batches APIが常に必要である",
-      "悪い案である。Batches APIにはSLAがなく最大24時間かかる可能性があり、これはブロッキング型のマージ前チェックとは相容れない",
-      "悪い案である。Batches APIはそもそもコードレビューのプロンプトを処理できない"
+      "良い案だ。Batches APIは、小さなペイロードなら必ず2分以内に結果を返す。",
+      "良い案だ。PRの追跡で`custom_id`による対応付けが必要なときは、常にBatches APIが必須になる。",
+      "悪い案だ。Batches APIにはSLAがなく、最大24時間かかることがあるため、マージをブロックするマージ前チェックとは両立しない。",
+      "悪い案だ。Batches APIは、コードレビューのプロンプトをそもそも処理できない。"
     ],
     "answer": 2,
-    "explanation": "Batches APIは最大24時間かかる可能性がありSLA保証がないため、2分以内にブロックする必要があるマージ前チェックには不適切です。同期APIの利用が正しい選択です。小さいペイロードでも2分以内保証はありません。custom_idの相関自体はBatches APIの機能ですが、それが同期APIを使う理由にはなりません。コードレビュープロンプト自体はBatches APIで処理可能ですが、リアルタイム性が要件と矛盾します。",
+    "explanation": "Batches APIは処理に最大24時間かかることがあり、SLAによる保証もないので、2分以内にブロックしなければならないマージ前チェックには向きません。同期APIを使うのが正しい選択です。小さなペイロードでも、2分以内に返る保証はありません。`custom_id`による対応付けはBatches APIの機能ですが、それはBatches APIが必須になる理由にはなりません。コードレビューのプロンプトはBatches APIでも処理できますが、リアルタイム性が要件と矛盾します。",
     "tags": [
       "batches-api",
       "ci-cd",
@@ -1318,15 +1318,15 @@
       "Switch to synchronous calls for all 10,000 requests going forward",
       "Discard the 120 failed results since Batches API does not support retries"
     ],
-    "questionJa": "1万件の文書抽出を処理する夜間のMessage Batchesジョブが完了しましたが、10,000件中120件が一時的な上流エラーで失敗しました。正しい修復アプローチはどれですか。",
+    "questionJa": "夜間のMessage Batches APIジョブで、1万件の文書抽出を処理しました。ジョブは完了しましたが、10,000件のうち120件のリクエストが、一時的な上流エラーで失敗しています。正しい対処方法はどれですか。",
     "choicesJa": [
-      "一貫性を保証するため、1万件全てのリクエストを再送信する",
-      "元の`custom_id`の値を使って、失敗した120件のリクエストのみを再送信する",
-      "今後は全ての1万件について同期呼び出しに切り替える",
-      "Batches APIは再試行をサポートしていないため、失敗した120件の結果を破棄する"
+      "一貫性を保証するために、1万件のリクエストからなるバッチ全体を再送信する。",
+      "元の`custom_id`の値を使って、失敗した120件のリクエストだけを再送信する。",
+      "今後は、1万件すべてのリクエストを同期呼び出しに切り替える。",
+      "Batches APIは再試行をサポートしていないので、失敗した120件の結果は破棄する。"
     ],
     "answer": 1,
-    "explanation": "バッチ失敗時の正しい対応は、失敗した`custom_id`のみを再送信することです。全件を再送信するのは無駄なコストと処理時間を生みます。同期呼び出しへの全面切り替えはバッチの効率性メリットを放棄することになり過剰な対応です。失敗結果を破棄するのは業務要件を満たさず、再送信という選択肢を無視しています。",
+    "explanation": "バッチが一部失敗したときの正しい対応は、失敗した`custom_id`のリクエストだけを再送信することです。全件を再送信すると、コストと処理時間がむだになります。すべてを同期呼び出しに切り替えると、バッチの効率面の利点を捨てることになり、過剰な対応です。失敗した結果を破棄するのは業務要件を満たさず、再送信という選択肢も無視しています。",
     "tags": [
       "batches-api",
       "custom_id",
@@ -1345,15 +1345,15 @@
       "Automatic ordering guarantee matching submission order",
       "`parent_tool_use_id` inherited from the coordinator"
     ],
-    "questionJa": "あるバッチジョブは、5,000件の非同期抽出リクエストのそれぞれを、結果が順不同で返ってきた場合でも対応する元の文書と関連付ける必要があります。Message Batches APIはこのためにどのような仕組みを提供していますか。",
+    "questionJa": "あるバッチジョブでは、5,000件の非同期の抽出リクエストについて、結果が順不同で返ってきても、それぞれを元の文書と対応付ける必要があります。Message Batches APIがこのために提供している仕組みはどれですか。",
     "choicesJa": [
-      "全リクエストで共有される`session_id`",
+      "すべてのリクエストで共通の`session_id`",
       "呼び出し側がリクエストごとに割り当てる`custom_id`",
-      "送信順序に一致する自動的な順序保証",
-      "コーディネーターから継承される`parent_tool_use_id`"
+      "送信順と一致する順序の自動的な保証",
+      "コーディネーターから引き継がれる`parent_tool_use_id`"
     ],
     "answer": 1,
-    "explanation": "Message Batches APIでは呼び出し側が各リクエストに`custom_id`を割り当てて結果との紐付けに使います。これにより順不同で返ってきても正しい文書と対応付けられます。session_idはマルチターンセッションの識別子でバッチのリクエスト単位の相関には使われません。バッチAPIは順序保証をしないため紐付けにはcustom_idが必須です。parent_tool_use_idはサブエージェントのツール呼び出し追跡に使われるもので、バッチAPIの機構ではありません。",
+    "explanation": "Message Batches APIでは、呼び出し側が各リクエストに`custom_id`を割り当て、結果との対応付けに使います。これで、結果が順不同で返ってきても、正しい文書と結び付けられます。`session_id`はマルチターンセッションの識別子で、バッチのリクエスト単位の対応付けには使われません。Batches APIは順序を保証しないので、対応付けには`custom_id`が欠かせません。`parent_tool_use_id`はサブエージェントのツール呼び出しを追跡するためのもので、Batches APIの仕組みではありません。",
     "tags": [
       "custom_id",
       "batches-api",
@@ -1372,15 +1372,15 @@
       "Batches API does not support multi-turn conversations; each request in a batch is independent",
       "Batches API only works with the Message Batches admin API, not the standard SDK"
     ],
-    "questionJa": "ある開発者が、各ターンが同じ会話内でのモデルの直前の応答に依存するマルチターンのカスタマーサポート会話シミュレーションを、Message Batches APIを使って実行しようとしています。彼らが直面する重要な制約はどれですか。",
+    "questionJa": "ある開発者が、マルチターンのカスタマーサポート会話のシミュレーションを、Message Batches APIで実行しようとしています。このシミュレーションでは、同じ会話の中で、各ターンがモデルの直前の応答に依存します。開発者が突き当たる重要な制約はどれですか。",
     "choicesJa": [
-      "Batches APIは`custom_id`ごとに会話をちょうど3ターンまでに制限する",
-      "Batches APIはマルチターンサポートのために`--output-format stream-json`を必要とする",
+      "Batches APIは、1つの`custom_id`につき会話をちょうど3ターンまでに制限する",
+      "Batches APIは、マルチターンに対応するために`--output-format stream-json`を必要とする",
       "Batches APIはマルチターン会話をサポートしておらず、バッチ内の各リクエストは独立している",
-      "Batches APIは標準のSDKではなくMessage Batches管理APIでのみ動作する"
+      "Batches APIは、標準のSDKではなくMessage Batchesの管理APIでしか動かない"
     ],
     "answer": 2,
-    "explanation": "Message Batches APIはマルチターン会話をサポートしておらず、バッチ内の各リクエストは独立して処理されます。そのため前のターンの応答に依存する会話シミュレーションには不向きです。ターン数の上限が3という制限は存在しません。output-formatのフラグはCLIの話でBatches APIの制約とは無関係です。管理APIとSDKの違いという説明も誤りで、根本原因はマルチターン非対応という点にあります。",
+    "explanation": "Message Batches APIはマルチターン会話をサポートしておらず、バッチ内の各リクエストは独立して処理されます。そのため、前のターンの応答に依存する会話のシミュレーションには向きません。ターン数の上限が3という制限はありません。`--output-format`のフラグはCLIの話で、Batches APIの制約とは関係ありません。管理APIとSDKの違いという説明も誤りで、根本原因はマルチターンに対応していないことです。",
     "tags": [
       "batches-api",
       "multi-turn",
@@ -1399,15 +1399,15 @@
       "The developer needed to enable `--max-turns` to force deeper analysis",
       "The bug was missed because Message Batches API was not used for the review"
     ],
-    "questionJa": "ある開発者が、複雑な返金処理機能の実装を長いClaude Codeセッションで終えたばかりで、同じセッション内でPRを開く前にその差分のバグをレビューするようClaudeに依頼しました。レビューは問題なしと返ってきましたが、後になってチームメイトがオフバイワンの請求バグを発見しました。このバグの見逃しを説明するアーキテクチャ上の誤りはどれですか。",
+    "questionJa": "ある開発者が、長いClaude Codeセッションで、複雑な返金処理機能の実装を終えたところです。同じセッションのまま、PRを開く前に、Claude自身が書いた差分にバグがないかレビューするよう頼みました。レビューでは問題なしと返ってきましたが、のちにチームメイトが、請求のオフバイワンのバグを見つけました。このバグの見逃しを説明する、アーキテクチャ上の誤りはどれですか。",
     "choicesJa": [
-      "構造化された指摘事項を強制するために`--output-format json`を使うべきだった",
-      "コードを書いたのと同じセッションでレビューすると推論コンテキストバイアスの影響を受けるため、新しい独立したセッションがレビューを行うべきである",
-      "より深い分析を強制するために開発者は`--max-turns`を有効にする必要があった",
-      "レビューにMessage Batches APIが使われなかったためバグが見逃された"
+      "構造化された指摘を強制するために、`--output-format json`を使うべきだった",
+      "コードを書いたのと同じセッションでレビューすると、推論コンテキストのバイアスの影響を受けるので、新しい独立したセッションにレビューさせるべきである",
+      "より深い分析を強制するために、開発者は`--max-turns`を有効にする必要があった",
+      "レビューにMessage Batches APIを使わなかったために、バグが見逃された"
     ],
     "answer": 1,
-    "explanation": "同一セッションでコードを書いた直後にレビューさせると、そのセッションはすでに自分の設計判断を正当化する推論コンテキストを持っており、自分の決定を疑いにくくなります（reasoning context bias）。独立した新しいセッションでレビューすることが正しい対処法です。output-formatは出力形式の話でバイアス問題とは無関係です。max-turnsはターン数上限でありレビューの質を保証するものではありません。Batches APIはコスト最適化の話でバグ発見とは無関係です。",
+    "explanation": "コードを書いた直後に同じセッションでレビューさせると、そのセッションはすでに自分の設計判断を正当化する推論コンテキストを持っているので、自分の決定を疑いにくくなります（reasoning context bias）。独立した新しいセッションでレビューするのが正しい対処です。`--output-format`は出力形式の話で、バイアスの問題とは関係ありません。`--max-turns`はターン数の上限で、レビューの質を保証するものではありません。Batches APIはコスト最適化の話で、バグの発見とは関係ありません。",
     "tags": [
       "code-review",
       "session-isolation",
@@ -1426,15 +1426,15 @@
       "Switch the session to `--permission-mode bypassPermissions` so it can review faster without confirmation prompts",
       "Increase `--max-budget-usd` so the single pass can spend more on each file"
     ],
-    "questionJa": "実装履歴を持たない新しい独立したClaude Codeセッションに、35ファイルのPR差分が与えられ、それを1回のパスでレビューするよう依頼されました。6か月後、チームは差分の中盤付近のファイルに対する指摘が始めと終わりのファイルに比べて一貫して浅くなっており、ファイル間で矛盾する指摘もあることに気づきました。ここではセッション分離によって既に推論バイアスは排除されているとして、この残る失敗モードに対処する追加のアーキテクチャ変更はどれですか。",
+    "questionJa": "実装の履歴を持たない、新しい独立したClaude Codeセッションに、35ファイルのPR差分を渡し、1回のパスでレビューするよう頼みました。6か月後、チームは、差分の中ほどにあるファイルへの指摘が、最初や最後のファイルへの指摘に比べて一貫して浅いことに気づきました。ファイルをまたいで互いに矛盾する指摘もあります。ここではセッションの分離によって、推論バイアスはすでに取り除かれているものとします。この残っている失敗モードに対処する、追加のアーキテクチャ変更はどれですか。",
     "choicesJa": [
-      "より多くのコンテキストを参照できるよう、実装履歴をセッションに再度追加する",
-      "レビューを、一貫した深さでファイル単位のローカル分析を行うPass 1と、その後にPass 1の結果を入力として受け取るクロスファイルの統合パスであるPass 2に分割する",
-      "確認プロンプトなしでより速くレビューできるよう、セッションを`--permission-mode bypassPermissions`に切り替える",
-      "単一パスで各ファイルにより多く費やせるよう`--max-budget-usd`を増やす"
+      "利用できるコンテキストを増やすために、実装履歴をセッションに再び加える",
+      "レビューを、Pass 1（一貫した深さでのファイル単位のローカル分析）と、それに続くPass 2（Pass 1の指摘を入力として受け取る、ファイル横断の統合パス）に分ける",
+      "確認プロンプトなしで速くレビューできるように、セッションを`--permission-mode bypassPermissions`に切り替える",
+      "1回のパスで各ファイルにより多く使えるように、`--max-budget-usd`を引き上げる"
     ],
     "answer": 1,
-    "explanation": "セッションを分離しても、35ファイルもの大規模PRを単一パスでレビューすると注意力が分散し、深さが不均一になったり矛盾する指摘が出たりする問題（attention dilution）が残ります。これを解決するのは、まずファイル単位で一貫した深さのローカル分析を行うPass 1、続いてその結果を入力としてクロスファイルの整合性を確認するPass 2という多段階レビュー構成です。実装履歴を再度加えるのはreasoning context biasを再発させてしまいます。bypassPermissionsは許可確認スキップの話でレビュー深度の均一化とは無関係です。予算を増やすだけでは単一パスの構造的な注意力分散という根本原因は解決しません。",
+    "explanation": "セッションを分離しても、35ファイルもある大きなPRを1回のパスでレビューすると、注意が分散して（attention dilution）、深さにむらが出たり、矛盾する指摘が出たりする問題が残ります。これを解決するのは、まずファイル単位で一貫した深さのローカル分析をするPass 1と、続いてその結果を入力にファイル間の整合性を確かめるPass 2という、複数段階のレビュー構成です。実装履歴を再び加えると、reasoning context biasがまた起きてしまいます。bypassPermissionsは許可の確認を省く話で、レビューの深さを均一にすることとは関係ありません。予算を増やすだけでは、1回のパスという構造から生じる注意の分散、つまり根本原因は解決しません。",
     "tags": [
       "multi-pass-review",
       "attention-dilution",
@@ -1453,15 +1453,15 @@
       "Increase `--max-turns` so Claude has more opportunities to self-correct",
       "Switch to the Message Batches API so more documents can be sampled at once"
     ],
-    "questionJa": "あるプロンプトエンジニアが、抽出した日付をどのようにフォーマットするかをClaudeに指示する内容を改善しています。現在の指示は「日付を一貫してフォーマットしてください」という文だけです。文書によって結果が一貫しません。反復的改善のベストプラクティスに従うと、信頼性を最も改善しそうな変更はどれですか。",
+    "questionJa": "プロンプトエンジニアが、抽出した日付の書式をClaudeに指示する文を改善しています。今の指示は「日付を一貫した書式にしてください。」という1文だけです。文書によって結果がばらついています。反復的改善のベストプラクティスにしたがうと、信頼性が最も上がりそうな変更はどれですか。",
     "choicesJa": [
-      "重要性を強調する形容詞を増やす。例えば「日付を非常に注意深く一貫してフォーマットしてください」",
-      "散文的な指示を、具体的なルールと2〜4個の入出力例に置き換える。例えばサンプル変換とともに「YYYY-MM-DD形式でフォーマットする」とする",
-      "Claudeが自己修正する機会を増やせるよう`--max-turns`を増やす",
-      "一度に多くの文書をサンプリングできるようMessage Batches APIに切り替える"
+      "重要性を強調する形容詞を足す。たとえば「日付を非常に注意深く、一貫した書式にしてください」とする",
+      "文章による指示を、具体的なルールと2〜4個の入出力例に置き換える。たとえば、「YYYY-MM-DD形式にする」というルールに変換のサンプルを添える",
+      "Claudeが自分で修正する機会を増やすために、`--max-turns`を増やす",
+      "一度に多くの文書をサンプリングできるように、Message Batches APIに切り替える"
     ],
     "answer": 1,
-    "explanation": "反復的なプロンプト改善のベストプラクティスでは、曖昧な散文的指示よりも具体的なルールと2〜4個の入出力例を示す方が効果的です（examples beat prose）。強調の形容詞を増やしても曖昧さは解消されません。max-turnsはCLIのターン数上限でありプロンプトの明確さとは無関係です。Batches APIはコスト・スループットの話であり、フォーマットの一貫性向上には寄与しません。",
+    "explanation": "反復的にプロンプトを改善するときのベストプラクティスでは、あいまいな文章の指示より、具体的なルールと2〜4個の入出力例を示すほうが効果的です（examples beat prose）。強調の形容詞を増やしても、あいまいさは解消されません。`--max-turns`はCLIのターン数の上限で、プロンプトの明確さとは関係ありません。Batches APIはコストやスループットの話で、書式の一貫性を高める効果はありません。",
     "tags": [
       "iterative-refinement",
       "few-shot",
@@ -1480,15 +1480,15 @@
       "Have Claude write a failing test, run it, share the failure output with Claude, let it fix the code, and repeat until the test passes",
       "Skip tests entirely and rely on `--max-turns` to bound the number of implementation attempts"
     ],
-    "questionJa": "ある開発者がClaude Codeで新しいAPIエンドポイントを構築しており、事前に長い仕様書を書くのではなく、テスト駆動の反復的改善ループを適用したいと考えています。このパターンを正しく反映しているワークフローはどれですか。",
+    "questionJa": "開発者が、Claude Codeで新しいAPIエンドポイントを作っています。長い仕様書を最初に書くのではなく、テスト駆動の反復的な改善ループで進めたいと考えています。このパターンを正しく表しているワークフローはどれですか。",
     "choicesJa": [
-      "まず2000語の網羅的な仕様書を書き、その後Claudeにそれ以上のやり取りなしで一度に全てを実装させる",
-      "何も実行せずに、Claudeにありそうなエッジケースを推測させ合成テストデータを生成させる",
-      "Claudeに失敗するテストを書かせ、それを実行し、失敗内容をClaudeと共有し、コードを修正させ、テストが通るまでこれを繰り返す",
-      "テストを完全に省略し、実装の試行回数の上限を`--max-turns`に頼る"
+      "最初に2000語の網羅的な仕様書を書き、あとはやり取りなしで、Claudeに一度にすべてを実装させる",
+      "何も実行しないまま、Claudeにありそうなエッジケースを推測させ、合成のテストデータを生成させる",
+      "Claudeに失敗するテストを書かせて実行し、失敗の出力をClaudeに見せてコードを直させる。これをテストが通るまで繰り返す",
+      "テストを完全に省き、実装の試行回数を`--max-turns`で制限することに頼る"
     ],
     "answer": 2,
-    "explanation": "TDDの反復ループは、失敗するテストを書く→実行する→失敗内容を共有する→修正する、というサイクルを繰り返すパターンです。これはClaude Codeでの反復的改善のベストプラクティスとして推奨されています。長大な仕様書を先に書いて一発実装させる方法は反復性がなく、フィードバックループの利点を活かせません。テストを実行せず推測だけで進めるのはTDDの本質を欠いています。max-turnsはターン数の上限管理でありテスト駆動のフィードバックループそのものではありません。",
+    "explanation": "TDDの反復ループは、失敗するテストを書く→実行する→失敗の内容を共有する→修正する、というサイクルを繰り返すパターンで、Claude Codeでの反復的改善のベストプラクティスとして推奨されています。長い仕様書を先に書いて一度で実装させる方法は、反復がなく、フィードバックループの利点を活かせません。テストを実行せず推測だけで進めるのは、TDDの本質に欠けています。`--max-turns`はターン数の上限を管理するもので、テスト駆動のフィードバックループそのものではありません。",
     "tags": [
       "tdd",
       "iterative-refinement",
@@ -1507,15 +1507,15 @@
       "Set `--permission-mode bypassPermissions` so Claude can make all decisions unilaterally without review",
       "Force `tool_choice: any` so Claude is guaranteed to start editing files right away"
     ],
-    "questionJa": "プロダクトマネージャーからの曖昧さのある機能要求をClaude Codeに実装させる前に、ある開発者は手戻り作業を減らしたいと考えています。曖昧な要件に対して推奨される反復的改善アプローチに最も合致するやり取りのパターンはどれですか。",
+    "questionJa": "プロダクトマネージャーから、ややあいまいな機能の要望が届きました。開発者は、これをClaude Codeに実装させる前に、手戻りを減らしたいと考えています。あいまいな要件に対して推奨される反復的改善のアプローチに最もよく合う、やり取りのパターンはどれですか。",
     "choicesJa": [
-      "コードを書く前に、曖昧な部分についてClaudeに確認質問をさせる（インタビューパターン）",
-      "Claudeにすぐ最善の推測で実装させ、PRを開いた後にのみ反復させる",
-      "Claudeがレビューなしで全ての意思決定を単独で行えるよう`--permission-mode bypassPermissions`を設定する",
-      "Claudeが確実にすぐファイル編集を始めるよう`tool_choice: any`を強制する"
+      "コードを書く前に、あいまいな部分についてClaudeに確認の質問をさせる（インタビューパターン）",
+      "Claudeにすぐ最善の推測で実装させ、PRを開いたあとでだけ反復する",
+      "Claudeがレビューなしにすべての判断を単独でできるように、`--permission-mode bypassPermissions`を設定する",
+      "Claudeがすぐにファイルの編集を始められるように、`tool_choice: any`を強制する"
     ],
     "answer": 0,
-    "explanation": "曖昧な要求に対しては、実装前にClaudeが確認質問を行う「インタビューパターン」が推奨されるアプローチで、手戻りを減らします。いきなり実装してPR後に修正するのは手戻りコストが大きく非効率です。bypassPermissionsは許可モードの話で要求の曖昧さ解消とは無関係です。tool_choice: anyはツール呼び出しを強制するAPI機能であり、要求の明確化とは関係ありません。",
+    "explanation": "あいまいな要望には、実装の前にClaudeが確認の質問をする「インタビューパターン」が推奨されるアプローチで、手戻りを減らせます。いきなり実装してPRのあとで直すのは、手戻りのコストが大きく非効率です。`bypassPermissions`は権限モードの話で、要望のあいまいさを解消することとは関係ありません。`tool_choice: any`はツール呼び出しを強制するAPIの機能で、要望を明確にすることとは関係ありません。",
     "tags": [
       "interview-pattern",
       "iterative-refinement",
@@ -1534,15 +1534,15 @@
       "Send every bug in its own message and its own fresh session to avoid any possible cross-contamination",
       "Send the three independent issues together in one message and handle the two interacting issues in separate sequential messages"
     ],
-    "questionJa": "ある開発者が、大きなPRで見つかった5つのバグを修正するようClaude Codeに指示しています。そのうち2つのバグは同じ関数内にあり、一方の修正がもう一方を簡単に壊しかねない（相互作用する課題）一方、残りの3つは共有ロジックのない無関係なファイルにあります（独立した課題）。反復的改善のガイダンスによれば、これらの依頼をどのように構成するのが推奨されますか。",
+    "questionJa": "開発者が、大きなPRで見つかった5つのバグを直すよう、Claude Codeに指示しようとしています。このうち2つのバグは同じ関数の中にあり、片方を直すともう片方が壊れやすい状態です（相互に影響する問題）。残りの3つは、共通のロジックがない無関係なファイルにあります（独立した問題）。反復的改善のガイダンスにしたがうと、推奨される依頼の組み立て方はどれですか。",
     "choicesJa": [
-      "Claude Codeはどのようなバッチサイズでも等しくうまく処理できるため、関係性に関わらず5つのバグ全てを1つのメッセージでまとめて送る",
-      "相互作用する2つの課題は、Claudeがその相互作用を考慮できるよう1つのメッセージにまとめて送り、独立した3つの課題は個別のメッセージで順番に処理する",
-      "相互汚染の可能性を避けるため、全てのバグをそれぞれ個別のメッセージと個別の新規セッションで送る",
-      "独立した3つの課題を1つのメッセージにまとめ、相互作用する2つの課題は個別の連続したメッセージで処理する"
+      "Claude Codeはどんなまとまりの大きさでも同じようにうまく処理できるので、関係の有無にかかわらず、5つのバグを1つのメッセージにまとめて送る",
+      "相互に影響する2つの問題は、Claudeがその関係を踏まえて考えられるように1つのメッセージで送り、独立した3つの問題は、別々のメッセージで順番に処理する",
+      "どんな相互汚染も避けるために、すべてのバグを、それぞれ別のメッセージ、かつ新しいセッションで送る",
+      "独立した3つの問題を1つのメッセージにまとめて送り、相互に影響する2つの問題は、別々のメッセージで順番に処理する"
     ],
     "answer": 1,
-    "explanation": "相互に影響し合う課題（interacting issues）は同じメッセージ内で一緒に伝えることで、Claudeがそれらの相互作用を考慮しながら修正できます。一方、互いに独立した課題（independent issues）は個別に順番に処理する方が、各修正の検証がしやすく安全です。全てを無条件に一括送信するのは相互作用のない課題まで一緒くたにしてしまい非効率です。全て個別セッションに分けるのは相互作用する課題の文脈共有を失わせてしまいます。独立課題をまとめて相互作用課題を分離するのは推奨パターンと逆です。",
+    "explanation": "相互に影響し合う問題（interacting issues）は、同じメッセージでまとめて伝えると、Claudeがその関係を踏まえながら直せます。一方、互いに独立した問題（independent issues）は、別々に順番に処理するほうが、修正ごとに確認しやすく安全です。すべてを無条件にまとめて送ると、関係のない問題まで一緒にしてしまい、非効率です。すべてを別々のセッションに分けると、相互に影響する問題の間で文脈が共有されなくなります。独立した問題をまとめて、相互に影響する問題を分けるのは、推奨されるパターンと逆です。",
     "tags": [
       "iterative-refinement",
       "interacting-issues",
@@ -1561,15 +1561,15 @@
       "Run the new prompt against a small representative sample first to catch prompt or schema issues cheaply, before committing to the full overnight batch run",
       "Convert the prompt to use `tool_choice: any` first, since Batches API silently rejects prompts using forced tool choice"
     ],
-    "questionJa": "あるプラットフォームチームが新しい抽出プロンプトを書き終えたばかりで、コストを節約するために夜間にMessage Batches APIを使って20万件のアーカイブ文書に対してそれを実行する予定です。本番の全件バッチを投入する前に、試験のガイダンスが推奨する手順はどれで、それはなぜですか。",
+    "questionJa": "プラットフォームチームが、新しい抽出プロンプトを書き終えました。コストを抑えるため、Message Batches APIを使って、夜間に20万件のアーカイブ文書へ実行する予定です。全件のジョブを投入する前に、試験のガイダンスが推奨する手順とその理由の組み合わせはどれですか。",
     "choicesJa": [
-      "50%の割引はコーパス全体を1つのジョブで送信した場合にのみ適用されるため、20万件のバッチをすぐに全件投入する",
-      "事前チェックを省略し、バッチ完了後に問題を修正するvalidation-retryループに頼る",
-      "本番の夜間バッチ実行にコミットする前に、まず小規模な代表サンプルに対して新しいプロンプトを実行し、プロンプトやスキーマの問題を安価なうちに発見する",
-      "Batches APIは強制されたtool_choiceを使うプロンプトを黙って拒否するため、まずプロンプトを`tool_choice: any`を使うように変換する"
+      "50%の割引は、コーパス全体を1つのジョブで送った場合にしか適用されないので、20万件のバッチをすぐに投入する。",
+      "事前チェックはせず、バッチが完了したあとに、validation-retryループで問題を修正する。",
+      "全件の夜間バッチを実行する前に、まず小さな代表サンプルで新しいプロンプトを実行し、プロンプトやスキーマの問題を安いうちに見つける。",
+      "Batches APIは、ツール選択を強制するプロンプトを黙って拒否するので、先にプロンプトを`tool_choice: any`を使う形に変換する。"
     ],
     "answer": 2,
-    "explanation": "大規模バッチ実行の前に、小規模な代表サンプルに対してまずプロンプトを検証し、プロンプトやスキーマの問題を安価な段階で発見してから本番の大規模バッチを投入するのが推奨される手順（pre-batch QA）です。全件を即座に投入するのは、プロンプトに欠陥があった場合に高コストなやり直しを招きます。validation-retryループは個々のレスポンスの検証エラーに対処するものであり、プロンプト設計そのものの欠陥を防ぐ事前検証の代わりにはなりません。tool_choice: anyに関する制約は実在しない誤った前提です。",
+    "explanation": "大規模なバッチを実行する前に、小さな代表サンプルでプロンプトを検証し、プロンプトやスキーマの問題を安い段階で見つけてから本番の大規模バッチを投入するのが、推奨される手順です（pre-batch QA）。全件をすぐに投入すると、プロンプトに欠陥があった場合に、高くつくやり直しになります。validation-retryループは、個々のレスポンスの検証エラーに対処するもので、プロンプト設計そのものの欠陥を防ぐ事前検証の代わりにはなりません。`tool_choice: any`に関する制約は、実在しない誤った前提です。",
     "tags": [
       "pre-batch-qa",
       "batches-api",
@@ -1588,15 +1588,15 @@
       "`--json-schema '{\"type\":\"string\"}'`",
       "`--output-format text`"
     ],
-    "questionJa": "あるマルチエージェントリサーチシステム用のCIスクリプトが、Claude Codeをヘッドレスで起動し、最終的な回答を、後段でのJSONパースを一切必要とせず、人間が読めるプレーンテキストとして直接Slack通知にパイプする必要があります。最も適した出力形式フラグはどれですか。",
+    "questionJa": "マルチエージェントのリサーチシステム用のCIスクリプトが、Claude Codeをヘッドレスで起動します。最終的な回答は、人が読めるプレーンテキストのままSlack通知に直接パイプしたく、後段でJSONをパースする必要はありません。最も適した出力形式のフラグはどれですか。",
     "choicesJa": [
       "`--output-format stream-json`",
-      "`--output-format json`にしてからテキストフィールドを手動で抽出する",
+      "`--output-format json`を指定し、あとでtextフィールドを手で取り出す",
       "`--json-schema '{\"type\":\"string\"}'`",
       "`--output-format text`"
     ],
     "answer": 3,
-    "explanation": "後段でJSON解析が不要な、人間可読なプレーンテキストが欲しいだけの場合は`--output-format text`が最も適切でシンプルです。stream-jsonは逐次イベントのJSON形式で、そのままSlack通知には向きません。output-format jsonを使ってから手動でtextフィールドを抜き出すのは不必要な追加処理です。json-schemaは構造化出力のスキーマ指定用でありプレーンテキスト出力の要件には合致しません。",
+    "explanation": "後段でJSONの解析が要らず、人が読めるプレーンテキストがほしいだけなら、`--output-format text`が最も適切でシンプルです。stream-jsonは、順次のイベントをJSONで流す形式なので、そのままSlack通知に使うには向きません。`--output-format json`にしてからtextフィールドを手で取り出すのは、不要な手間が増えるだけです。`--json-schema`は構造化出力のスキーマを指定するもので、プレーンテキスト出力という要件には合いません。",
     "tags": [
       "output-format",
       "headless",
@@ -1616,19 +1616,19 @@
       "Turn every convention into a skill and invoke it manually for each task",
       "Split the conventions by topic into multiple files under `.claude/rules/`"
     ],
-    "questionJa": "複数のパッケージをまとめたモノレポで、ルートのCLAUDE.mdが1500行になった。フロントエンドを触るときにもデータベースの規約が読み込まれ、指示が守られにくくなっている。整理の方法として適切なものはどれか。",
+    "questionJa": "複数のパッケージを含むモノレポで、ルートのCLAUDE.mdが1,500行まで膨らみました。フロントエンドの作業をしているときもデータベースの規約が読み込まれ、指示が守られないことが増えています。整理するための適切な方法はどれですか。2つ選んでください。",
     "choicesJa": [
-      "すべての規約を各メンバーの`~/.claude/CLAUDE.md`に移す",
-      "規約をCLAUDE.mdから削除し、コードレビューで指摘するようにする",
-      "各パッケージのCLAUDE.mdから`@import`で、そのパッケージに必要な規約ファイルだけを読み込む",
-      "すべての規約をスキルにして、作業のたびに手で呼び出す",
-      "規約をテーマ別に分けて、`.claude/rules/`配下の複数のファイルにする"
+      "すべての規約を、各メンバーの`~/.claude/CLAUDE.md`に移す",
+      "規約をCLAUDE.mdから削除し、違反はコードレビューで見つける",
+      "各パッケージのCLAUDE.mdで`@import`を使い、そのパッケージに必要な規約ファイルだけを読み込む",
+      "すべての規約をスキルにして、作業のたびに手動で呼び出す",
+      "規約をテーマ別に複数のファイルに分けて、`.claude/rules/`の下に置く"
     ],
     "answer": [
       2,
       4
     ],
-    "explanation": "`@import`で各パッケージに必要な規約だけを読み込む方法と、`.claude/rules/`にテーマ別のファイルとして分ける方法が、肥大化したCLAUDE.mdを整理する正しいやり方です。どちらも、作業に関係のない規約で大事な指示が埋もれるのを防げます。「各メンバーの`~/.claude/CLAUDE.md`に移す」は、ユーザー個人の設定なのでチームに共有されなくなります。「CLAUDE.mdから消してレビューで指摘する」は、Claudeに規約が伝わらなくなります。「すべてスキルにする」も誤りで、常に守るべき規約はCLAUDE.mdやルールに置き、スキルは必要なときだけ呼び出す作業に使います。",
+    "explanation": "`@import`で各パッケージに必要な規約だけを読み込む方法と、`.claude/rules/`にテーマ別のファイルとして分ける方法が、膨らんだCLAUDE.mdを整理する正しいやり方です。どちらも、作業に関係のない規約に大事な指示が埋もれるのを防げます。各メンバーの`~/.claude/CLAUDE.md`に移す方法は、ユーザー個人の設定なのでチームに共有されなくなります。規約をCLAUDE.mdから消してレビューで指摘する方法では、Claudeに規約が伝わらなくなります。すべてをスキルにする方法も誤りで、常に守るべき規約はCLAUDE.mdやルールに置き、スキルは必要なときだけ呼び出す作業に使います。",
     "tags": [
       "claude-md",
       "imports",
@@ -1648,19 +1648,19 @@
       "`allowed-tools` restricted to read-only tools",
       "`model` set to a larger model"
     ],
-    "questionJa": "コードベース全体を分析するスキルを作成した。実行すると大量の分析結果がメインの会話に流れ込み、その後の作業の質が落ちる。また、分析の途中で誤ってファイルを書き換えたこともあった。SKILL.mdのフロントマターに追加する設定として適切なものはどれか。",
+    "questionJa": "コードベース全体を分析するスキルを作りました。実行すると、大量の分析結果がメインの会話にあふれ出し、その後の作業の質が下がります。また、ある実行では、分析の途中で誤ってファイルを書き換えてしまいました。SKILL.mdのfrontmatterに追加すべき設定はどれですか。2つ選んでください。",
     "choicesJa": [
       "`argument-hint`",
       "`context: fork`",
       "`paths`",
-      "読み取り系のツールだけに絞った`allowed-tools`",
-      "より大きなモデルを指定する`model`"
+      "読み取り専用のツールだけに絞った`allowed-tools`",
+      "より大きなモデルを指定した`model`"
     ],
     "answer": [
       1,
       3
     ],
-    "explanation": "`context: fork`を指定すると、スキルは分離されたサブエージェントのコンテキストで実行され、大量の分析結果でメインの会話を散らかしません。`allowed-tools`を読み取り系のツールに絞ると、分析中の誤ったファイル書き換えを防げます。`argument-hint`は呼び出し時の引数の案内を表示するための設定で、この問題とは関係ありません。`paths`はどのファイルを扱うときにスキルを自動で使うかを指定する設定です。`model`で大きなモデルに変えても、会話が散らかる問題も書き換えの問題も解決しません。",
+    "explanation": "`context: fork`を指定すると、スキルは分離されたサブエージェントのコンテキストで実行されるので、大量の分析結果でメインの会話が散らかりません。`allowed-tools`を読み取り専用のツールに絞れば、分析中に誤ってファイルを書き換えることを防げます。`argument-hint`は、呼び出すときに引数の案内を表示するための設定で、この問題とは関係ありません。`paths`は、どのファイルを扱うときにスキルを自動で使うかを指定する設定です。`model`をより大きなモデルにしても、会話が散らかる問題も、書き換えの問題も解決しません。",
     "tags": [
       "skills",
       "context-fork",
@@ -1680,19 +1680,19 @@
       "Adding a new feature where there are several options for the database design",
       "Fixing a typo in on-screen text"
     ],
-    "questionJa": "開発者が、Claude Codeでどの作業を直接実行ではなくplan modeから始めるべきかを判断している。次の作業のうち、plan modeから始めるべきものはどれか。",
+    "questionJa": "開発者が、Claude Codeで、どの作業を直接実行ではなくプランモードから始めるかを判断しようとしています。次の作業のうち、プランモードから始めるべきものはどれですか。2つ選んでください。",
     "choicesJa": [
-      "ログイン方式の変更（30以上のファイルに影響し、実装方法の候補が2つある）",
-      "エラーの出ている行がはっきりしている、1ファイルだけの不具合の修正",
-      "入力欄に、日付の形式チェックを1つ追加する作業",
-      "データベースの設計に複数の選択肢がある新機能の追加",
-      "画面の文言の誤字の修正"
+      "認証方式の変更（30を超えるファイルに影響し、実装方法の候補が2つある）",
+      "失敗している行がすでにはっきりしている、1つのファイル内のバグの修正",
+      "入力欄に日付形式の検証を1つ追加する",
+      "データベース設計にいくつか選択肢がある新機能の追加",
+      "画面上の文言の誤字の修正"
     ],
     "answer": [
       0,
       3
     ],
-    "explanation": "影響範囲が大きい、実装方法の候補が複数ある、設計の判断が必要、といった作業はplan modeから始め、方針を固めてから実装に入ります。ログイン方式の変更（30以上のファイル・候補が2つ）と、DB設計に選択肢がある新機能の追加がこれに当たります。原因の行が分かっている1ファイルだけの不具合修正、日付チェックを1つ追加する作業、誤字の修正は、範囲がはっきりした小さな変更なので、直接実行で十分です。",
+    "explanation": "影響範囲が大きい、実装方法の候補が複数ある、設計の判断が必要、といった作業は、プランモードから始めて方針を固めてから実装に入ります。認証方式の変更（30を超えるファイル、候補が2つ）と、データベース設計に選択肢がある新機能の追加が、これに当たります。原因の行が分かっている1ファイルだけのバグ修正、日付チェックを1つ追加する作業、誤字の修正は、範囲がはっきりした小さな変更なので、直接実行で十分です。",
     "tags": [
       "plan-mode",
       "workflow"
@@ -1711,19 +1711,19 @@
       "Have a person read the review output and manually copy it into comments",
       "Use `--output-format json` together with `--json-schema` to produce results in a fixed structure"
     ],
-    "questionJa": "CIでClaude Codeにプルリクエストをレビューさせ、その結果をプログラムで読み取って、プルリクエストの該当行にコメントとして自動投稿したい。必要な設定として正しいものはどれか。",
+    "questionJa": "CIでClaude Codeにプルリクエストをレビューさせ、その結果をプログラムで読み取って、各プルリクエストの該当行にインラインコメントとして自動で投稿したいと考えています。必要な設定はどれですか。2つ選んでください。",
     "choicesJa": [
-      "`-p`（`--print`）フラグをつけて、対話なしで実行する",
+      "`-p`（`--print`）フラグを付けて、非対話で実行する",
       "環境変数`CLAUDE_HEADLESS=true`を設定する",
-      "`--batch`オプションをつける",
-      "レビュー結果を人が読んで、手でコメントに書き写す",
-      "`--output-format json`と`--json-schema`で、決まった構造の結果を出力させる"
+      "`--batch`オプションを追加する",
+      "人がレビュー結果を読んで、手作業でコメントに写す",
+      "`--output-format json`と`--json-schema`を併用して、決まった構造で結果を出力させる"
     ],
     "answer": [
       0,
       4
     ],
-    "explanation": "CIでは`-p`（`--print`）で対話なしに実行し、`--output-format json`と`--json-schema`でプログラムが読み取れる決まった形の結果を出させます。これで該当行へのコメント投稿を自動化できます。`CLAUDE_HEADLESS=true`という環境変数や`--batch`オプションは存在しません（公式の例題でも誤答として登場します）。人が読んで書き写す方法は、自動化になっていません。",
+    "explanation": "CIでは、`-p`（`--print`）で非対話で実行し、`--output-format json`と`--json-schema`で、プログラムが読み取れる決まった形の結果を出力させます。これで、該当行へのコメント投稿を自動化できます。環境変数`CLAUDE_HEADLESS=true`も`--batch`オプションも存在しません（公式の例題でも誤答として登場します）。人が読んで書き写す方法は、自動化になっていません。",
     "tags": [
       "ci-cd",
       "headless",
@@ -1742,15 +1742,15 @@
       "In the root `CLAUDE.md`, under a heading that describes the command",
       "In a `commands` array inside the project's `.claude/settings.json`"
     ],
-    "questionJa": "チームで、マージ済みのプルリクエストからリリースノートの下書きを作る `/changelog` というカスタムのスラッシュコマンドを用意したい。開発者がリポジトリをクローンまたはプルした時点で、全員が自動的に使えるようにしたい。このコマンドはどこに作るべきか。",
+    "questionJa": "チームで、マージ済みのプルリクエストからリリースノートの下書きを作る、`/changelog`というカスタムスラッシュコマンドがほしいと考えています。リポジトリをクローンまたはプルした時点で、すべての開発者が自動的に使えるようにしたいところです。このコマンドを作る場所はどれですか。",
     "choicesJa": [
-      "各開発者の `~/.claude/commands/` ディレクトリ",
-      "リポジトリのルートにある `.claude/commands/` ディレクトリ",
-      "ルートの `CLAUDE.md` の中に、コマンドの内容を説明する見出しを作って書く",
-      "プロジェクトの `.claude/settings.json` の中の `commands` 配列"
+      "各開発者の`~/.claude/commands/`ディレクトリ",
+      "リポジトリのルートにある`.claude/commands/`ディレクトリ",
+      "ルートの`CLAUDE.md`の中の、コマンドを説明する見出しの下",
+      "プロジェクトの`.claude/settings.json`の中にある`commands`配列"
     ],
     "answer": 1,
-    "explanation": "プロジェクトの `.claude/commands/` に置いたコマンドはリポジトリと一緒にバージョン管理されるので、クローンやプルをした全員がそのまま使えます。`~/.claude/commands/` はユーザー個人の場所で、リポジトリに入らないため、チームには共有されません。`CLAUDE.md` は常に読み込まれる指示を書くファイルで、スラッシュコマンドを定義する場所ではありません。`.claude/settings.json` に `commands` という設定項目は存在しません。なお、現在の Claude Code ではカスタムコマンドがスキルに統合されていて、`.claude/skills/` に置いても同じようにチームで共有できます。既存の `.claude/commands/` もそのまま使えます。",
+    "explanation": "プロジェクトの`.claude/commands/`に置いたコマンドは、リポジトリと一緒にバージョン管理されるので、クローンやプルをした全員がそのまま使えます。`~/.claude/commands/`はユーザー個人の場所で、リポジトリには入らないため、チームには共有されません。`CLAUDE.md`は常に読み込まれる指示を書くファイルで、スラッシュコマンドを定義する場所ではありません。`.claude/settings.json`に`commands`という設定項目はありません。なお、現在のClaude Codeではカスタムコマンドがスキルに統合されていて、`.claude/skills/`に置いても同じようにチームで共有できます。既存の`.claude/commands/`もそのまま使えます。",
     "tags": [
       "slash-commands",
       "project-scope",
@@ -1769,15 +1769,15 @@
       "Use direct execution with detailed upfront instructions that specify exactly how every file should be changed",
       "Start with direct execution, and switch to plan mode only if the changes turn out to be more complex than expected"
     ],
-    "questionJa": "大規模なバックエンドサービス全体で使っている ORM を入れ替える作業を、Claude Code に依頼する。変更は60以上のファイルに及ぶ。トランザクションの扱い方、既存のスキーマの移行方法、移行期間中に新旧の ORM を併用するかどうか、といった設計上の判断もまだ決まっていない。最も適切な進め方はどれか。",
+    "questionJa": "チームが、大規模なバックエンドサービス全体で使っているORMを入れ替える作業を、Claude Codeに頼みます。変更は60を超えるファイルに及びます。設計の判断もいくつか決まっていません。トランザクションをどう扱うか、既存のスキーマをどう移行するか、移行期間中に新旧のORMを併用するかどうか、の3つです。最も適切な進め方はどれですか。",
     "choicesJa": [
-      "プランモードで始め、コードベースを調べて依存関係を把握し、実装計画を固めてから変更に入る",
-      "直接実行で1ファイルずつ少しずつ変更し、進めながらやり方を決めていく",
-      "すべてのファイルの変え方を細かく指定した事前の指示を渡して、直接実行する",
-      "直接実行で始め、思ったより複雑だと分かった時点でプランモードに切り替える"
+      "プランモードで始め、コードベースを調べて依存関係を把握し、実装計画を固めてから変更に着手する",
+      "直接実行で、1ファイルずつ少しずつコードを変更し、進めながらやり方を決める",
+      "直接実行で、すべてのファイルをどう変更するかを細かく指定した指示を、先に渡す",
+      "直接実行で始め、変更が思ったより複雑だと分かった場合にだけ、プランモードに切り替える"
     ],
     "answer": 0,
-    "explanation": "多数のファイルに影響し、設計上の判断も残っている大きな変更は、プランモードで始めるのが正解です。先にコードベースを調べて依存関係を把握し、方針を決めてから実装すれば、途中で大きな手戻りが起きるのを防げます。直接実行で少しずつ進める方法は、設計判断を後回しにするため、途中で方針が食い違って手戻りが増えます。細かい事前の指示を渡して直接実行する方法は、コードベースを調べる前に変更内容を決めてしまうので、調べて初めて分かる依存関係に対応できません。直接実行で始めて複雑になったら切り替える方法は、複雑になることが最初から分かっている作業では、無駄な手戻りを生むだけです。",
+    "explanation": "多数のファイルに影響し、設計上の判断も残っている大きな変更は、プランモードで始めるのが正解です。先にコードベースを調べて依存関係を把握し、方針を決めてから実装すれば、途中で大きな手戻りが起きるのを防げます。直接実行で少しずつ進める方法は、設計判断を後回しにするため、途中で方針が食い違って手戻りが増えます。細かい事前の指示を渡して直接実行する方法は、コードベースを調べる前に変更内容を決めてしまうので、調べて初めて分かる依存関係に対応できません。直接実行で始めて、複雑になったら切り替える方法は、複雑になることが最初から分かっている作業では、無駄な手戻りを生むだけです。",
     "tags": [
       "plan-mode",
       "large-refactor"
@@ -1795,15 +1795,15 @@
       "Create a rule file in `.claude/rules/` with `paths` set to a glob pattern such as `**/*.stories.tsx`",
       "Place a `CLAUDE.md` containing the Storybook conventions in every directory that has story files"
     ],
-    "questionJa": "フロントエンドのモノレポでは、Storybook のファイル（`*.stories.tsx`）がそれぞれのコンポーネントの隣に置かれ、何十ものディレクトリに散らばっている。チームには、ストーリーの名前のつけ方や使うモックデータのヘルパーなど、このファイル専用の規約がある。ファイルがどこにあっても、Claude Code がストーリーのファイルを編集するときには、この規約を自動で当てはめてほしい。最も保守しやすい方法はどれか。",
+    "questionJa": "フロントエンドのモノレポで、Storybookのファイル（`*.stories.tsx`）が、それぞれのコンポーネントの隣に置かれ、何十ものディレクトリに散らばっています。チームには、ストーリーの名前のつけ方や、使うモックデータのヘルパーなど、これらのファイル専用の規約があります。ファイルがどこにあっても、Claude Codeがストーリーのファイルを編集するときは、この規約を自動で適用させたいと考えています。最も保守しやすい方法はどれですか。",
     "choicesJa": [
-      "ルートの `CLAUDE.md` に「Storybook の規約」という見出しを作ってまとめ、正しいファイルに当てはめるのは Claude に任せる",
-      "規約をスキルにして、ストーリーを作業するときに開発者が呼び出す",
-      "`.claude/rules/` にルールファイルを作り、`paths` に `**/*.stories.tsx` のような glob パターンを書く",
-      "ストーリーのファイルがあるすべてのディレクトリに、Storybook の規約を書いた `CLAUDE.md` を置く"
+      "ルートの`CLAUDE.md`に「Storybookの規約」というセクションを追加し、正しいファイルに適用するのはClaudeに任せる",
+      "規約をスキルにまとめ、開発者がストーリーを扱うたびに呼び出す",
+      "`.claude/rules/`にルールファイルを作り、`paths`に`**/*.stories.tsx`のようなglobパターンを指定する",
+      "ストーリーのファイルがあるすべてのディレクトリに、Storybookの規約を書いた`CLAUDE.md`を置く"
     ],
     "answer": 2,
-    "explanation": "`.claude/rules/` のルールファイルに `paths` で glob パターンを書くと、パターンに合うファイルを扱うときだけ、その規約が自動で読み込まれます。ファイルがどのディレクトリにあっても1つのファイルで管理できるので、最も保守しやすい方法です。ルートの `CLAUDE.md` に見出しでまとめる方法は、どのファイルに当てはめるかを Claude の推測に任せることになり確実ではないうえ、関係のない作業でも常に読み込まれます。スキルは呼び出されたときだけ使われるので、自動で確実に当てはめることはできません。すべてのディレクトリに `CLAUDE.md` を置く方法は、同じ内容のファイルを何十も管理することになり、ディレクトリが増えるたびに追加も必要です。",
+    "explanation": "`.claude/rules/`のルールファイルで`paths`にglobパターンを指定すると、パターンに合うファイルを扱うときだけ、その規約が自動で読み込まれます。ファイルがどのディレクトリにあっても1つのファイルで管理できるので、最も保守しやすい方法です。ルートの`CLAUDE.md`にセクションでまとめる方法は、どのファイルに適用するかをClaudeの推測に任せることになるので確実ではなく、関係のない作業でも常に読み込まれます。スキルは呼び出されたときだけ使われるので、自動で確実に適用することはできません。すべてのディレクトリに`CLAUDE.md`を置く方法は、同じ内容のファイルを何十も管理することになり、ディレクトリが増えるたびに追加も必要です。",
     "tags": [
       "rules",
       "path-scoped",
@@ -1822,15 +1822,15 @@
       "Run the command with the `-p` (`--print`) flag",
       "Redirect standard input from `/dev/null` so that Claude Code has nothing to wait for"
     ],
-    "questionJa": "毎晩決まった時刻に動くジョブで、`claude \"Summarize today's failing test logs and write the summary to report.md\"`（今日失敗したテストのログを要約して report.md に書く）を実行している。ところがジョブは終わらず、タイムアウトするまで止まったままになる。ログを見ると、Claude Code が対話の入力を待っていた。正しい直し方はどれか。",
+    "questionJa": "毎晩決まった時刻に動くジョブが、`claude \"Summarize today's failing test logs and write the summary to report.md\"`（今日失敗したテストのログを要約して、その要約をreport.mdに書く）を実行します。ところが、ジョブは終わらず、タイムアウトするまで止まったままです。ログを見ると、Claude Codeが対話的な入力を待っていました。正しい直し方はどれですか。",
     "choicesJa": [
-      "コマンドに `--no-input` フラグをつける",
-      "コマンドを実行する前に、環境変数 `CLAUDE_CODE_NONINTERACTIVE=1` を設定する",
-      "`-p`（`--print`）フラグをつけてコマンドを実行する",
-      "標準入力を `/dev/null` からリダイレクトして、Claude Code が入力を待たないようにする"
+      "コマンドに`--no-input`フラグを付ける",
+      "コマンドを実行する前に、環境変数`CLAUDE_CODE_NONINTERACTIVE=1`を設定する",
+      "コマンドを`-p`（`--print`）フラグ付きで実行する",
+      "標準入力を`/dev/null`からリダイレクトして、Claude Codeが待つものがない状態にする"
     ],
     "answer": 2,
-    "explanation": "`-p`（`--print`）フラグをつけると、Claude Code は対話モードに入らず、結果を出力して終了します。CI や定期実行のジョブのように、人が入力できない環境で Claude Code を動かすときの正しい方法です。`--no-input` というフラグや `CLAUDE_CODE_NONINTERACTIVE` という環境変数は、Claude Code には存在しません（公式の CLI リファレンスにも載っていません）。標準入力を `/dev/null` からリダイレクトする方法は Unix の回避策にすぎず、Claude Code を非対話モードで動かす公式の方法ではないので、確実な解決になりません。",
+    "explanation": "`-p`（`--print`）フラグを付けると、Claude Codeは対話モードに入らず、結果を出力して終了します。CIや定期実行のジョブのように、人が入力できない環境でClaude Codeを動かすときの正しい方法です。`--no-input`というフラグも`CLAUDE_CODE_NONINTERACTIVE`という環境変数も、Claude Codeには存在しません（公式のCLIリファレンスにも載っていません）。標準入力を`/dev/null`からリダイレクトする方法はUnixの回避策にすぎず、Claude Codeを非対話モードで動かす公式の方法ではないので、確実な解決にはなりません。",
     "tags": [
       "ci-cd",
       "headless",

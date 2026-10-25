@@ -3,8 +3,8 @@
     "id": "fc-agentic-001",
     "domain": "agentic",
     "term": "Agentic loop pattern",
-    "termJa": "エージェント型ループの基本パターン",
-    "definition": "プロンプト送信→toolsを渡す→stop_reasonを確認→ツール実行→tool_resultを返す、を繰り返す基本ループ。ループの終了は必ずstop_reasonのシグナルで判断し、テキスト内容（「done」等の自然言語）で判断してはならない。",
+    "termJa": "エージェントループの基本パターン",
+    "definition": "プロンプトを送り、toolsを渡し、stop_reasonを確認し、ツールを実行してtool_resultを返す。この流れを繰り返す基本のループである。ループを終えるかどうかは、必ずstop_reasonのシグナルで判断する。「done」のような自然言語のテキストの内容で判断してはならない。",
     "tags": [
       "agentic-loop"
     ]
@@ -13,8 +13,8 @@
     "id": "fc-agentic-002",
     "domain": "agentic",
     "term": "stop_reason: tool_use",
-    "termJa": "停止理由：ツール使用",
-    "definition": "モデルがツールを呼び出したいことを示すstop_reason。エージェントはtool_use blockを実行し、tool_resultを返してループを継続する。",
+    "termJa": "stop_reason: tool_use（ツールの呼び出し）",
+    "definition": "モデルがツールを呼び出したいことを示すstop_reason。エージェントはtool_useブロックを実行し、tool_resultを返してループを続ける。",
     "tags": [
       "stop_reason"
     ]
@@ -23,8 +23,8 @@
     "id": "fc-agentic-003",
     "domain": "agentic",
     "term": "stop_reason: end_turn",
-    "termJa": "停止理由：応答完了",
-    "definition": "モデルの応答が完了したことを示すstop_reason。ツール呼び出しは不要で、テキストをそのままユーザーに提示してよい（ループ終了）。",
+    "termJa": "stop_reason: end_turn（応答の完了）",
+    "definition": "モデルの応答が完了したことを示すstop_reason。ツールの呼び出しは不要で、テキストをそのままユーザーに見せてよい（ループの終了）。",
     "tags": [
       "stop_reason"
     ]
@@ -33,8 +33,8 @@
     "id": "fc-agentic-004",
     "domain": "agentic",
     "term": "stop_reason: stop_sequence",
-    "termJa": "停止理由：ストップシーケンス一致",
-    "definition": "カスタムのstop sequence文字列にマッチしたことを示すstop_reason。どのstop sequenceがマッチしたかを確認する必要がある。",
+    "termJa": "stop_reason: stop_sequence（ストップシーケンスに一致）",
+    "definition": "カスタムのstop sequence文字列に一致したことを示すstop_reason。どのstop sequenceに一致したのかを確認する必要がある。",
     "tags": [
       "stop_reason"
     ]
@@ -43,8 +43,8 @@
     "id": "fc-agentic-005",
     "domain": "agentic",
     "term": "stop_reason: pause_turn",
-    "termJa": "停止理由：ターン一時停止",
-    "definition": "web_search等のサーバーサイドツールのループが反復上限に達した場合などに返る。応答をそのまま送り返せばループは継続する（エラーではない）。",
+    "termJa": "stop_reason: pause_turn（ターンの一時停止）",
+    "definition": "web_searchなどのサーバーサイドツールのループが、反復の上限に達したときなどに返る。応答をそのまま送り返せばループが続く（エラーではない）。",
     "tags": [
       "stop_reason"
     ]
@@ -53,8 +53,8 @@
     "id": "fc-agentic-006",
     "domain": "agentic",
     "term": "stop_reason: max_tokens",
-    "termJa": "停止理由：最大トークン到達",
-    "definition": "出力がmax_tokensで打ち切られたことを示す。応答が途中で切れている可能性があり、継続処理が必要になる場合がある。",
+    "termJa": "stop_reason: max_tokens（最大トークン数に到達）",
+    "definition": "出力がmax_tokensで打ち切られたことを示す。応答が途中で切れている可能性があり、その場合は続きの処理が必要になることがある。",
     "tags": [
       "stop_reason"
     ]
@@ -63,8 +63,8 @@
     "id": "fc-agentic-007",
     "domain": "agentic",
     "term": "stop_reason: refusal",
-    "termJa": "停止理由：拒否",
-    "definition": "安全性上の理由でモデルが応答を拒否したことを示すstop_reason。ループはここで終了する。",
+    "termJa": "stop_reason: refusal（拒否）",
+    "definition": "安全上の理由でモデルが応答を拒否したことを示すstop_reason。ループはここで終わる。",
     "tags": [
       "stop_reason"
     ]
@@ -73,8 +73,8 @@
     "id": "fc-agentic-008",
     "domain": "agentic",
     "term": "stop_reason: model_context_window_exceeded",
-    "termJa": "停止理由：コンテキスト上限到達",
-    "definition": "max_tokensに達する前にコンテキストウィンドウの上限に達したことを示す。応答自体は有効だが内容は途中で打ち切られている。",
+    "termJa": "stop_reason: model_context_window_exceeded（コンテキスト上限に到達）",
+    "definition": "max_tokensに達する前に、コンテキストウィンドウの上限に達したことを示す。応答そのものは有効だが、内容は途中で打ち切られている。",
     "tags": [
       "stop_reason"
     ]
@@ -83,8 +83,8 @@
     "id": "fc-agentic-009",
     "domain": "agentic",
     "term": "stop_details (on refusal)",
-    "termJa": "拒否時の詳細情報",
-    "definition": "refusal時に付与される詳細情報。typeは常に\"refusal\"、categoryは\"cyber\"/\"bio\"/null、explanationは人間向けの説明文でパース用途には使わない。Opus 4.7以降が必要で、refusal以外のstop_reasonではnullになる。",
+    "termJa": "stop_details（refusalのときの詳細情報）",
+    "definition": "refusalのときに付く詳細情報。typeは常に\"refusal\"で、categoryは\"cyber\"、\"bio\"、nullのいずれか。explanationは人向けの説明文なので、パースには使わない。Opus 4.7以降が必要で、refusal以外のstop_reasonではnullになる。",
     "tags": [
       "stop_reason",
       "refusal"
@@ -94,8 +94,8 @@
     "id": "fc-agentic-010",
     "domain": "agentic",
     "term": "Mixed content in one response",
-    "termJa": "1応答内のテキスト・ツール混在",
-    "definition": "1回の応答にテキストブロックと複数のtool_useブロックが同時に含まれることがある。テキストの存在だけをタスク完了のシグナルとみなすのはアンチパターン。",
+    "termJa": "1回の応答にテキストとツール呼び出しが混在",
+    "definition": "1回の応答に、テキストブロックと複数のtool_useブロックが同時に入っていることがある。テキストがあるというだけでタスク完了のシグナルとみなすのは、アンチパターンである。",
     "tags": [
       "tool-use"
     ]
@@ -104,8 +104,8 @@
     "id": "fc-agentic-011",
     "domain": "agentic",
     "term": "tool_use / tool_result フィールド構造",
-    "termJa": "tool_use / tool_result のフィールド構造",
-    "definition": "tool_useブロックはid・name・inputを持つ。tool_resultは対応するtool_use_idを正確に参照しなければならず、失敗時はis_error: trueを付与する。1つのメッセージに複数のtool_resultを含めることができる。",
+    "termJa": "tool_use / tool_resultのフィールド構造",
+    "definition": "tool_useブロックはid、name、inputを持つ。tool_resultは、対応するtool_use_idを正確に参照しなければならない。失敗したときは、is_error: trueを付ける。1つのメッセージに、複数のtool_resultを入れることもできる。",
     "tags": [
       "tool-use",
       "tool-result"
@@ -116,7 +116,7 @@
     "domain": "agentic",
     "term": "Model-driven decision making",
     "termJa": "モデル主導の意思決定",
-    "definition": "エージェント設計の基本原則。どのツールをいつ呼ぶか、いつ止めるかはClaudeが判断する（事前に固定した決定木やワークフロー自動化に頼らない）。固定ワークフローで代替するのはアンチパターン。",
+    "definition": "エージェント設計の基本原則。どのツールをいつ呼ぶか、いつ止めるかはClaudeが判断する（あらかじめ固定した決定木やワークフロー自動化に頼らない）。固定のワークフローで代わりにするのは、アンチパターンである。",
     "tags": [
       "agentic-loop"
     ]
@@ -126,7 +126,7 @@
     "domain": "agentic",
     "term": "Loop termination anti-patterns",
     "termJa": "ループ終了判定のアンチパターン",
-    "definition": "自然言語（\"I'm done\"）のパースでループ終了を判断すること、任意の反復回数上限（\"max 5 loops\"）を主要な停止機構にすること、テキストの存在だけを完了シグナルとみなすことは全てアンチパターン。安全策としての上限はバックストップとしてのみ許容される。",
+    "definition": "次のものはすべてアンチパターンである。自然言語（\"I'm done\"など）をパースしてループの終了を判断すること、任意の反復回数の上限（\"max 5 loops\"など）を主な停止の仕組みにすること、テキストがあるというだけで完了のシグナルとみなすこと。安全策としての上限は、バックストップとしてだけ認められる。",
     "tags": [
       "agentic-loop",
       "anti-pattern"
@@ -136,8 +136,8 @@
     "id": "fc-agentic-014",
     "domain": "agentic",
     "term": "Hub-and-spoke multi-agent architecture",
-    "termJa": "ハブ・アンド・スポーク型マルチエージェント構成",
-    "definition": "1つのコーディネーターと複数の専門サブエージェントから成るマルチエージェント構成。サブエージェント同士は直接会話しない。全対全のフラットなトポロジーはアンチパターン。",
+    "termJa": "ハブ・アンド・スポーク型のマルチエージェント構成",
+    "definition": "1つのコーディネーターと、複数の専門サブエージェントでできたマルチエージェント構成。サブエージェント同士は直接やり取りしない。全対全でつなぐフラットなトポロジーは、アンチパターンである。",
     "tags": [
       "multi-agent"
     ]
@@ -146,8 +146,8 @@
     "id": "fc-agentic-015",
     "domain": "agentic",
     "term": "Coordinator responsibilities",
-    "termJa": "コーディネーターの責務",
-    "definition": "タスクの分解、サブエージェントへの委譲、サブエージェント間の全通信のルーティング、結果の集約、サブエージェントのエラー処理、統合結果の品質評価とギャップがあれば再委譲を行う。",
+    "termJa": "コーディネーターの役割",
+    "definition": "コーディネーターが担うのは、タスクの分解、サブエージェントへの委譲、サブエージェント間の通信すべてのルーティング、結果の集約、サブエージェントのエラー処理である。統合した結果の品質を評価し、ギャップがあれば再び委譲することも担う。",
     "tags": [
       "multi-agent",
       "coordinator"
@@ -158,7 +158,7 @@
     "domain": "agentic",
     "term": "Subagent context isolation",
     "termJa": "サブエージェントのコンテキスト分離",
-    "definition": "試験頻出。サブエージェントはコーディネーターの会話履歴を継承しない。注文ID・金額・名前・ポリシーなど必要な情報は全てサブエージェントへのプロンプトに明示的に含めなければならない。",
+    "definition": "試験によく出る。サブエージェントは、コーディネーターの会話履歴を引き継がない。注文ID、金額、名前、ポリシーなど必要な情報は、すべてサブエージェントへのプロンプトに明示的に含めなければならない。",
     "tags": [
       "multi-agent",
       "context-isolation"
@@ -169,7 +169,7 @@
     "domain": "agentic",
     "term": "Parallel subagent dispatch",
     "termJa": "サブエージェントの並列実行",
-    "definition": "並列サブエージェント実行は、コーディネーターの単一の応答内で複数のTask/Agentのtool_use呼び出しを同時に発行することで行う（複数ターンにまたがらせない）。",
+    "definition": "サブエージェントを並列に実行するには、コーディネーターの1回の応答の中で、複数のTask/Agentのtool_use呼び出しを同時に出す（複数のターンにまたがらせない）。",
     "tags": [
       "multi-agent",
       "parallel"
@@ -179,8 +179,8 @@
     "id": "fc-agentic-018",
     "domain": "agentic",
     "term": "PreToolUse hook for deterministic enforcement",
-    "termJa": "決定的な強制のためのPreToolUseフック",
-    "definition": "財務・安全性に関わるルールはプロンプト指示（確率的、ベストエフォート）ではなく、hooksによる100%決定的なプログラム的強制が必要。代表例：process_refundはget_customerによる検証が完了するまでPreToolUse hookでブロックし、「必ず先に確認して」という指示文には頼らない。",
+    "termJa": "PreToolUseフックによる決定的な強制",
+    "definition": "財務や安全に関わるルールは、プロンプトでの指示（確率的でベストエフォート）ではなく、hooksによる100%決定的なプログラムで強制する必要がある。代表例は、get_customerでの検証が終わるまで、PreToolUse hookでprocess_refundをブロックすること。「必ず先に確認して」という指示文には頼らない。",
     "tags": [
       "hooks",
       "PreToolUse"
@@ -191,7 +191,7 @@
     "domain": "agentic",
     "term": "Key hook events",
     "termJa": "主要なフックイベント",
-    "definition": "試験で問われる代表的なhookイベント：SessionStart, SessionEnd, UserPromptSubmit, Stop, PreToolUse, PostToolUse, PermissionRequest, SubagentStop, PreCompact。2026年拡張では全6グループ28イベントが存在する。",
+    "definition": "試験で問われる代表的なhookイベントは次のとおり: SessionStart, SessionEnd, UserPromptSubmit, Stop, PreToolUse, PostToolUse, PermissionRequest, SubagentStop, PreCompact。2026年の拡張で、全6グループ・28イベントになっている。",
     "tags": [
       "hooks"
     ]
@@ -201,7 +201,7 @@
     "domain": "agentic",
     "term": "Five hook types",
     "termJa": "5種類のフックタイプ",
-    "definition": "command（シェル実行、exit 0=許可・exit 2=ブロック）、http（POST webhook）、mcp_tool、prompt（単発のLLMによるyes/no判定）、agent（ツールを持つ複数ターンのサブエージェント）の5種類。",
+    "definition": "フックは5種類ある。command（シェルを実行。exit 0なら許可、exit 2ならブロック）、http（webhookにPOST）、mcp_tool、prompt（LLMが1回だけyes/noを判定）、agent（ツールを持つ、複数ターンのサブエージェント）。",
     "tags": [
       "hooks"
     ]
@@ -210,8 +210,8 @@
     "id": "fc-agentic-021",
     "domain": "agentic",
     "term": "Hook decision JSON",
-    "termJa": "フック判定のJSON出力",
-    "definition": "hookの判定出力はhookEventName、permissionDecision（\"allow\"|\"deny\"|\"ask\"）、permissionDecisionReason、additionalContextというフィールドを持つJSON形式で返される。",
+    "termJa": "フックの判定を返すJSON",
+    "definition": "hookは判定の結果を、hookEventName、permissionDecision（\"allow\"、\"deny\"、\"ask\"のいずれか）、permissionDecisionReason、additionalContextというフィールドを持つJSONで返す。",
     "tags": [
       "hooks"
     ]
@@ -220,8 +220,8 @@
     "id": "fc-agentic-022",
     "domain": "agentic",
     "term": "Claude Agent SDK: query() / ClaudeAgentOptions",
-    "termJa": "Claude Agent SDKのquery()関数とオプション",
-    "definition": "Claude Agent SDK（旧Claude Code SDK）のエントリポイントはquery()関数とClaudeAgentOptionsで構成される。pip install claude-agent-sdk / npm install @anthropic-ai/claude-agent-sdkでインストールする。",
+    "termJa": "Claude Agent SDKのquery()関数とClaudeAgentOptions（オプション）",
+    "definition": "Claude Agent SDK（旧Claude Code SDK）の入口は、query()関数とClaudeAgentOptionsである。pip install claude-agent-sdk、またはnpm install @anthropic-ai/claude-agent-sdkでインストールする。",
     "tags": [
       "agent-sdk"
     ]
@@ -231,7 +231,7 @@
     "domain": "agentic",
     "term": "AgentDefinition structure",
     "termJa": "AgentDefinitionの構造",
-    "definition": "Agent SDKでサブエージェントを定義する構造体で、description・prompt・toolsのリストをサブエージェントごとに持つ。Claude Codeの\"Task\" toolとAgent SDKの\"Agent\"は同じ仕組みを指す別名。",
+    "definition": "Agent SDKでサブエージェントを定義する構造体。サブエージェントごとに、description、prompt、toolsのリストを持つ。Claude Codeの\"Task\"ツールとAgent SDKの\"Agent\"は、同じ仕組みの別名である。",
     "tags": [
       "agent-sdk"
     ]
@@ -240,8 +240,8 @@
     "id": "fc-agentic-024",
     "domain": "agentic",
     "term": "parent_tool_use_id / fork_session",
-    "termJa": "parent_tool_use_id と fork_session",
-    "definition": "parent_tool_use_idはサブエージェントの出力を追跡するためのメッセージ属性。fork_sessionは共有のベースラインから独立したブランチを作り、異なるアプローチを互いに汚染せず試すための機能。",
+    "termJa": "parent_tool_use_idとfork_session",
+    "definition": "parent_tool_use_idは、サブエージェントの出力をたどるためのメッセージの属性である。fork_sessionは、共通のベースラインから独立したブランチを作る機能で、異なるアプローチを互いに影響させずに試せる。",
     "tags": [
       "agent-sdk"
     ]
@@ -250,8 +250,8 @@
     "id": "fc-agentic-025",
     "domain": "agentic",
     "term": "Escalation summary contents",
-    "termJa": "エスカレーション要約に含める内容",
-    "definition": "人間へのエスカレーションでは会話の全文（フルトランスクリプト）は渡さない。代わりに顧客ID、issue、注文詳細、実施済みアクション、推奨アクション、返金額などの構造化サマリーを提供する。",
+    "termJa": "エスカレーションの要約に含める内容",
+    "definition": "人の担当者へのエスカレーションでは、会話の全文（フルトランスクリプト）は渡さない。代わりに、顧客ID、issue、注文の詳細、実施済みのアクション、推奨アクション、返金額などを、構造化したサマリーにして渡す。",
     "tags": [
       "escalation"
     ]
@@ -260,8 +260,8 @@
     "id": "fc-agentic-026",
     "domain": "agentic",
     "term": "--resume criteria",
-    "termJa": "--resume の使用基準",
-    "definition": "ツール実行結果がまだ有効な場合は--resume <session>で再開する。ファイルが変更された・コンテキストが古くなった場合は新規セッションを開始し、構造化サマリーを渡す。再開したセッションには何が変わったかを明示的に伝える必要がある。",
+    "termJa": "--resumeを使う基準",
+    "definition": "ツールの実行結果がまだ有効なときは、--resume <session>で再開する。ファイルが変更された、コンテキストが古くなった、というときは、新しいセッションを始めて構造化サマリーを渡す。再開したセッションには、何が変わったかを明示的に伝える必要がある。",
     "tags": [
       "session-management"
     ]
@@ -270,8 +270,8 @@
     "id": "fc-agentic-027",
     "domain": "agentic",
     "term": "Dynamic subagent selection / decomposition risk",
-    "termJa": "動的サブエージェント選択と分解リスク",
-    "definition": "関連するサブエージェントのみを動的に呼び出すべきで、毎回全パイプラインを起動すべきではない。分解が狭すぎるとタスクの一部側面を見落とすリスクがある（例：「creative industries」を視覚芸術のみに限定してしまう）。コーディネーターはラウンド1の結果を評価し、ギャップがあればラウンド2で的を絞った委譲を行う。",
+    "termJa": "サブエージェントの動的な選択と、タスク分解のリスク",
+    "definition": "関係するサブエージェントだけを動的に呼び出すべきで、毎回パイプライン全体を起動してはならない。タスクの分解が狭すぎると、タスクの一部の側面を見落とすリスクがある（例：「creative industries」を視覚芸術だけに限ってしまう）。コーディネーターは、ラウンド1の結果を評価し、ギャップがあればラウンド2で的を絞って委譲する。",
     "tags": [
       "multi-agent",
       "decomposition"
@@ -282,7 +282,7 @@
     "domain": "claude-code",
     "term": "CLAUDE.md loading hierarchy",
     "termJa": "CLAUDE.mdの読み込み階層",
-    "definition": "広い順に読み込まれる: managed policy (組織管理者, OS別パス) → user `~/.claude/CLAUDE.md` → project `./CLAUDE.md` または `./.claude/CLAUDE.md` (バージョン管理対象) → `./CLAUDE.local.md` (個人用, gitignore対象) → directory-level `./src/api/CLAUDE.md` (そのディレクトリのファイルを触った時にオンデマンドで読込)。より具体的なレベルほど後から読まれる。",
+    "definition": "適用範囲が広いものから順に読み込まれる。managed policy（組織の管理者用。パスはOSごとに違う）→ user `~/.claude/CLAUDE.md` → project `./CLAUDE.md`または`./.claude/CLAUDE.md`（バージョン管理の対象）→ `./CLAUDE.local.md`（個人用。gitignoreの対象）→ directory-level `./src/api/CLAUDE.md`（そのディレクトリのファイルに触れたときに、必要に応じて読み込まれる）。より具体的なレベルほど、後から読み込まれる。",
     "tags": [
       "CLAUDE.md",
       "hierarchy"
@@ -292,8 +292,8 @@
     "id": "fc-claude-code-002",
     "domain": "claude-code",
     "term": "CLAUDE.local.md",
-    "termJa": "個人用メモファイルCLAUDE.local.md",
-    "definition": "プロジェクト直下に置く個人用メモファイルで、gitignore対象のためチームと共有されない。`.claude/CLAUDE.md`（プロジェクト共有・バージョン管理対象）との違いが試験で頻出のトラップ。個人の作業メモや一時的な指示に使う。",
+    "termJa": "CLAUDE.local.md（個人用のメモファイル）",
+    "definition": "プロジェクト直下に置く個人用のメモファイル。gitignoreの対象なので、チームとは共有されない。`.claude/CLAUDE.md`（プロジェクトで共有し、バージョン管理の対象）との違いは、試験で頻出のトラップである。個人の作業メモや、一時的な指示に使う。",
     "tags": [
       "CLAUDE.md",
       "trap"
@@ -303,8 +303,8 @@
     "id": "fc-claude-code-003",
     "domain": "claude-code",
     "term": "@import syntax",
-    "termJa": "他ファイル読み込みの@import記法",
-    "definition": "CLAUDE.md内で他ファイルを読み込む記法。パスはインポート元ファイルからの相対パス、`@~/`はホームディレクトリを指す。ネストしたimportも可能だが、最大インポート深度は5ホップまで。AGENTS.mdとの単一情報源化にも`@AGENTS.md`のimportが使われる。",
+    "termJa": "他のファイルを読み込む@import記法",
+    "definition": "CLAUDE.mdの中で、ほかのファイルを読み込む記法。パスは、インポート元のファイルからの相対パスで書く。`@~/`はホームディレクトリを指す。importはネストできるが、最大のインポート深度は5ホップまで。AGENTS.mdと単一の情報源にまとめるときにも、`@AGENTS.md`のimportが使われる。",
     "tags": [
       "CLAUDE.md",
       "import"
@@ -315,7 +315,7 @@
     "domain": "claude-code",
     "term": ".claude/rules/ directory: paths frontmatter",
     "termJa": ".claude/rules/ディレクトリのpaths指定",
-    "definition": "トピック別ルールファイル（例: testing.md, security.md）を置くディレクトリ。frontmatterが無ければセッション開始時に常時ロードされ、`paths:`にglobパターン（例 `paths: [\"**/*.test.ts\"]`）を指定すると該当パスのファイルを触った時だけ条件付きでロードされる。クロスディレクトリな規約はディレクトリ単位のCLAUDE.mdより`.claude/rules/`の方が優れている。",
+    "definition": "トピックごとのルールファイル（例: testing.md、security.md）を置くディレクトリ。frontmatterがなければ、セッションの開始時に常に読み込まれる。`paths:`にglobパターン（例: `paths: [\"**/*.test.ts\"]`）を指定すると、該当するパスのファイルに触れたときだけ、条件付きで読み込まれる。ディレクトリをまたぐ規約は、ディレクトリ単位のCLAUDE.mdより`.claude/rules/`のほうが優れている。",
     "tags": [
       ".claude/rules",
       "paths"
@@ -326,7 +326,7 @@
     "domain": "claude-code",
     "term": "Auto memory limits",
     "termJa": "自動メモリの読み込み上限",
-    "definition": "`~/.claude/projects/<project>/memory/MEMORY.md`はセッション開始時に先頭200行または25KBのどちらか早い方まで自動ロードされる。トピック別ファイル（例: debugging.md）はオンデマンドで読込。マシンローカルでworktree間は共有される。`autoMemoryEnabled: false`で無効化、`autoMemoryDirectory`で保存先変更可能（v2.1.59+）。",
+    "definition": "`~/.claude/projects/<project>/memory/MEMORY.md`は、セッションの開始時に、先頭の200行か25KBのどちらか早いほうまで自動で読み込まれる。トピック別のファイル（例: debugging.md）は、必要になったときに読み込まれる。メモリはマシンローカルで、worktree間では共有される。`autoMemoryEnabled: false`で無効にでき、`autoMemoryDirectory`で保存先を変えられる（v2.1.59以降）。",
     "tags": [
       "memory",
       "limits"
@@ -337,7 +337,7 @@
     "domain": "claude-code",
     "term": "SKILL.md frontmatter: description field",
     "termJa": "SKILL.mdのdescriptionフィールド",
-    "definition": "スキルの自動ロード（auto-load）判定に使われる最重要フィールド。`when_to_use`と合わせて合計1,536文字の上限がある。他の主要フィールドは`name`, `argument-hint`, `arguments`, `allowed-tools`, `model`, `effort`（low/medium/high/xhigh/max）, `context: fork`, `agent`, `hooks`, `paths`, `shell`など。",
+    "definition": "スキルを自動で読み込むか（auto-load）の判定に使われる、最も重要なフィールド。`when_to_use`と合わせて、合計1,536文字までという上限がある。ほかの主なフィールドは、`name`、`argument-hint`、`arguments`、`allowed-tools`、`model`、`effort`（low/medium/high/xhigh/max）、`context: fork`、`agent`、`hooks`、`paths`、`shell`など。",
     "tags": [
       "SKILL.md",
       "frontmatter"
@@ -347,8 +347,8 @@
     "id": "fc-claude-code-007",
     "domain": "claude-code",
     "term": "SKILL.md frontmatter: disable-model-invocation vs user-invocable: false",
-    "termJa": "disable-model-invocation と user-invocable: false の違い",
-    "definition": "`disable-model-invocation`はユーザーのみが呼べる（Claudeの自動判断では起動しない）設定。`user-invocable: false`は逆にClaudeのみが呼べる設定で、`/`メニューには表示されない（隠しスキル）。両者は対称的な制御であり、試験で混同しやすい。",
+    "termJa": "disable-model-invocationとuser-invocable: falseの違い",
+    "definition": "`disable-model-invocation`は、ユーザーだけが呼べるようにする設定（Claudeが自動で判断して起動することはない）。`user-invocable: false`は逆に、Claudeだけが呼べるようにする設定で、`/`メニューには表示されない（隠しスキル）。この2つは対になる制御で、試験で混同しやすい。",
     "tags": [
       "SKILL.md",
       "frontmatter"
@@ -358,8 +358,8 @@
     "id": "fc-claude-code-008",
     "domain": "claude-code",
     "term": "Skill location priority",
-    "termJa": "スキル探索の優先順位",
-    "definition": "スキルの探索優先順位: Enterprise（組織管理）→ Personal (`~/.claude/skills/`) → Project (`.claude/skills/`) → Plugin（`plugin:skill`名前空間）。名前が衝突した場合はより優先度の高い場所のものが勝つ。",
+    "termJa": "スキルの場所ごとの優先順位",
+    "definition": "スキルを探す優先順位は、Enterprise（組織管理）→ Personal（`~/.claude/skills/`）→ Project（`.claude/skills/`）→ Plugin（`plugin:skill`の名前空間）の順。名前が衝突したときは、優先度の高い場所のものが勝つ。",
     "tags": [
       "skills",
       "priority"
@@ -370,7 +370,7 @@
     "domain": "claude-code",
     "term": "context: fork (SKILL.md)",
     "termJa": "SKILL.mdのcontext: fork設定",
-    "definition": "スキルを分離されたsubagent内で実行するfrontmatterオプション。CLAUDE.mdはロードされるが、メインの会話履歴は引き継がれない。ノイズの多い操作（詳細な調査、デプロイなど）をメインコンテキストから隔離するのに使う。",
+    "definition": "スキルを、分離されたサブエージェントの中で実行するfrontmatterのオプション。CLAUDE.mdは読み込まれるが、メインの会話履歴は引き継がれない。ノイズの多い操作（詳細な調査、デプロイなど）をメインのコンテキストから切り離すために使う。",
     "tags": [
       "SKILL.md",
       "context"
@@ -381,7 +381,7 @@
     "domain": "claude-code",
     "term": "Permission modes",
     "termJa": "権限モード",
-    "definition": "Claude Codeの権限モード: `default`, `acceptEdits`, `plan`, `auto`（分類器が自動判断）, `dontAsk`, `bypassPermissions`（危険、確認なし全許可）。Shift+Tabまたは`--permission-mode`フラグで切り替え可能。",
+    "definition": "Claude Codeの権限モードは次のとおり: `default`、`acceptEdits`、`plan`、`auto`（分類器が自動で判断）、`dontAsk`、`bypassPermissions`（危険。確認なしですべて許可）。Shift+Tabか`--permission-mode`フラグで切り替えられる。",
     "tags": [
       "permissions",
       "CLI"
@@ -392,7 +392,7 @@
     "domain": "claude-code",
     "term": "Plan mode: when to use",
     "termJa": "プランモードの使いどころ",
-    "definition": "複数ファイル変更、アーキテクチャ判断、複数の妥当なアプローチが存在する場合、大規模スコープ（例: 45ファイル以上の移行）、要件が不明瞭な場合に適する。単一ファイルの修正や明確な指示・スコープが明白な場合は直接実行でよく、plan modeが常に必須というのは誤り（トラップ）。",
+    "definition": "複数ファイルにまたがる変更、アーキテクチャの判断、複数の妥当なアプローチがある場合、大規模なスコープ（例: 45ファイル以上の移行）、要件が不明瞭な場合に向く。単一ファイルの修正や、指示とスコープが明確な場合は、直接実行でよい。プランモードが常に必須というのは誤り（トラップ）。",
     "tags": [
       "plan-mode"
     ]
@@ -402,7 +402,7 @@
     "domain": "claude-code",
     "term": "-p / --print flag",
     "termJa": "非対話実行の-p / --printフラグ",
-    "definition": "CI/CD環境で必須のフラグ。対話モードを無効化し非対話的に実行結果を出力する。付け忘れるとプロセスがハングする典型的なトラップとして頻出。",
+    "definition": "CI/CD環境で必須のフラグ。対話モードを無効にし、非対話で実行して結果を出力する。付け忘れるとプロセスがハングするのが典型的なトラップで、頻出である。",
     "tags": [
       "CLI",
       "CI/CD"
@@ -412,8 +412,8 @@
     "id": "fc-claude-code-013",
     "domain": "claude-code",
     "term": "--output-format flag",
-    "termJa": "出力形式指定の--output-formatフラグ",
-    "definition": "CLI出力形式を指定するフラグ。値は`text`, `json`, `stream-json`。CI/CDパイプラインでプログラム的にパースする際は`json`や`stream-json`を使う。対応する入力側は`--input-format stream-json`。",
+    "termJa": "出力形式を指定する--output-formatフラグ",
+    "definition": "CLIの出力形式を指定するフラグ。値は`text`、`json`、`stream-json`。CI/CDパイプラインでプログラムからパースするときは、`json`か`stream-json`を使う。これに対応する入力側は`--input-format stream-json`。",
     "tags": [
       "CLI",
       "CI/CD"
@@ -424,7 +424,7 @@
     "domain": "claude-code",
     "term": "--max-turns / --max-budget-usd",
     "termJa": "暴走防止の--max-turns / --max-budget-usd",
-    "definition": "エージェントループの暴走を防ぐCLIフラグ。`--max-turns N`はターン数上限、`--max-budget-usd X`はコスト上限（USD）を指定する。CI/CDでの安全なバックストップとして使うが、これらを主要な停止条件として設計するのはアンチパターン（stop_reasonでの判定が正）。",
+    "definition": "エージェントループの暴走を防ぐCLIフラグ。`--max-turns N`はターン数の上限、`--max-budget-usd X`はコストの上限（USD）を指定する。CI/CDでの安全なバックストップとして使う。ただし、これらを主な停止条件にするのはアンチパターンで、stop_reasonで判断するのが正しい。",
     "tags": [
       "CLI",
       "CI/CD"
@@ -435,7 +435,7 @@
     "domain": "claude-code",
     "term": "Message Batches API key facts",
     "termJa": "Message Batches APIの基本事項",
-    "definition": "通常の50%のコストで処理できるが、24時間以内のSLAなし（保証なし）。`custom_id`でリクエストとレスポンスを対応付ける。バッチ内でマルチターン会話は不可。夜間分析や週次監査など非リアルタイム用途に向き、マージ前チェックやリアルタイム処理には不向き。",
+    "definition": "通常の50%のコストで処理できる。ただし、結果が返るまで最大24時間かかり、SLA（保証）はない。`custom_id`で、リクエストとレスポンスを対応付ける。バッチの中では、マルチターンの会話はできない。夜間の分析や週次の監査など、リアルタイム性のいらない用途に向き、マージ前チェックやリアルタイム処理には向かない。",
     "tags": [
       "batches-api"
     ]
@@ -445,7 +445,7 @@
     "domain": "claude-code",
     "term": "Batch failure handling",
     "termJa": "バッチ処理の失敗時の扱い",
-    "definition": "Message Batches APIで一部のリクエストが失敗した場合、バッチ全体を再送信するのではなく、失敗した`custom_id`のみを再送信するのが正しい対処法。",
+    "definition": "Message Batches APIで一部のリクエストが失敗したときは、バッチ全体を再送するのではなく、失敗した`custom_id`のものだけを再送するのが正しい対処である。",
     "tags": [
       "batches-api"
     ]
@@ -455,7 +455,7 @@
     "domain": "claude-code",
     "term": "Reasoning context bias",
     "termJa": "推論時のコンテキストバイアス",
-    "definition": "同一セッション内でコードを書いた後にそのセッションでレビューさせると、自分の判断を再検証できず見落としが生じる現象。対策として、コード生成セッションとは完全に独立した新しいセッションでレビューを行う（session context isolation for code review）。",
+    "definition": "同じセッションでコードを書かせたあと、そのセッションでレビューもさせると、自分の判断を見直せず、見落としが出る現象。対策は、コードを生成したセッションとは完全に独立した新しいセッションでレビューすること（session context isolation for code review）。",
     "tags": [
       "reliability",
       "code-review"
@@ -466,7 +466,7 @@
     "domain": "claude-code",
     "term": "AGENTS.md interop",
     "termJa": "AGENTS.mdとの相互運用",
-    "definition": "Claude CodeはAGENTS.mdを直接読み込まず、CLAUDE.mdを読む。両方のファイルがあるプロジェクトでは、CLAUDE.mdから`@AGENTS.md`でimportすることで単一の情報源(single source of truth)として管理できる。",
+    "definition": "Claude CodeはAGENTS.mdを直接は読み込まず、CLAUDE.mdを読む。両方のファイルがあるプロジェクトでは、CLAUDE.mdから`@AGENTS.md`をimportすることで、情報源を1つ（single source of truth）にして管理できる。",
     "tags": [
       "CLAUDE.md",
       "AGENTS.md"
@@ -476,8 +476,8 @@
     "id": "fc-claude-code-019",
     "domain": "claude-code",
     "term": "Monorepo CLAUDE.md controls",
-    "termJa": "モノレポでのCLAUDE.md制御設定",
-    "definition": "モノレポでのCLAUDE.md読み込みを制御する設定群: `claudeMdExcludes`（globで除外指定）、`--add-dir <path>`（追加ディレクトリを明示的に含める）、`CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1`、`CLAUDE_CODE_NEW_INIT=1`。",
+    "termJa": "モノレポでCLAUDE.mdの読み込みを制御する設定",
+    "definition": "モノレポでCLAUDE.mdの読み込みを制御する設定がいくつかある: `claudeMdExcludes`（globで除外を指定）、`--add-dir <path>`（追加のディレクトリを明示的に含める）、`CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1`、`CLAUDE_CODE_NEW_INIT=1`。",
     "tags": [
       "CLAUDE.md",
       "monorepo"
@@ -487,8 +487,8 @@
     "id": "fc-claude-code-020",
     "domain": "claude-code",
     "term": "2026 skills/commands merger",
-    "termJa": "2026年のスキル・コマンド統合",
-    "definition": "2026年にスラッシュコマンドとスキルが統合され、`.claude/commands/deploy.md`と`.claude/skills/deploy/SKILL.md`はどちらも`/deploy`として等価に扱われる。旧来の`/project:name`や`/user:name`という名前空間は廃止された。名前が衝突した場合はskillが優先される。",
+    "termJa": "2026年のスキルとコマンドの統合",
+    "definition": "2026年に、スラッシュコマンドとスキルが統合された。`.claude/commands/deploy.md`と`.claude/skills/deploy/SKILL.md`は、どちらも`/deploy`として同じように扱われる。従来の`/project:name`や`/user:name`という名前空間は廃止された。名前が衝突したときは、skillが優先される。",
     "tags": [
       "skills",
       "commands"
@@ -499,7 +499,7 @@
     "domain": "prompting",
     "term": "strict mode requirements",
     "termJa": "strict modeの要件",
-    "definition": "strict modeを有効にするには \"strict\": true に加え、\"additionalProperties\": false を設定し、かつ全プロパティを required に含める必要がある。この3条件が揃って初めてスキーマ準拠が保証される。",
+    "definition": "strict modeを有効にするには、\"strict\": trueに加えて、\"additionalProperties\": falseを設定し、さらにすべてのプロパティをrequiredに含める必要がある。この3つの条件がそろって初めて、スキーマへの準拠が保証される。",
     "tags": [
       "structured-output",
       "strict-mode"
@@ -510,7 +510,7 @@
     "domain": "prompting",
     "term": "output_config shape",
     "termJa": "output_configの形式",
-    "definition": "現行の直接JSON出力パターンは output_config: {\"format\": {\"type\": \"json_schema\", \"schema\": {...}}} という形。旧来の output_format は移行期のため残されているが、structured-outputs-2025-11-13 の beta ヘッダーはもう不要。",
+    "definition": "現行の、JSONを直接出力させるパターンは、output_config: {\"format\": {\"type\": \"json_schema\", \"schema\": {...}}}という形である。従来のoutput_formatは移行期間のため残されているが、structured-outputs-2025-11-13のbetaヘッダーはもう要らない。",
     "tags": [
       "structured-output",
       "api-config"
@@ -520,8 +520,8 @@
     "id": "fc-prompting-003",
     "domain": "prompting",
     "term": "schema correctness vs semantic correctness",
-    "termJa": "スキーマ正しさと意味的正しさの違い",
-    "definition": "最頻出の対比。スキーマ準拠（型・必須フィールド・enum・フォーマット）はstrict modeで保証されるが、意味的正しさ（明細合計と総額の一致、フィールド間の整合性、業務ロジック）は保証されない。意味検証には別途カスタムバリデーションが必要。",
+    "termJa": "スキーマ上の正しさと意味上の正しさの違い",
+    "definition": "最頻出の対比。スキーマへの準拠（型、必須フィールド、enum、フォーマット）はstrict modeで保証されるが、意味上の正しさ（明細の合計と総額の一致、フィールド間の整合性、業務ロジック）は保証されない。意味の検証には、別にカスタムのバリデーションが必要になる。",
     "tags": [
       "structured-output",
       "validation"
@@ -532,7 +532,7 @@
     "domain": "prompting",
     "term": "nullable types design",
     "termJa": "nullable型の設計",
-    "definition": "任意項目には \"type\": [\"string\", \"null\"] のようなnullable型を使う。情報源にデータが無いときのでっち上げ（fabrication）を防ぐため。リトライを繰り返しても存在しないデータを作り出すことはできない点も重要。",
+    "definition": "任意の項目には、\"type\": [\"string\", \"null\"]のようなnullable型を使う。情報源にデータがないときに、モデルがでっち上げ（fabrication）をするのを防ぐためである。リトライを繰り返しても、存在しないデータは作り出せない点も重要。",
     "tags": [
       "structured-output",
       "schema-design"
@@ -542,8 +542,8 @@
     "id": "fc-prompting-005",
     "domain": "prompting",
     "term": "enum other/unclear fallback",
-    "termJa": "enumのother/unclearフォールバック",
-    "definition": "enum設計では \"other\" と \"unclear\" のフォールバック値を必ず含める。選択肢に当てはまらない場合にモデルが無理に既存カテゴリへ当てはめて推測するのを防ぐため。",
+    "termJa": "enumのother/unclear（フォールバック値）",
+    "definition": "enumを設計するときは、\"other\"と\"unclear\"のフォールバック値を必ず入れる。選択肢に当てはまらないときに、モデルが無理に既存のカテゴリへ当てはめて推測するのを防ぐためである。",
     "tags": [
       "structured-output",
       "schema-design"
@@ -553,8 +553,8 @@
     "id": "fc-prompting-006",
     "domain": "prompting",
     "term": "unsupported strict-mode schema features",
-    "termJa": "strict modeで非対応のスキーマ機能",
-    "definition": "strict modeのJSON Schemaは type, properties, required, enum, items, additionalProperties:false, format(date/time/email/uri) をサポートするが、minimum/maximum, minLength/maxLength, pattern, allOf/anyOf/oneOf, patternProperties, if/then/else は非対応。数値範囲や正規表現チェックはカスタムコードで別途行う必要がある。",
+    "termJa": "strict modeが対応していないスキーマ機能",
+    "definition": "strict modeのJSON Schemaがサポートするのは、type、properties、required、enum、items、additionalProperties:false、format（date/time/email/uri）。サポートしないのは、minimum/maximum、minLength/maxLength、pattern、allOf/anyOf/oneOf、patternProperties、if/then/else。数値の範囲や正規表現のチェックは、別にカスタムコードで実装する必要がある。",
     "tags": [
       "structured-output",
       "strict-mode"
@@ -564,8 +564,8 @@
     "id": "fc-prompting-007",
     "domain": "prompting",
     "term": "few-shot example three parts",
-    "termJa": "few-shot例の3要素構成",
-    "definition": "few-shotの各例は input・output・reasoning(なぜその出力が正しいかの因果的説明)の3要素で構成する必要がある。reasoningを省くと、モデルは表面的パターンをコピーするだけで汎化しにくい。",
+    "termJa": "few-shotの例の3つの要素",
+    "definition": "few-shotの各例は、input、output、reasoning（その出力がなぜ正しいかの因果的な説明）の3つの要素で構成する必要がある。reasoningを省くと、モデルは表面的なパターンをコピーするだけになり、汎化しにくい。",
     "tags": [
       "prompting-technique",
       "few-shot"
@@ -575,8 +575,8 @@
     "id": "fc-prompting-008",
     "domain": "prompting",
     "term": "optimal few-shot example count",
-    "termJa": "最適なfew-shot例の数",
-    "definition": "最適な例の数は2〜4個の的を絞った例。多すぎるとコンテキストの浪費や過学習（overfit）につながり、少なすぎると曖昧なケースやエッジケースを教えきれない。",
+    "termJa": "few-shotの例の最適な数",
+    "definition": "最適なのは、的を絞った2〜4個の例。多すぎると、コンテキストの浪費や過学習（overfit）につながる。少なすぎると、曖昧なケースやエッジケースを教えきれない。",
     "tags": [
       "prompting-technique",
       "few-shot"
@@ -586,8 +586,8 @@
     "id": "fc-prompting-009",
     "domain": "prompting",
     "term": "validation-retry loop pattern",
-    "termJa": "validation-retryループパターン",
-    "definition": "抽出結果をvalidateし、失敗したらエラー内容をJSONとしてプロンプトに追記して再試行するループ。max_retries は概ね3回程度に設定し、上限に達したら例外を送出(raise)する。",
+    "termJa": "validation-retryループ（検証と再試行）",
+    "definition": "抽出結果をvalidateし、失敗したら、エラーの内容をJSONにしてプロンプトに追記して再試行するループ。max_retriesは3回程度に設定し、上限に達したら例外を送出（raise）する。",
     "tags": [
       "structured-output",
       "validation"
@@ -597,8 +597,8 @@
     "id": "fc-prompting-010",
     "domain": "prompting",
     "term": "false-positive economics",
-    "termJa": "誤検知（false positive）の経済性",
-    "definition": "あるカテゴリのノイズ（誤検知）が多いと、そのカテゴリだけでなく全カテゴリへの信頼が損なわれる。対処法は「無効化 → 判定基準を洗練 → 再度有効化」というサイクル。",
+    "termJa": "誤検知（false positive）のコスト",
+    "definition": "あるカテゴリでノイズ（誤検知）が多いと、そのカテゴリだけでなく、すべてのカテゴリへの信頼が損なわれる。対処は、「無効にする → 判定基準を洗練する → 再び有効にする」というサイクルで進める。",
     "tags": [
       "prompting-technique",
       "quality"
@@ -609,7 +609,7 @@
     "domain": "prompting",
     "term": "dual extraction self-correction",
     "termJa": "二重抽出による自己検証",
-    "definition": "請求書などの抽出で stated_total（記載された合計）と calculated_total（明細から計算した合計）の両方を抽出し、conflict_detected フラグで不一致を検出するパターン。意味的検証をモデル自身に補助させる設計。",
+    "definition": "請求書などから抽出するときに、stated_total（記載された合計）とcalculated_total（明細から計算した合計）の両方を抽出させ、conflict_detectedフラグで食い違いを検出するパターン。意味の検証を、モデル自身に手伝わせる設計である。",
     "tags": [
       "structured-output",
       "validation"
@@ -619,8 +619,8 @@
     "id": "fc-prompting-012",
     "domain": "prompting",
     "term": "pre-batch QA",
-    "termJa": "バッチ処理前のQA検証",
-    "definition": "1万件以上の文書をバッチ処理する前に、小サンプルでプロンプトを検証・改善しておく手順。Message Batches APIは結果が出るまで最大24時間かかりSLAもないため、投入後にプロンプトの欠陥に気づくと修正コストが高く、事前のQAが重要。",
+    "termJa": "バッチ処理前のQA（品質検証）",
+    "definition": "1万件以上の文書をバッチ処理する前に、小さなサンプルでプロンプトを検証し、改善しておく手順。Message Batches APIは、結果が出るまで最大24時間かかり、SLAもない。投入したあとでプロンプトの欠陥に気づくと修正のコストが高いため、事前のQAが重要になる。",
     "tags": [
       "batch-processing",
       "quality"
@@ -630,8 +630,8 @@
     "id": "fc-prompting-013",
     "domain": "prompting",
     "term": "explicit criteria framework",
-    "termJa": "明示的基準フレームワーク",
-    "definition": "何が該当し何が該当しないか（境界事例）を明示し、具体例も添えるフレームワーク。「be conservative」「high-confidence findings」「use best judgment」のような曖昧な指示は避けるべき。",
+    "termJa": "明示的な基準のフレームワーク",
+    "definition": "何が該当し、何が該当しないか（境界事例）をはっきり示し、具体例も添えるフレームワーク。\"be conservative\"、\"high-confidence findings\"、\"use best judgment\"のような曖昧な指示は避けるべきである。",
     "tags": [
       "prompting-technique",
       "criteria-design"
@@ -641,8 +641,8 @@
     "id": "fc-prompting-014",
     "domain": "prompting",
     "term": "precise negation boundaries",
-    "termJa": "境界条件の精密な否定表現",
-    "definition": "境界条件を精密に否定形で書く例：「コメントを古いと判定するのは、主張されている挙動が実際のコードと直接矛盾する場合ONLYに限る」。曖昧な基準より誤検知を減らせる。",
+    "termJa": "境界条件を否定形で正確に書く方法",
+    "definition": "境界条件を、否定形を使って正確に書く例：「コメントを古いと判定するのは、主張されている挙動が実際のコードと直接矛盾する場合ONLYに限る」。曖昧な基準よりも、誤検知を減らせる。",
     "tags": [
       "prompting-technique",
       "criteria-design"
@@ -653,7 +653,7 @@
     "domain": "prompting",
     "term": "tool_choice forcing structured output",
     "termJa": "構造化出力を強制するtool_choice",
-    "definition": "構造化出力は tool_use と input_schema (JSON Schema) を使い、tool_choice: {\"type\":\"tool\",\"name\":\"extract_invoice_data\"} のように特定ツールを強制することで実現する。",
+    "definition": "構造化出力は、tool_useとinput_schema（JSON Schema）を使い、tool_choice: {\"type\":\"tool\",\"name\":\"extract_invoice_data\"}のように特定のツールを強制することで実現する。",
     "tags": [
       "structured-output",
       "tool-use"
@@ -663,8 +663,8 @@
     "id": "fc-prompting-016",
     "domain": "prompting",
     "term": "what schema validation catches vs misses",
-    "termJa": "スキーマ検証が捕捉する範囲と限界",
-    "definition": "スキーマ検証が捕捉するのは missing fields, type mismatch, invalid enum, malformed date/email/URI。捕捉できないのは calculated≠stated values, 未来日付, エンティティ参照の矛盾, フィールド間の業務ルール違反で、これらはカスタムロジックが必要。",
+    "termJa": "スキーマ検証で検出できるものと、できないもの",
+    "definition": "スキーマ検証で検出できるのは、missing fields、type mismatch、invalid enum、malformed date/email/URI。検出できないのは、calculated≠stated values、未来の日付、エンティティ参照の矛盾、フィールド間の業務ルール違反で、これらにはカスタムロジックが必要になる。",
     "tags": [
       "structured-output",
       "validation"
@@ -674,8 +674,8 @@
     "id": "fc-prompting-017",
     "domain": "prompting",
     "term": "detection metadata for pattern tracking",
-    "termJa": "パターン追跡用の検出メタデータ",
-    "definition": "detected_pattern, file, line などのメタデータを検出結果に付与し、誤検知パターンの追跡とプロンプト改善に活用するパターン。false-positive economicsへの実務的対応策。",
+    "termJa": "パターンを追跡するための検出メタデータ",
+    "definition": "detected_pattern、file、lineなどのメタデータを検出結果に付けておき、誤検知のパターンを追跡してプロンプトの改善に生かすパターン。false-positive economicsに対する、実務的な対応策である。",
     "tags": [
       "prompting-technique",
       "quality"
@@ -686,7 +686,7 @@
     "domain": "prompting",
     "term": "few-shot use cases",
     "termJa": "few-shotが有効な場面",
-    "definition": "few-shotが有効な場面は、曖昧なシナリオ、フォーマット/推論プロセスのデモンストレーション、ハルシネーションリスクの高い抽出タスク、エッジケースの明示。単純明快なタスクには過剰。",
+    "definition": "few-shotが有効なのは、曖昧なシナリオ、フォーマットや推論プロセスのデモンストレーション、ハルシネーションのリスクが高い抽出タスク、エッジケースを明示したい場面である。単純明快なタスクには過剰である。",
     "tags": [
       "prompting-technique",
       "few-shot"
@@ -696,8 +696,8 @@
     "id": "fc-prompting-019",
     "domain": "prompting",
     "term": "Message Batches API for structured extraction",
-    "termJa": "構造化抽出向けMessage Batches API",
-    "definition": "50%コスト削減、24時間以内でSLAなし、custom_idで結果を紐付け、マルチターン不可。同期処理はpre-merge/リアルタイム/ブロッキングCIに向き、バッチは夜間処理や週次監査、大量一括抽出に向く。",
+    "termJa": "構造化抽出向けのMessage Batches API",
+    "definition": "コストを50%削減できる。結果が返るまで最大24時間かかり、SLAはない。結果はcustom_idで紐づける。マルチターンはできない。同期処理は、マージ前チェック、リアルタイム処理、ブロッキングCIに向く。バッチは、夜間処理、週次の監査、大量の一括抽出に向く。",
     "tags": [
       "batch-processing",
       "api-config"
@@ -707,8 +707,8 @@
     "id": "fc-prompting-020",
     "domain": "prompting",
     "term": "batch failure resubmission",
-    "termJa": "バッチ失敗時の再送方針",
-    "definition": "バッチ処理で一部のリクエストが失敗した場合、バッチ全体を再送するのではなく、失敗した custom_id のみを再送するのが正しい対処法。",
+    "termJa": "バッチが一部失敗したときの再送方針",
+    "definition": "バッチ処理で一部のリクエストが失敗したときは、バッチ全体を再送するのではなく、失敗したcustom_idのものだけを再送するのが正しい対処である。",
     "tags": [
       "batch-processing",
       "error-handling"
@@ -718,8 +718,8 @@
     "id": "fc-mcp-001",
     "domain": "mcp",
     "term": "MCP architecture: Host / Client / Server roles",
-    "termJa": "MCPのHost/Client/Server構成",
-    "definition": "MCPはHost（Claude CodeなどのAIアプリ）→Client（各Serverへの1:1接続）→Server（tools/resources/promptsを提供）という構成。1つのHostが複数のServerに接続でき、各接続は専用のClientが担当する。",
+    "termJa": "MCPのHost/Client/Serverの役割分担",
+    "definition": "MCPは、Host（Claude CodeなどのAIアプリ）→ Client（各Serverへの1対1の接続）→ Server（tools/resources/promptsを提供する）という構成である。1つのHostは複数のServerに接続でき、接続ごとに専用のClientが担当する。",
     "tags": [
       "mcp",
       "architecture"
@@ -729,8 +729,8 @@
     "id": "fc-mcp-002",
     "domain": "mcp",
     "term": "MCP definition",
-    "termJa": "MCPの定義",
-    "definition": "MCP (Model Context Protocol) は、AIモデルを外部のデータやツール（DB、API、ファイルシステムなど）に接続するためのオープンな標準規格。異なるサービスへの接続方法を統一するインターフェースを提供する。",
+    "termJa": "MCPとは",
+    "definition": "MCP（Model Context Protocol）は、AIモデルを外部のデータやツール（DB、API、ファイルシステムなど）につなぐための、オープンな標準規格。異なるサービスへの接続方法をそろえるインターフェースを提供する。",
     "tags": [
       "mcp",
       "concept"
@@ -741,7 +741,7 @@
     "domain": "mcp",
     "term": "stdio vs Streamable HTTP transport",
     "termJa": "stdioとStreamable HTTPトランスポートの違い",
-    "definition": "stdioはローカルプロセス向けでネットワークオーバーヘッドがなく、最も一般的なローカル接続方式。Streamable HTTPはHTTP POST（オプションでSSEストリーミング）を使い、リモート/クラウド/分散環境向け。",
+    "definition": "stdioはローカルのプロセス向けで、ネットワークのオーバーヘッドがなく、ローカル接続で最も一般的な方式。Streamable HTTPはHTTP POST（オプションでSSEストリーミング）を使い、リモートやクラウド、分散環境に向く。",
     "tags": [
       "mcp",
       "transport"
@@ -751,8 +751,8 @@
     "id": "fc-mcp-004",
     "domain": "mcp",
     "term": "JSON-RPC initialization sequence",
-    "termJa": "JSON-RPCの初期化シーケンス",
-    "definition": "MCPはJSON-RPC 2.0を採用し双方向通信を行う。初期化順序は initialize（機能ネゴシエーション）→ notifications/initialized → tools/list → tools/call。",
+    "termJa": "JSON-RPCの初期化の順序",
+    "definition": "MCPはJSON-RPC 2.0を採用していて、双方向に通信する。初期化の順序は、initialize（機能のネゴシエーション）→ notifications/initialized → tools/list → tools/callである。",
     "tags": [
       "mcp",
       "protocol"
@@ -762,8 +762,8 @@
     "id": "fc-mcp-005",
     "domain": "mcp",
     "term": "Server-side primitives: tools / resources / prompts",
-    "termJa": "サーバー側プリミティブ：tools/resources/prompts",
-    "definition": "MCPサーバーが提供する3つの主要プリミティブ。tools=実行可能な関数、resources=読み取り専用のコンテンツ/データ、prompts=対話用テンプレート。",
+    "termJa": "サーバー側のプリミティブ：tools/resources/prompts",
+    "definition": "MCPサーバーが提供する3つの主なプリミティブ。toolsは実行できる関数、resourcesは読み取り専用のコンテンツやデータ、promptsは対話用のテンプレートである。",
     "tags": [
       "mcp",
       "server"
@@ -773,8 +773,8 @@
     "id": "fc-mcp-006",
     "domain": "mcp",
     "term": "Client-side primitives: sampling / elicitation / roots",
-    "termJa": "クライアント側プリミティブ：sampling/elicitation/roots",
-    "definition": "MCPクライアント側の3つの機能。sampling=サーバーがクライアントにLLM補完をリクエストする、elicitation=サーバーがユーザー入力をリクエストする、roots=ファイルシステムの境界を定義する。",
+    "termJa": "クライアント側のプリミティブ：sampling/elicitation/roots",
+    "definition": "MCPクライアント側の3つの機能。samplingは、サーバーがクライアントにLLMの補完をリクエストする機能。elicitationは、サーバーがユーザーの入力をリクエストする機能。rootsは、ファイルシステムの境界を定義する機能である。",
     "tags": [
       "mcp",
       "client"
@@ -785,7 +785,7 @@
     "domain": "mcp",
     "term": ".mcp.json vs ~/.claude.json",
     "termJa": ".mcp.jsonと~/.claude.jsonの違い",
-    "definition": ".mcp.json（プロジェクトルート）はバージョン管理されたチーム共通の設定。~/.claude.jsonは個人用/実験的設定で共有しない。この2つを混同する（例: 個人設定をプロジェクトにコミット）ことは試験で問われるトラップ。",
+    "definition": ".mcp.json（プロジェクトのルートに置く）は、バージョン管理されるチーム共通の設定。~/.claude.jsonは個人用や実験的な設定で、共有しない。この2つを混同すること（例: 個人の設定をプロジェクトにコミットする）は、試験で問われるトラップである。",
     "tags": [
       "mcp",
       "config"
@@ -796,7 +796,7 @@
     "domain": "mcp",
     "term": ".mcp.json anatomy",
     "termJa": ".mcp.jsonの構造",
-    "definition": ".mcp.jsonは mcpServers オブジェクトの下に各サーバーの command、args、env を定義する。env では ${VAR_NAME} 形式の環境変数展開を使い、シークレットは設定ファイルに直接コミットしない。接続時に設定済みの全サーバーからツールが検出される。",
+    "definition": ".mcp.jsonでは、mcpServersオブジェクトの下に、各サーバーのcommand、args、envを定義する。envでは、${VAR_NAME}形式の環境変数展開を使い、シークレットは設定ファイルに直接コミットしない。接続すると、設定済みのすべてのサーバーからツールが検出される。",
     "tags": [
       "mcp",
       "config"
@@ -806,8 +806,8 @@
     "id": "fc-mcp-009",
     "domain": "mcp",
     "term": "env secret expansion (${VAR_NAME})",
-    "termJa": "環境変数によるシークレット展開（${VAR_NAME}）",
-    "definition": "MCPサーバー設定の env フィールドでは ${VAR_NAME} 構文により環境変数からシークレット（APIキー、トークンなど）を展開する。認証情報は環境変数経由で管理し、設定ファイルに平文で書かない。",
+    "termJa": "環境変数によるシークレットの展開（${VAR_NAME}）",
+    "definition": "MCPサーバー設定のenvフィールドでは、${VAR_NAME}の構文で、環境変数からシークレット（APIキーやトークンなど）を展開する。認証情報は環境変数で管理し、設定ファイルに平文で書かない。",
     "tags": [
       "mcp",
       "security"
@@ -817,8 +817,8 @@
     "id": "fc-mcp-010",
     "domain": "mcp",
     "term": "tool_choice: auto",
-    "termJa": "tool_choice: auto（自律判断）",
-    "definition": "デフォルトの動作。Claudeがツールを呼び出すかテキストで直接回答するかを自律的に判断する。構造化出力を強制したい場合には不向き。",
+    "termJa": "tool_choice: auto（モデルの自律判断）",
+    "definition": "デフォルトの動作。ツールを呼び出すか、テキストで直接答えるかを、Claudeが自分で判断する。構造化出力を強制したい場合には向かない。",
     "tags": [
       "mcp",
       "tool_choice"
@@ -828,8 +828,8 @@
     "id": "fc-mcp-011",
     "domain": "mcp",
     "term": "tool_choice: any",
-    "termJa": "tool_choice: any（ツール呼び出し強制）",
-    "definition": "何らかのツールを必ず呼び出すことを強制する（構造化出力は保証されるが、どのツールが呼ばれるかは保証されない）。特定のツールを強制したい場合はこれではなく名前指定形式 {\"type\":\"tool\",\"name\":\"x\"} を使う必要がある点がトラップ。",
+    "termJa": "tool_choice: any（必ずツールを呼ぶ）",
+    "definition": "何らかのツールを必ず呼び出させる（構造化出力は保証されるが、どのツールが呼ばれるかは保証されない）。特定のツールを強制したいときは、これではなく、名前を指定する形式の{\"type\":\"tool\",\"name\":\"x\"}を使う必要がある。ここがトラップになる。",
     "tags": [
       "mcp",
       "tool_choice"
@@ -839,8 +839,8 @@
     "id": "fc-mcp-012",
     "domain": "mcp",
     "term": "tool_choice: {\"type\":\"tool\",\"name\":\"x\"}",
-    "termJa": "tool_choice: 特定ツール名の指定強制",
-    "definition": "特定の名前のツールを強制的に呼び出させる指定方法。ワークフローの順序を強制したい場合（例: extract_metadataを最初に必ず実行させる）に使う。",
+    "termJa": "tool_choice: 特定のツールを名前で指定して強制",
+    "definition": "特定の名前のツールを、必ず呼び出させる指定方法。ワークフローの順序を強制したい場合（例: extract_metadataを最初に必ず実行させる）に使う。",
     "tags": [
       "mcp",
       "tool_choice"
@@ -850,8 +850,8 @@
     "id": "fc-mcp-013",
     "domain": "mcp",
     "term": "Error category taxonomy",
-    "termJa": "ツールエラーの分類体系",
-    "definition": "ツールエラーは4分類される。Transient（タイムアウト/503/レート制限、再試行可、指数バックオフ）、Validation（入力修正が必要、再試行不可）、Business（ポリシー違反/凍結アカウント、エスカレーション/通知が必要）、Permission（アクセス拒否/トークン期限切れ、人間へエスカレーション）。",
+    "termJa": "ツールエラーの4分類",
+    "definition": "ツールエラーは4つに分類される。Transient（タイムアウト、503、レート制限。指数バックオフで再試行できる）、Validation（入力の修正が必要。再試行できない）、Business（ポリシー違反、凍結アカウント。エスカレーションや通知が必要）、Permission（アクセス拒否、トークンの期限切れ。人の担当者へエスカレーションする）。",
     "tags": [
       "mcp",
       "error-handling"
@@ -861,8 +861,8 @@
     "id": "fc-mcp-014",
     "domain": "mcp",
     "term": "Empty vs failed distinction",
-    "termJa": "空結果と失敗の区別",
-    "definition": "HTTP 200 + 空配列は「有効な検索結果ゼロ」を意味し、タイムアウトや5xxは「検索自体が実行されなかった」ことを意味する。両者はエージェントの応答が全く異なるべきであり、レスポンスステータスを必ず確認する必要がある（頻出論点）。",
+    "termJa": "空の結果と失敗の区別",
+    "definition": "HTTP 200と空配列は、「有効な検索結果がゼロだった」ことを意味する。一方、タイムアウトや5xxは、「検索そのものが実行されなかった」ことを意味する。エージェントはこの2つで応答をまったく変えるべきなので、レスポンスのステータスを必ず確認する必要がある（頻出の論点）。",
     "tags": [
       "mcp",
       "error-handling"
@@ -872,8 +872,8 @@
     "id": "fc-mcp-015",
     "domain": "mcp",
     "term": "4-5 tool maximum per agent principle",
-    "termJa": "1エージェントあたりツール数4〜5個の原則",
-    "definition": "1エージェントあたりツールは4〜5個が上限の目安。18個以上のツールを持たせるとツール選択の信頼性が大きく低下する。解決策は説明文の改善やプロンプト例の追加ではなく、専門化したサブエージェントにツールを分散させるアーキテクチャ的な対応。",
+    "termJa": "1エージェントあたりツールは4〜5個までという原則",
+    "definition": "1エージェントに持たせるツールは、4〜5個が上限の目安。18個以上のツールを持たせると、ツールを選ぶ信頼性が大きく下がる。解決策は、ツールの説明の改善やプロンプトへの例の追加ではなく、専門化したサブエージェントにツールを分散させるという、アーキテクチャ面の対応である。",
     "tags": [
       "mcp",
       "tool-design"
@@ -883,8 +883,8 @@
     "id": "fc-mcp-016",
     "domain": "mcp",
     "term": "Required tool description components",
-    "termJa": "ツール説明文に必須の構成要素",
-    "definition": "ツール説明文には、目的/使用タイミング、入力形式と例、出力形式、エッジケースの挙動、類似ツールとの差別化という要素が必須。説明文の質がエージェントのツール選択信頼性を左右する。",
+    "termJa": "ツールの説明に必須の要素",
+    "definition": "ツールの説明には、目的と使うタイミング、入力形式と例、出力形式、エッジケースでの挙動、似たツールとの違いという要素が必須である。説明の質が、エージェントがツールを選ぶ信頼性を左右する。",
     "tags": [
       "mcp",
       "tool-design"
@@ -895,7 +895,7 @@
     "domain": "mcp",
     "term": "Structured error response shape",
     "termJa": "構造化エラー応答の形式",
-    "definition": "ツールのエラー応答は isError、errorCategory、isRetryable、description、partial_results、attempted_action といったフィールドで構造化する。「Operation failed」のような汎用エラーメッセージや、サービス障害時に空配列を静かに返すことはアンチパターン。",
+    "definition": "ツールのエラー応答は、isError、errorCategory、isRetryable、description、partial_results、attempted_actionといったフィールドで構造化する。\"Operation failed\"のような汎用のエラーメッセージや、サービス障害のときに空配列を黙って返すことは、アンチパターンである。",
     "tags": [
       "mcp",
       "error-handling"
@@ -905,8 +905,8 @@
     "id": "fc-mcp-018",
     "domain": "mcp",
     "term": "MCP resources reduce exploratory tool calls",
-    "termJa": "探索的ツール呼び出しを減らすMCP resources",
-    "definition": "resourcesはuri、name、mimeTypeを持つカタログとして事前にブラウズでき、盲目的な検索呼び出しを重ねる前に利用可能なデータを把握できる。これにより無駄なツールコールを削減できる。",
+    "termJa": "探索的なツール呼び出しを減らすMCP resources",
+    "definition": "resourcesは、uri、name、mimeTypeを持つカタログとして、事前にブラウズできる。手当たり次第に検索を呼び出す前に、使えるデータを把握できるので、無駄なツール呼び出しを減らせる。",
     "tags": [
       "mcp",
       "resources"
@@ -916,8 +916,8 @@
     "id": "fc-context-001",
     "domain": "context",
     "term": "Lost in the Middle effect",
-    "termJa": "Lost in the Middle現象",
-    "definition": "長い会話では冒頭と末尾の情報はモデルに確実に処理されるが、中間部分は見落とされやすいという現象。対策として、重要情報をキーファインディングとして先頭に要約したり、明示的なセクション見出しを使ったり、重要情報を冒頭と末尾の両方に配置する（bookending）。",
+    "termJa": "Lost in the Middle現象（中間部分の見落とし）",
+    "definition": "長い会話では、冒頭と末尾の情報はモデルに確実に処理されるが、中間の部分は見落とされやすい、という現象。対策は、重要な情報をキーファインディングとして先頭に要約する、明示的なセクション見出しを使う、重要な情報を冒頭と末尾の両方に置く（bookending）、など。",
     "tags": [
       "context-degradation",
       "lost-in-the-middle"
@@ -927,8 +927,8 @@
     "id": "fc-context-002",
     "domain": "context",
     "term": "Case facts block pattern",
-    "termJa": "要約禁止のケース事実ブロックパターン",
-    "definition": "顧客ID・注文番号・日付・金額・issue・依頼されたアクションなどを保持する、要約禁止（do-not-summarize）指示付きの永続的な構造化ブロック。/compact による圧縮を生き残らせるための設計パターン。",
+    "termJa": "ケース事実ブロックのパターン（要約禁止）",
+    "definition": "顧客ID、注文番号、日付、金額、issue、依頼されたアクションなどを保持する、構造化されたブロック。要約禁止（do-not-summarize）の指示をつけて、永続的に残す。/compactによる圧縮を生き延びさせるための設計パターンである。",
     "tags": [
       "context-degradation",
       "case-facts-block"
@@ -938,8 +938,8 @@
     "id": "fc-context-003",
     "domain": "context",
     "term": "What survives /compact vs what is lost",
-    "termJa": "/compact後に残るものと失われるもの",
-    "definition": "/compact 後も残るもの：CLAUDE.md（ディスクから再読込）、システムプロンプト、直近のメッセージ、auto-memory の MEMORY.md。失われるもの：初期の詳細情報、具体的なツール結果、初期コンテキストの正確な引用や数値。予測不能な自動圧縮より前に、能動的に /compact する方が良い。",
+    "termJa": "/compactのあとに残るものと失われるもの",
+    "definition": "/compactのあとも残るのは、CLAUDE.md（ディスクから再読み込みされる）、システムプロンプト、直近のメッセージ、auto-memoryのMEMORY.md。失われるのは、初期の詳細な情報、具体的なツールの結果、初期のコンテキストの正確な引用や数値。予測できない自動圧縮が起きる前に、こちらから先に/compactするほうがよい。",
     "tags": [
       "compact",
       "context-degradation"
@@ -950,7 +950,7 @@
     "domain": "context",
     "term": "Tool output trimming",
     "termJa": "ツール出力のトリミング",
-    "definition": "ツール結果は必要なフィールドのみを返すべきという原則。例：40フィールドある注文照会結果から本質的な5フィールドだけを返す。これにより無関係なデータでコンテキストウィンドウを浪費せず、progressive summarization による情報劣化のリスクも減らせる。",
+    "definition": "ツールの結果は、必要なフィールドだけを返すべきという原則。例: 40フィールドある注文照会の結果から、本質的な5フィールドだけを返す。こうすると、無関係なデータでコンテキストウィンドウを無駄にせず、progressive summarizationによる情報の劣化のリスクも減らせる。",
     "tags": [
       "context-degradation",
       "tool-output"
@@ -961,7 +961,7 @@
     "domain": "context",
     "term": "Immediate escalation triggers",
     "termJa": "即時エスカレーションのトリガー",
-    "definition": "即座にエスカレーションすべきトリガー：顧客が明示的に人間対応を要求した場合、ポリシーのギャップや例外に該当する場合、合理的な試行を重ねても進展がない場合。これらは客観的・構造的な基準であり、感情や自己申告の確信度ではない。",
+    "definition": "すぐにエスカレーションすべきトリガーは次の3つ。顧客が人の対応を明示的に求めた場合、ポリシーのギャップや例外に当たる場合、合理的な試行を重ねても進展がない場合。これらは客観的で構造的な基準であり、感情や、自己申告の確信度ではない。",
     "tags": [
       "escalation",
       "reliability"
@@ -971,8 +971,8 @@
     "id": "fc-context-006",
     "domain": "context",
     "term": "When NOT to escalate (non-triggers)",
-    "termJa": "エスカレーション不要なケース",
-    "definition": "エスカレーションすべきでないケース（試験で頻出）：高い感情表出のみ（sentiment ≠ complexity）、自己申告の低い確信度（キャリブレーションが悪く信頼できない）、会話の長さそのもの。これらは複雑さや実際の失敗を示す信頼できる指標ではない。",
+    "termJa": "エスカレーションが不要なケース",
+    "definition": "エスカレーションすべきでないケース（試験で頻出）は、感情の表出が強いだけの場合（sentiment ≠ complexity）、自己申告の確信度が低い場合（キャリブレーションが悪く、信頼できない）、会話が長いというだけの場合。これらは、複雑さや実際の失敗を示す信頼できる指標ではない。",
     "tags": [
       "escalation",
       "reliability"
@@ -983,7 +983,7 @@
     "domain": "context",
     "term": "Sentiment vs complexity",
     "termJa": "感情の強さと複雑さの違い",
-    "definition": "感情の強さと問題の複雑さは独立した軸である。怒っている顧客でも単純な請求エラーならエージェントが解決できる一方、穏やかな口調でもSLAやデータ所在地のような複雑なポリシー問題であればエスカレーションが必要になり得る。感情だけでエスカレーション判断をしてはならない。",
+    "definition": "感情の強さと問題の複雑さは、独立した軸である。怒っている顧客でも、単純な請求エラーならエージェントが解決できる。一方、口調が穏やかでも、SLAやデータの所在地のような複雑なポリシーの問題なら、エスカレーションが必要になることがある。感情だけでエスカレーションを判断してはならない。",
     "tags": [
       "escalation",
       "sentiment-complexity"
@@ -993,8 +993,8 @@
     "id": "fc-context-008",
     "domain": "context",
     "term": "Confidence calibration requirement",
-    "termJa": "確信度スコアの較正要件",
-    "definition": "フィールドレベルの確信度スコア {value, confidence} は、ラベル付き検証セットに対して0.9が実際に約90%正解であることを意味しなければキャリブレーションが取れておらず「意味がない」。エスカレーション判断はLLMの自己申告確信度ではなく決定論的な閾値ロジックで行うべき。",
+    "termJa": "確信度スコアのキャリブレーションの条件",
+    "definition": "フィールドごとの確信度スコア{value, confidence}は、ラベル付きの検証セットで、0.9が実際に約90%の正解率を意味していなければ、キャリブレーションが取れておらず「意味がない」。エスカレーションするかどうかは、LLMの自己申告の確信度ではなく、決定論的なしきい値のロジックで決めるべきである。",
     "tags": [
       "confidence",
       "reliability"
@@ -1004,8 +1004,8 @@
     "id": "fc-context-009",
     "domain": "context",
     "term": "Aggregate accuracy masking",
-    "termJa": "集計精度が覆い隠す性能低下",
-    "definition": "全体97%の精度という数字は、手書きメモで45%、外国語文書で62%といった特定カテゴリでの深刻な性能低下を隠し得る（試験頻出）。本番運用可否の判断前に、必ず文書タイプ別・フィールド別に精度を分解して確認すべき。",
+    "termJa": "全体の精度に隠れてしまう性能低下",
+    "definition": "全体で97%の精度という数字は、手書きメモで45%、外国語の文書で62%といった、特定のカテゴリでの深刻な性能低下を隠してしまうことがある（試験で頻出）。本番で運用してよいかを判断する前に、必ず文書タイプ別・フィールド別に精度を分解して確認すべきである。",
     "tags": [
       "accuracy",
       "reliability"
@@ -1015,8 +1015,8 @@
     "id": "fc-context-010",
     "domain": "context",
     "term": "Stratified random sampling for human review",
-    "termJa": "人手レビュー向け層別サンプリング",
-    "definition": "人によるレビューを効率化するための層別サンプリング比率：高リスク項目20%、中リスク10%、低リスク5%をレビュー対象とする。リスクレベルに応じてレビュー労力を配分する考え方。",
+    "termJa": "人によるレビューのための層別サンプリング",
+    "definition": "人によるレビューを効率化するための層別サンプリングの比率は、高リスクの項目で20%、中リスクで10%、低リスクで5%をレビューの対象にする。リスクレベルに応じて、レビューの労力を配分する考え方である。",
     "tags": [
       "review",
       "sampling"
@@ -1026,8 +1026,8 @@
     "id": "fc-context-011",
     "domain": "context",
     "term": "Information provenance fields",
-    "termJa": "情報の出所を示すフィールド群",
-    "definition": "claim（主張）とsource（情報源）を対応付けるためのフィールド群：claim、evidence、source_url、document_name、publication_date、source_type。矛盾するデータはどちらかを勝手に選ばず、出典ごとに注釈を付けて競合を明示し、下流やユーザーに判断を委ねる。",
+    "termJa": "情報の出所を示すフィールド",
+    "definition": "claim（主張）とsource（情報源）を対応付けるためのフィールドは、claim、evidence、source_url、document_name、publication_date、source_type。矛盾するデータは、どちらかを勝手に選ばず、出典ごとに注釈を付けて競合を明示し、判断は下流やユーザーに委ねる。",
     "tags": [
       "provenance",
       "synthesis"
@@ -1037,8 +1037,8 @@
     "id": "fc-context-012",
     "domain": "context",
     "term": "Temporal fields",
-    "termJa": "時間関連フィールド",
-    "definition": "情報の鮮度混同（period confusion）を防ぐための時間関連フィールド：data_as_of（データ基準日）、source_published（情報源公開日）、retrieved_on（取得日）。これらを明示することで、古いデータを最新として誤用するリスクを減らす。",
+    "termJa": "時間に関するフィールド",
+    "definition": "情報の鮮度の混同（period confusion）を防ぐための、時間に関するフィールド: data_as_of（データの基準日）、source_published（情報源の公開日）、retrieved_on（取得日）。これらを明示すると、古いデータを最新のものとして誤って使うリスクを減らせる。",
     "tags": [
       "provenance",
       "temporal"
@@ -1048,8 +1048,8 @@
     "id": "fc-context-013",
     "domain": "context",
     "term": "Crash recovery pattern",
-    "termJa": "クラッシュ復旧パターン",
-    "definition": "各エージェントが既知のパス（例：/tmp/workflow/agent-X-state.json）に状態をエクスポートし、コーディネーターがマニフェストを保持することで、最後に完了したステップから再開できるようにする設計パターン。長時間実行のマルチエージェントワークフローの障害耐性に用いる。",
+    "termJa": "クラッシュからの復旧パターン",
+    "definition": "各エージェントが、決まったパス（例：/tmp/workflow/agent-X-state.json）に状態をエクスポートする。コーディネーターがマニフェストを持っておくことで、最後に完了したステップから再開できる。長時間動くマルチエージェントのワークフローで、障害への耐性を高めるための設計パターンである。",
     "tags": [
       "reliability",
       "crash-recovery"
@@ -1059,8 +1059,8 @@
     "id": "fc-context-014",
     "domain": "context",
     "term": "Structured error context fields",
-    "termJa": "サブエージェントの構造化エラー伝播フィールド",
-    "definition": "サブエージェントのエラーを上位に伝播する際に含めるべき構造化フィールド：failure_type、service、attempted_query、timeout_duration_ms、partial_results、alternative_approaches、is_retryable、retry_after_ms。一時的な失敗はバックオフ付きでローカルリトライし、解決不能なエラーのみ試行詳細・部分結果・再試行可否とともに伝播する。",
+    "termJa": "サブエージェントの構造化されたエラーコンテキスト",
+    "definition": "サブエージェントのエラーを上位に伝えるときに含めるべき構造化フィールドは、failure_type、service、attempted_query、timeout_duration_ms、partial_results、alternative_approaches、is_retryable、retry_after_ms。一時的な失敗は、バックオフをつけてローカルでリトライする。解決できないエラーだけを、試行の詳細、部分的な結果、再試行できるかどうかとあわせて伝える。",
     "tags": [
       "error-handling",
       "reliability"
@@ -1070,8 +1070,8 @@
     "id": "fc-context-015",
     "domain": "context",
     "term": "Scratchpad persistence strategy",
-    "termJa": "スクラッチパッド永続化戦略",
-    "definition": "長時間セッションでの劣化の兆候（回答が実際に見つけたコードではなく「典型的なパターン」にすり替わる、一貫性のない回答、発見済み事項の忘却、検証の代わりに憶測を使う）への対策として、findingsをmarkdownのscratchpadファイルに永続化し、/compact 後も再読込できるようにするパターン。Explore subagentは50以上のファイルを読み込み、メインコンテキストには簡潔な要約のみ返す。",
+    "termJa": "スクラッチパッドによる永続化の戦略",
+    "definition": "長いセッションでは、次のような劣化の兆候が出る。回答が、実際に見つけたコードではなく「典型的なパターン」にすり替わる。回答に一貫性がなくなる。見つけたはずのことを忘れる。検証せずに憶測で答える。この対策として、findingsをmarkdownのscratchpadファイルに保存して残し、/compactのあとでも読み直せるようにする。Exploreサブエージェントは50以上のファイルを読み込み、メインのコンテキストには簡潔な要約だけを返す。",
     "tags": [
       "context-degradation",
       "scratchpad"
