@@ -55,7 +55,7 @@ const SINGLE_CHOICE_COUNT = 4;
 const MULTI_CHOICE_MIN = 4;
 const MULTI_CHOICE_MAX = 5;
 
-const FLASHCARDS_FULL_COUNT = 100;
+const FLASHCARDS_FULL_COUNT = 113;
 
 const allQuestionIds = new Map(); // id -> file it was first seen in
 

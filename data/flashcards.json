@@ -278,6 +278,50 @@
     ]
   },
   {
+    "id": "fc-agentic-028",
+    "domain": "agentic",
+    "term": "Coordinator allowedTools must include \"Task\"",
+    "termJa": "コーディネーターの allowedTools と \"Task\"",
+    "definition": "試験ガイドの前提では、サブエージェントを起動する仕組みは Task ツールである。コーディネーターの allowedTools に \"Task\" がないと、agents にサブエージェントを定義していても委任できず、手元のツールだけで作業を続けてしまう。（補足: 最新のドキュメントでは Task は Agent に改名され、allowedTools は確認なしで使えるツールの一覧という意味になっている。本番は試験ガイドの前提で答える）",
+    "tags": [
+      "allowedTools",
+      "subagents"
+    ]
+  },
+  {
+    "id": "fc-agentic-029",
+    "domain": "agentic",
+    "term": "AgentDefinition tools: restrict each subagent to its role",
+    "termJa": "サブエージェントのツール制限（tools）",
+    "definition": "AgentDefinition の tools に書いたツールだけが、そのサブエージェントで使える。tools を省くと、使えるツールをすべて引き継ぐ。調べる係には Read・Grep・Glob、書き換える係にはさらに Edit・Write、のように役割に必要なものだけを渡す。渡していないツールはそもそも存在しないので、エラーも確認も出ないまま、それなしで作業が進む。",
+    "tags": [
+      "AgentDefinition",
+      "tool-restriction"
+    ]
+  },
+  {
+    "id": "fc-agentic-030",
+    "domain": "agentic",
+    "term": "Diagnosing misconfigured subagent spawning",
+    "termJa": "サブエージェントが正しく動かないときの確認点",
+    "definition": "原因は3つに分けて考える。① ツール権限の不足: コーディネーターに \"Task\" がなく、委任そのものができない。② AgentDefinition の誤り: tools に必要なツールがない（例: 調べる係に WebSearch がなく、一般知識で答えてしまう）、tools を省いて余計なツールまで持っている、description があいまいでどの依頼を任せるか決められない。③ つながりの欠如: サブエージェントを agents に登録していない。",
+    "tags": [
+      "AgentDefinition",
+      "troubleshooting"
+    ]
+  },
+  {
+    "id": "fc-agentic-031",
+    "domain": "agentic",
+    "term": "Choosing an orchestration pattern",
+    "termJa": "オーケストレーションの3つの形の選び方",
+    "definition": "並列実行は、互いに関係のない調べものを1回の応答でまとめて任せる形で、全体の時間はいちばん遅いものに近くなる（レイテンシー重視）。逐次パイプラインは、毎回決まった手順を順につなぐ形で、手順ごとにテストでき、間に検証を挟める（信頼性重視）。コーディネーター・ワーカーは、統合した結果を見て足りない領域を探し、そこを任せ直す形で、網羅性を最優先するときに向く。",
+    "tags": [
+      "orchestration",
+      "multi-agent"
+    ]
+  },
+  {
     "id": "fc-claude-code-001",
     "domain": "claude-code",
     "term": "CLAUDE.md loading hierarchy",
@@ -492,6 +536,39 @@
     "tags": [
       "skills",
       "commands"
+    ]
+  },
+  {
+    "id": "fc-claude-code-021",
+    "domain": "claude-code",
+    "term": "Built-in tools: Grep vs Glob vs Read vs Bash",
+    "termJa": "組み込みツールの使い分け（Grep・Glob・Read・Bash）",
+    "definition": "Glob はファイルの「名前やパス」をパターン（例: **/*.test.ts）で探す。Grep はファイルの「中身」を正規表現で探す。Read は決まったファイルの内容を読む（長いファイルは行の範囲を指定できる）。Bash はテストや git などのコマンドを動かす。（補足: 最新の Claude Code の macOS・Linux・WSL では Glob と Grep が既定のツールに含まれず、Bash から find や grep を使う。本番は試験ガイドの前提で答える）",
+    "tags": [
+      "built-in-tools",
+      "codebase-exploration"
+    ]
+  },
+  {
+    "id": "fc-claude-code-022",
+    "domain": "claude-code",
+    "term": "Incremental codebase exploration",
+    "termJa": "段階的なコードベース探索",
+    "definition": "最初からファイルを全部読まない。① Grep や Glob で広く浅く探して候補を絞る。② 当たったファイルの関係ある部分だけを Read で読む。③ 入口の処理から、呼び出している（import している）関数をたどって次のファイルを読む。結果が多すぎて省略されたら、フォルダを限定して探し直す。広い調査は Explore サブエージェントに任せ、要約だけを受け取るとコンテキストを節約できる。",
+    "tags": [
+      "codebase-exploration",
+      "context-window"
+    ]
+  },
+  {
+    "id": "fc-claude-code-023",
+    "domain": "claude-code",
+    "term": "Edit failure fallback: Read + Write",
+    "termJa": "Edit が失敗したときの代わりの手",
+    "definition": "Edit は、書き換える前の文字列がファイルの中で見つからないときや、1か所に決まらないときに失敗する。試験ガイドの前提では、そのときはファイルを Read で読み、Write で全体を書き直すのが代わりの手になる。（補足: 最新のドキュメントでは、前後の行も含めた長い目印にして1か所に決める方法や、すべてを置き換える設定も示されている）",
+    "tags": [
+      "built-in-tools",
+      "edit"
     ]
   },
   {
@@ -913,6 +990,50 @@
     ]
   },
   {
+    "id": "fc-mcp-019",
+    "domain": "mcp",
+    "term": "MCP server scopes: local / project / user",
+    "termJa": "MCP サーバーのスコープ（local・project・user）",
+    "definition": "claude mcp add で --scope を省くと local になる（自分の、そのプロジェクトだけ。~/.claude.json に保存され、リポジトリには書かれない）。project はリポジトリ直下の .mcp.json に書かれ、コミットすればチーム全員に配られる。user は ~/.claude.json に保存され、自分のすべてのプロジェクトで使える。チームで共有したいなら project を選ぶ。",
+    "tags": [
+      "mcp-config",
+      "scope"
+    ]
+  },
+  {
+    "id": "fc-mcp-020",
+    "domain": "mcp",
+    "term": "Verifying MCP connection and tool discovery",
+    "termJa": "MCP サーバーの接続とツールの確認",
+    "definition": "Claude Code の中で /mcp を開くと、サーバーごとの接続状態と、使えるツールを確認できる。ターミナルでは claude mcp list や claude mcp get <名前> で確かめられる。.mcp.json に書かれた project スコープのサーバーは、安全のため、初めて使うときに承認を求められる。",
+    "tags": [
+      "mcp-config",
+      "tool-discovery"
+    ]
+  },
+  {
+    "id": "fc-mcp-021",
+    "domain": "mcp",
+    "term": "Replace generic tools with constrained alternatives",
+    "termJa": "汎用ツールを制約付きの専用ツールに置き換える",
+    "definition": "役割の外の呼び出しを防ぐには、ツールの数を絞るだけでなく、何でもできる汎用ツールを、目的に合わせて制限した専用ツールに置き換える。例: どんな URL でも取りに行ける fetch_url の代わりに、文書の URL かどうかを検証してから読む load_document を渡す。範囲の外の呼び出しが、そもそもできなくなる。",
+    "tags": [
+      "tool-distribution",
+      "tool-design"
+    ]
+  },
+  {
+    "id": "fc-mcp-022",
+    "domain": "mcp",
+    "term": "Scoped cross-role tools for frequent needs",
+    "termJa": "よく使う役割外の作業には範囲を絞ったツールを渡す",
+    "definition": "まとめ役のエージェントが事実の確認のたびにコーディネーターへ戻ると、往復で時間がかかる。よく起きる単純な確認に限り、範囲を絞った専用ツール（例: verify_fact）をまとめ役に直接渡す。複雑な調査は、これまでどおりコーディネーター経由で調べる係に任せる。",
+    "tags": [
+      "tool-distribution",
+      "multi-agent"
+    ]
+  },
+  {
     "id": "fc-context-001",
     "domain": "context",
     "term": "Lost in the Middle effect",
@@ -1075,6 +1196,28 @@
     "tags": [
       "context-degradation",
       "scratchpad"
+    ]
+  },
+  {
+    "id": "fc-context-016",
+    "domain": "context",
+    "term": "Context window optimization techniques",
+    "termJa": "長い会話で応答の質を保つ4つの手法",
+    "definition": "要約は、古いやり取りを短くまとめる（金額や日付などの細かい数字があいまいになりやすい）。スライディングウィンドウは、直近の何ターンかだけを残す（範囲から外れた古い事実は消える）。構造化された状態オブジェクトは、必要な事実を決まった形にまとめて毎回渡す（何度要約しても数字が変わらない）。選択的な保持は、ツールの結果などから必要な項目だけを残す。",
+    "tags": [
+      "context-window",
+      "summarization"
+    ]
+  },
+  {
+    "id": "fc-context-017",
+    "domain": "context",
+    "term": "Messages API is stateless",
+    "termJa": "Messages API は会話を覚えていない",
+    "definition": "Messages API はサーバー側に会話を保存しない。前のやり取りを踏まえて答えさせるには、アプリの側で履歴を持ち、毎回まとめて送る必要がある。そのため、会話が長くなるほど1回のリクエストのトークンが増える。上限に近づく前に、要約や状態オブジェクトで送る量を減らす。",
+    "tags": [
+      "context-window",
+      "messages-api"
     ]
   }
 ]

@@ -610,6 +610,10 @@ button {
 }
 
 /* ---------- Question Card (quiz / review) ---------- */
+.question-card {
+  overflow-wrap: anywhere; /* 出典 URLs and long identifiers must wrap, not run off the card */
+}
+
 .question-card__header {
   margin-bottom: var(--space-3);
 }
@@ -774,8 +778,10 @@ button {
   touch-action: manipulation;
 }
 
+/* Both faces share one grid cell, so the card grows to fit the taller face
+   (long definitions used to spill out of a fixed-height card). */
 .flip-card__inner {
-  position: relative;
+  display: grid;
   width: 100%;
   min-height: 220px;
   transition: transform 0.5s;
@@ -787,14 +793,17 @@ button {
 }
 
 .flip-card__face {
-  position: absolute;
-  inset: 0;
+  grid-area: 1 / 1;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--space-3);
   padding: var(--space-5);
+  /* keep text clear of the domain badge in the top-left corner */
+  padding-top: calc(var(--space-4) + 20px + var(--space-3));
+  overflow-wrap: anywhere;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -802,6 +811,12 @@ button {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   text-align: center;
+}
+
+/* The front is as tall as the back, so start the term at the top instead of
+   leaving it centered far down a long card. */
+.flip-card__face--front {
+  justify-content: flex-start;
 }
 
 .flip-card__face--back {
@@ -831,7 +846,9 @@ button {
 }
 
 .flip-card__definition {
+  align-self: stretch;
   font-size: 1rem;
+  text-align: left; /* multi-line Japanese reads better left-aligned */
   margin: 0;
 }
 
