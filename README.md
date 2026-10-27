@@ -63,7 +63,7 @@ cca-f/
 
 最終的な問題数の目標: 単一選択 agentic 82 / claude-code 57 / prompting 58 / mcp 53 / context 43 (計293問) + 複数選択 agentic 3 / claude-code 3 / prompting 2 / mcp 2 / context 2 (計12問)。
 
-2026-10-27 に全問を作り直しました (旧323問 → 305問)。本番のスコアレポートに載っている37の試験目標を骨組みにし、Claude Academy (academy.claude.com) の日本語版を根拠にしています。
+2026-10-27 に全問を作り直しました (旧323問 → 305問)。CCA-F の37の試験目標を骨組みにし、Claude Academy (academy.claude.com) の日本語版を根拠にしています。
 
 - `tags` の先頭は目標コード (`obj-A1` など。A=agentic、C=claude-code、X=context、P=prompting、M=mcp)
 - `questionJa` / `choicesJa` は本番の日本語版と同じ硬い翻訳調、`explanation` は【かみくだくと】【正解】【誤答】の順で、最後に（目標 A1）
@@ -83,7 +83,7 @@ cca-f/
 ```
 
 - `id` は `fc-{domain}-{連番3桁}`、こちらも一意である必要があります。
-- 目標枚数: 113枚 (2026-10-27 に、スコアレポートで点が取れなかった目標のカードを13枚追加)。
+- 目標枚数: 113枚 (2026-10-27 に、マルチエージェント構成・ツールの割り当て・MCP の設定・コードベース探索などの目標のカードを13枚追加)。
 
 ### 追加/編集後の検証
 
