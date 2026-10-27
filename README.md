@@ -66,7 +66,7 @@ cca-f/
 2026-10-27 に全問を作り直しました (旧323問 → 305問)。CCA-F の37の試験目標を骨組みにし、Claude Academy (academy.claude.com) の日本語版を根拠にしています。
 
 - `tags` の先頭は目標コード (`obj-A1` など。A=agentic、C=claude-code、X=context、P=prompting、M=mcp)
-- `questionJa` / `choicesJa` は本番の日本語版と同じ硬い翻訳調、`explanation` は【かみくだくと】【正解】【誤答】の順で、最後に（目標 A1）
+- `questionJa` / `choicesJa` は本番の日本語版に近づけた直訳調 (一文が長い、カタカナ語が多い、選択肢は同じ骨組みと長さにそろえる)、`explanation` は【かみくだくと】【正解】【誤答】の順で、最後に（目標 A1）
 - 試験ガイド v1.0 と最新の公式ドキュメントが食い違う点は、ガイドの説明を正解にし、解説に【補足】を付けている
 - id は各ドメイン 101 から振り直した (旧 id の学習履歴は使われない)
 
