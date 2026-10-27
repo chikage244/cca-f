@@ -308,7 +308,10 @@ export function renderQuestionCard(container, question, opts) {
       label = "不正解";
     }
     explanationPanel.appendChild(el("p", { class: "question-card__explanation-label" }, label));
-    explanationPanel.appendChild(el("p", {}, question.explanation));
+    // Explanations are written as 【かみくだくと】…【正解】…【誤答】…【補足】…; one paragraph per part.
+    question.explanation
+      .split(/(?=【(?:かみくだくと|正解|誤答|補足)】)/)
+      .forEach((part) => explanationPanel.appendChild(el("p", {}, part.trim())));
     if (question.ref) {
       explanationPanel.appendChild(el("p", { class: "text-muted question-card__ref" }, `出典: ${question.ref}`));
     }

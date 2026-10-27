@@ -1,1304 +1,1227 @@
 [
   {
-    "id": "context-001",
-    "domain": "context",
-    "difficulty": 1,
-    "question": "A developer productivity team is designing a long-running Claude Code session that will process dozens of files and tool calls. Which statement about the finite context window correctly describes the underlying cost/reliability constraint?",
-    "choices": [
-      "Only user-authored messages count against the context window; tool results are stored separately and free",
-      "Every message, tool result, and system prompt consumes tokens, and long conversations degrade as the window fills",
-      "The context window only matters for billing, not for output quality or reliability",
-      "Context window limits apply solely to the final response, not to the accumulated conversation history"
-    ],
-    "questionJa": "開発者生産性チームが、数十のファイルとツール呼び出しを処理する長時間のClaude Codeセッションを設計しています。有限のコンテキストウィンドウについて、コストと信頼性の制約を正しく説明している記述はどれですか。",
-    "choicesJa": [
-      "コンテキストウィンドウを消費するのはユーザーが書いたメッセージだけで、ツール結果は別に保存されるため無料である",
-      "すべてのメッセージ、ツール結果、システムプロンプトがトークンを消費し、ウィンドウが埋まるにつれて長い会話は劣化する",
-      "コンテキストウィンドウが関係するのは課金だけで、出力の品質や信頼性には関係しない",
-      "コンテキストウィンドウの上限が適用されるのは最終的な応答だけで、蓄積された会話履歴には適用されない"
-    ],
-    "answer": 1,
-    "explanation": "正解は、システムプロンプト・メッセージ・ツール結果のすべてがトークンを消費し、会話が長くなるほど劣化する、という有限のコンテキストウィンドウの基本原則を述べています。ツール結果は無料だとする説明は誤りです。課金だけに関係するとする説明は、品質の劣化を無視しています。蓄積された会話履歴も同じようにトークンを消費するので、上限が最終的な応答にしかかからないとする説明も誤りです。",
-    "tags": [
-      "context-window",
-      "economics"
-    ],
-    "ref": "D5 context economics"
-  },
-  {
-    "id": "context-002",
+    "id": "context-101",
     "domain": "context",
     "difficulty": 2,
-    "question": "In a multi-agent research system, a coordinator compiles a long transcript of subagent findings before answering the user's question. To reduce the risk of the model underweighting information buried in the middle of that transcript, what should the coordinator do?",
+    "question": "A multi-agent research system built with the Claude Agent SDK has a coordinator pass the web search subagent's findings to a synthesis subagent, which produces cited reports. The web search subagent currently returns several paragraphs of prose with a list of URLs at the end. As a result, the synthesis subagent often attaches the wrong source to a claim, and reviewers cannot trace statements in the final report back to their evidence. The fix must not add new search work to the synthesis subagent. Which change to the web search subagent's output is the most appropriate approach?",
     "choices": [
-      "Place a key-findings summary at the start of the transcript and bookend critical facts at both the beginning and end",
-      "Append a key-findings summary only at the very end, right before the final answer",
-      "Randomize the order of subagent findings so no single section is consistently deprioritized",
-      "Increase the max_tokens parameter so the model has more room to consider the middle content"
+      "Have the subagent write longer, more detailed paragraphs that describe each source in context, so the synthesis subagent can infer which source supports which statement.",
+      "Have the synthesis subagent re-run the search for each claim, so that it confirms which URL supports each statement before citing it.",
+      "Return the findings as a list of items, each holding the claim, a supporting excerpt, the source URL or document name, and the publication date.",
+      "Keep the prose, but have the subagent list at the end of each paragraph the URLs it drew on, so that it is clear which sources support each paragraph's content."
     ],
-    "questionJa": "マルチエージェントのリサーチシステムで、コーディネーターがサブエージェントの調査結果を長いトランスクリプトにまとめてから、ユーザーの質問に答えます。トランスクリプトの途中に埋もれた情報をモデルが軽視してしまうリスクを減らすために、コーディネーターがとるべき対応はどれですか。",
+    "questionJa": "Claude Agent SDK で構築されたマルチエージェントのリサーチシステムでは、コーディネーターが Web 検索サブエージェントの調査結果を統合サブエージェントに渡し、引用付きのレポートを生成しています。現在、Web 検索サブエージェントは数段落の文章と、末尾にまとめた URL の一覧を返しています。その結果、統合サブエージェントが主張に誤った情報源を付与することが多く、レビュー担当者は最終レポートの記述を根拠までたどることができません。なお、統合サブエージェントに新たな検索作業を追加することは認められていません。Web 検索サブエージェントの出力の変更として、最も適切なアプローチはどれですか。",
     "choicesJa": [
-      "トランスクリプトの冒頭に主要な調査結果の要約を置き、重要な事実を冒頭と末尾の両方に置いて前後から挟む",
-      "主要な調査結果の要約を、いちばん最後（最終回答の直前）にだけ追加する",
-      "特定のセクションがいつも後回しにされないよう、サブエージェントの調査結果の順序をランダムにする",
-      "max_tokensパラメータを増やして、モデルが途中の内容を検討する余裕を広げる"
-    ],
-    "answer": 0,
-    "explanation": "正解は、「lost in the middle」現象への対策として、冒頭に要点の要約を置き、重要な情報を先頭と末尾の両方に置いて前後から挟む方法です。要約を末尾にだけ置く方法では、冒頭側の弱点を補えません。順序をランダムにしても、途中の部分の処理の信頼性が下がる問題は解消しません。max_tokensは出力の長さを制御するものなので、lost-in-the-middle問題とは関係ありません。",
-    "tags": [
-      "lost-in-the-middle",
-      "summary-placement"
-    ],
-    "ref": "D5 lost in the middle"
-  },
-  {
-    "id": "context-003",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "A customer support resolution agent is handling a long conversation about a disputed charge. Midway through, progressive summarization compresses an earlier tool result so that \"$149.99\" becomes \"approximately $150\" and the order date becomes \"mid-January.\" What is the best design fix to prevent this from affecting the final refund action?",
-    "choices": [
-      "Disable summarization entirely for the whole session so nothing is ever compressed",
-      "Increase the model's temperature so it reconstructs the exact figures from context",
-      "Maintain a persistent case-facts block with exact order ID, amount, and dates, marked with a do-not-summarize instruction",
-      "Ask the customer to repeat the exact amount and date each time the agent needs them"
-    ],
-    "questionJa": "顧客サポートの解決エージェントが、異議が出ている請求についての長い会話を処理しています。会話の途中で、段階的要約（progressive summarization）が以前のツール結果を圧縮し、「$149.99」が「約$150」に、注文日が「1月中旬」に変わってしまいました。これが最終的な返金処理に影響しないようにするための、最善の設計上の修正はどれですか。",
-    "choicesJa": [
-      "何も圧縮されないよう、セッション全体で要約を完全に無効にする",
-      "モデルのtemperatureを上げて、コンテキストから正確な数値を再構成させる",
-      "正確な注文ID・金額・日付を入れた永続的なcase-factsブロックを維持し、要約しないよう指示を付ける",
-      "エージェントが必要になるたびに、顧客に正確な金額と日付をもう一度伝えてもらう"
+      "各情報源を文脈の中で説明する、より長く詳細な段落を記述させることで、どの情報源がどの記述を裏づけるかを統合サブエージェントが推測できるようにする。",
+      "各主張について統合サブエージェントに検索を再実行させ、どの URL が各記述を実際に裏づけるかを引用の前に確認させる。",
+      "主張、裏づけとなる抜粋、情報源の URL または文書名、および公開日を各項目に保持するリストとして調査結果を返す。",
+      "文章の形式は維持したまま、各段落の末尾にその段落で参照した URL を列挙させることで、どの情報源がどの段落の内容を裏づけるかを段落単位で示す。"
     ],
     "answer": 2,
-    "explanation": "正解は、注文ID・金額・日付などを保持する永続的なcase-factsブロックを設け、要約の対象から外す指示を付けて、数値の劣化を防ぐパターンです。要約を完全に無効にする方法は非現実的で、パフォーマンスやコストに悪影響があります。temperatureは数値を正確に再現することとは関係ありません。顧客に何度も伝えてもらう方法は、顧客体験を損ない、根本的な設計上の問題も解決しません。",
+    "explanation": "【かみくだくと】調べ係のサブエージェントが「文章＋最後に URL の一覧」で結果を返すので、どの主張がどの出典なのか分からなくなっています。調べ係の返し方をどう変えるのがよいか、という問題です。【正解】主張・抜粋・出典・公開日を1つの項目にまとめて返せば、主張と出典の組み合わせがデータとして固定されます。統合の段階でも崩れず、最終レポートから根拠をたどれます。【誤答】段落を長く詳しくする案は、どの文がどの出典に基づくかが文章の中に埋もれたままです。統合サブエージェントに検索をやり直させる案は、問題文の条件に反し、作業も重複します。段落の末尾に URL を並べる案は、1つの段落に主張が複数あれば、どれがどの URL かは分かりません。（目標 X1）",
     "tags": [
-      "progressive-summarization",
-      "case-facts-block"
-    ],
-    "ref": "D5 case facts block"
-  },
-  {
-    "id": "context-004",
-    "domain": "context",
-    "difficulty": 1,
-    "question": "In a structured data extraction pipeline, a tool call retrieves a full order record containing 40 fields, but only 5 fields (order ID, status, total, customer email, ship date) are relevant to the current task. What is the recommended approach for the tool result returned to the model?",
-    "choices": [
-      "Return all 40 fields so the model has maximum flexibility for follow-up questions",
-      "Return the 40 fields but compress them into a single summarized string",
-      "Return only field names without values, and let the model request values individually",
-      "Trim the tool output to return only the 5 essential fields relevant to the task"
-    ],
-    "questionJa": "構造化データ抽出のパイプラインで、ツール呼び出しが40フィールドある注文レコード全体を取得しました。ただし、今のタスクに関係するのは5フィールド（注文ID、ステータス、合計金額、顧客のメールアドレス、発送日）だけです。モデルに返すツール結果として推奨される方法はどれですか。",
-    "choicesJa": [
-      "モデルが後続の質問に最大限柔軟に対応できるよう、40フィールドすべてを返す",
-      "40フィールドを返すが、1つの要約した文字列に圧縮する",
-      "フィールド名だけを値なしで返し、モデルに値を1つずつ要求させる",
-      "ツールの出力を絞り込み、タスクに関係する必須の5フィールドだけを返す"
-    ],
-    "answer": 3,
-    "explanation": "正解は、関係する5フィールドだけに絞って返し、コンテキストの消費を抑える方法です。40フィールドすべてを返す方法は、不要なトークンを無駄にし、lost-in-the-middleのリスクも高めます。圧縮して要約する方法は、数値が劣化するリスクを持ち込みます。値なしでフィールド名だけを返す方法は、値がないので実質的に使えず、ラウンドトリップが増えて非効率です。",
-    "tags": [
-      "tool-output-trimming"
-    ],
-    "ref": "D5 tool output trimming"
-  },
-  {
-    "id": "context-005",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "A Claude Code user runs `/compact` in the middle of a long refactoring session. Which pair of items correctly describes what typically survives compaction versus what is typically lost?",
-    "choices": [
-      "Survives: exact tool result contents from early turns; Lost: CLAUDE.md and MEMORY.md",
-      "Survives: CLAUDE.md (re-read from disk), MEMORY.md, and recent messages; Lost: earlier tool results and exact figures from early context",
-      "Survives: nothing except the system prompt; Lost: all prior configuration and memory files",
-      "Survives: only the most recent tool_use block; Lost: all text messages regardless of recency"
-    ],
-    "questionJa": "Claude Codeのユーザーが、長いリファクタリングセッションの途中で`/compact`を実行しました。compaction（圧縮）のあとに通常残るものと、通常失われるものの組み合わせを正しく説明しているのはどれですか。",
-    "choicesJa": [
-      "残る: 初期のターンのツール結果の正確な内容／失われる: CLAUDE.mdとMEMORY.md",
-      "残る: CLAUDE.md（ディスクから再読み込み）、MEMORY.md、直近のメッセージ／失われる: 初期のツール結果と、初期コンテキストにあった正確な数値",
-      "残る: システムプロンプト以外は何もなし／失われる: それまでの設定とメモリファイルのすべて",
-      "残る: 直近のtool_useブロックだけ／失われる: 新しさに関係なく、テキストメッセージのすべて"
-    ],
-    "answer": 1,
-    "explanation": "正解は、CLAUDE.mdはディスクから再読み込みされ、MEMORY.mdや直近のメッセージも残る一方で、初期のツール結果や正確な数値は失われる、という`/compact`の挙動を正しく説明しています。初期のツール結果が残り、CLAUDE.mdとMEMORY.mdが失われるとする組み合わせは、残るものと失われるものが逆です。システムプロンプト以外は何も残らないとする組み合わせは、CLAUDE.mdやMEMORY.mdが残る事実を無視しています。直近のtool_useブロックしか残らないとする組み合わせは、直近のテキストメッセージも残るので誤りです。",
-    "tags": [
-      "compact",
-      "survives-vs-lost"
-    ],
-    "ref": "D5 /compact survives vs lost"
-  },
-  {
-    "id": "context-006",
-    "domain": "context",
-    "difficulty": 3,
-    "question": "During a multi-hour Claude Code session doing a large codebase migration, the assistant starts giving answers that sound like generic best practices rather than facts specific to this repository, and it re-asks about things it had already verified earlier. What is the most likely explanation and the recommended proactive fix?",
-    "choices": [
-      "This is normal model variance; switching to a higher-effort model setting will resolve it",
-      "This means the tool descriptions are ambiguous; the fix is to consolidate tools into fewer, better-described ones",
-      "This indicates context degradation from an overloaded window; proactively run /compact before natural degradation occurs, rather than waiting for automatic compaction",
-      "This means CLAUDE.md was not loaded at session start; the fix is to restart the session from scratch"
-    ],
-    "questionJa": "数時間にわたるClaude Codeセッションで、大規模なコードベースの移行作業をしています。アシスタントが、このリポジトリ固有の事実ではなく一般的なベストプラクティスのような回答をするようになり、以前に確認済みのことをもう一度質問してきます。最も考えられる原因と、推奨される先回りの対処はどれですか。",
-    "choicesJa": [
-      "通常のモデルのばらつきである。より高いeffort設定のモデルに切り替えれば解決する",
-      "ツールの説明があいまいなことを示している。ツールを、より少数でより説明の行き届いたものに統合して直す",
-      "過負荷になったウィンドウによるコンテキスト劣化を示している。自然に劣化が進む前に、自動compactionを待たず先回りして/compactを実行する",
-      "セッション開始時にCLAUDE.mdが読み込まれなかったことを示している。セッションを最初からやり直して直す"
-    ],
-    "answer": 2,
-    "explanation": "正解は、長時間のセッションで典型的なコンテキスト劣化の兆候（一般論に逃げる、確認済みのことを聞き直す）にあたり、自然な劣化を待つ自動compactionよりも、先回りして/compactを実行するほうがよい、という原則に基づきます。モデルのばらつきだとして高いeffort設定に切り替える対処は、根本原因を無視した対症療法です。ツールの統合はツール設計の問題への対処で、この症状の原因ではありません。CLAUDE.mdの問題ではなく、セッションを最初からやり直すのは過剰な対応です。",
-    "tags": [
-      "degradation-signs",
-      "proactive-compact"
-    ],
-    "ref": "D5 degradation signs; proactive compact"
-  },
-  {
-    "id": "context-007",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "A CI/CD automation pipeline runs Claude Code non-interactively for hours across multiple scheduled jobs, relying on scratchpad markdown files to persist intermediate findings between compaction events. Why does this strategy work well for preserving state across /compact?",
-    "choices": [
-      "Because /compact automatically deletes all files in the working directory except scratchpad files",
-      "Because scratchpad files are automatically injected into MEMORY.md during compaction",
-      "Because /compact only affects the system prompt, never the working directory or file contents",
-      "Because scratchpad files written to disk survive compaction and can be re-read on demand, unlike in-context tool results"
-    ],
-    "questionJa": "CI/CDの自動化パイプラインで、複数のスケジュールジョブにまたがって、Claude Codeを数時間、非対話モードで実行しています。compaction（圧縮）が起きても中間的な調査結果が残るよう、スクラッチパッド用のMarkdownファイルに頼っています。この方法が/compactをまたいだ状態の保持にうまく働く理由はどれですか。",
-    "choicesJa": [
-      "/compactは、スクラッチパッド用のファイルを除いて、作業ディレクトリ内のファイルをすべて自動的に削除するため",
-      "compactionの間に、スクラッチパッド用のファイルがMEMORY.mdに自動的に注入されるため",
-      "/compactが影響するのはシステムプロンプトだけで、作業ディレクトリやファイルの内容には決して影響しないため",
-      "ディスクに書き込まれたスクラッチパッド用のファイルは、コンテキスト内のツール結果と違ってcompactionを経ても残り、必要なときに読み直せるため"
-    ],
-    "answer": 3,
-    "explanation": "正解は、スクラッチパッド用のファイルはディスク上に残るので/compactの影響を受けず、必要なときに読み直せる、という設計原則です。/compactがファイルを削除するという前提は誤りです。MEMORY.mdへ自動的に統合されるという主張は、事実に基づきません。/compactが影響するのはシステムプロンプトだけだという説明は、影響範囲の説明として不正確で、論点もずれています。",
-    "tags": [
-      "scratchpad",
-      "compact-survival"
-    ],
-    "ref": "D5 scratchpad files strategy"
-  },
-  {
-    "id": "context-008",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "A developer wants their main Claude Code session to explore a large unfamiliar codebase (50+ files) without polluting the main context with all the intermediate file reads. What is the recommended pattern?",
-    "choices": [
-      "Read all 50+ files directly in the main session so nothing is missed later",
-      "Delegate the exploration to an Explore subagent, which reads the files and returns only a concise summary to the main context",
-      "Use /compact immediately after each file read to keep the window small",
-      "Ask the user to manually summarize the codebase structure before starting"
-    ],
-    "questionJa": "開発者が、メインのClaude Codeセッションで、大規模でなじみのないコードベース（50以上のファイル）を探索させたいと考えています。ただし、途中のファイル読み込みのすべてでメインのコンテキストを汚したくありません。推奨されるパターンはどれですか。",
-    "choicesJa": [
-      "あとで見落としがないよう、50以上のファイルをすべてメインセッションで直接読み込む",
-      "探索をExploreサブエージェントに任せ、サブエージェントがファイルを読み込んで、メインのコンテキストには簡潔な要約だけを返す",
-      "ウィンドウを小さく保つため、ファイルを1つ読み込むたびにすぐ/compactを使う",
-      "作業を始める前に、ユーザーにコードベースの構造を手作業で要約してもらう"
-    ],
-    "answer": 1,
-    "explanation": "正解は、Exploreサブエージェントに探索を任せ、詳細な読み込みはサブエージェントのコンテキストに閉じ込めて、メインのコンテキストには簡潔な要約だけを返すパターンです。メインセッションですべて読む方法は、メインのコンテキストを無駄に使い、lost-in-the-middleのリスクも高めます。ファイルを読むたびにcompactするのは非効率で、現実的な運用ではありません。ユーザーに手作業で要約してもらう方法は、自動化の目的に反し、ユーザーの負担を増やします。",
-    "tags": [
-      "explore-subagent",
-      "context-isolation"
-    ],
-    "ref": "D5 Explore-subagent delegation"
-  },
-  {
-    "id": "context-009",
-    "domain": "context",
-    "difficulty": 1,
-    "question": "Which of the following is explicitly named as a sign of context degradation in a long Claude Code session, as opposed to a sign of a healthy, well-functioning session?",
-    "choices": [
-      "The assistant continues to cite the exact line numbers and file paths it verified earlier in the session",
-      "The assistant asks a clarifying question before implementing a large multi-file change",
-      "The assistant's answers shift toward generic 'typical patterns' instead of the specific code it actually found, and assumptions start replacing verification",
-      "The assistant proposes a plan and waits for approval before editing files"
-    ],
-    "questionJa": "長時間のClaude Codeセッションで、健全に機能しているセッションの兆候ではなく、コンテキスト劣化の兆候として明確に挙げられているものはどれですか。",
-    "choicesJa": [
-      "セッションの前半で確認した正確な行番号やファイルパスを、アシスタントがその後も引用し続ける",
-      "複数ファイルにまたがる大きな変更を実装する前に、アシスタントが確認の質問をする",
-      "アシスタントの回答が、実際に見つけた具体的なコードではなく一般的な「典型的なパターン」に寄っていき、検証の代わりに仮定が使われ始める",
-      "アシスタントが計画を示し、ファイルを編集する前に承認を待つ"
-    ],
-    "answer": 2,
-    "explanation": "正解は、コンテキスト劣化の兆候として挙げられる「一般的なパターンへの逃避」「検証済みのことの忘却」「検証の代わりに仮定が入り込む」という現象です。以前確認した行番号やファイルパスを引用し続けるのは、健全なセッションの特徴です。確認の質問をすることと、計画を示して承認を待つことは、プランモードやinterview patternとして推奨される良い振る舞いで、劣化の兆候ではありません。",
-    "tags": [
-      "degradation-signs"
-    ],
-    "ref": "D5 degradation signs"
-  },
-  {
-    "id": "context-010",
-    "domain": "context",
-    "difficulty": 3,
-    "question": "A team debates two compaction strategies for a long Claude Code CI/CD job: (A) let automatic compaction trigger whenever the context window fills up unpredictably, or (B) explicitly invoke /compact at planned checkpoints before the window is full. Which statement correctly justifies the recommended choice?",
-    "choices": [
-      "Strategy B is preferred because proactively compacting before natural degradation occurs beats relying on unpredictable auto-compaction",
-      "Strategy A is preferred because automatic compaction always preserves more exact figures than a manually triggered one",
-      "Both strategies are equivalent since /compact behavior is identical regardless of when it is triggered",
-      "Strategy A is preferred because it guarantees CLAUDE.md and MEMORY.md are never reloaded, saving tokens"
-    ],
-    "questionJa": "あるチームが、長時間のClaude Code CI/CDジョブに向けた2つのcompaction戦略について議論しています。（A）コンテキストウィンドウがいつ満杯になるか予測できないまま、満杯になったときに自動compactionを発動させる。（B）ウィンドウが満杯になる前の、計画したチェックポイントで/compactを明示的に実行する。推奨される選択の理由を正しく説明しているのはどれですか。",
-    "choicesJa": [
-      "戦略Bがよい。自然な劣化が起きる前に先回りしてcompactするほうが、予測できない自動compactionに頼るより優れているため",
-      "戦略Aがよい。自動compactionは、手動で発動させたものより常に多くの正確な数値を保持するため",
-      "どちらの戦略も同等である。/compactの挙動は、いつ発動させても変わらないため",
-      "戦略Aがよい。CLAUDE.mdとMEMORY.mdが再読み込みされないことが保証され、トークンを節約できるため"
-    ],
-    "answer": 0,
-    "explanation": "正解は、計画したタイミングで先回りして/compactを実行するほうが、ウィンドウが埋まってから不規則に発動する自動compactionより優れている、という原則です。自動と手動でcompactの精度が違うとする説明は、誤った前提に立っています。両者が同等だとする説明は、タイミングによって劣化の度合いが変わることを無視しています。CLAUDE.mdの再読み込みを避けることが目的だとする説明は誤解で、実際には、再読み込みされること自体が望ましいことです。",
-    "tags": [
-      "proactive-compact",
-      "auto-compaction"
-    ],
-    "ref": "D5 proactive compact beats auto"
-  },
-  {
-    "id": "context-011",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "A customer support agent's conversation log shows an early tool result listing 40 order fields, but by the time the agent needs to reference the exact original purchase amount 30 turns later (after a /compact occurred), the number is gone. What combination of techniques from context management best prevents this specific failure?",
-    "choices": [
-      "Rely on the model's ability to recall numbers from training data when the exact figure is missing",
-      "Increase max_turns so the agent has more opportunities to ask the customer again",
-      "Switch the tool_choice parameter to 'any' so the model is forced to call a tool for every question",
-      "Trim tool output to only the fields needed, and store must-keep figures like exact amounts in a persistent case-facts block excluded from summarization"
-    ],
-    "questionJa": "顧客サポートエージェントの会話ログを見ると、初期のツール結果に40個の注文フィールドが並んでいました。ところが30ターン後（/compactが実行されたあと）、エージェントが当初の購入金額を正確に参照する必要が生じたときには、その数値が失われていました。この特定の失敗を最もよく防ぐ、コンテキスト管理の技術の組み合わせはどれですか。",
-    "choicesJa": [
-      "正確な数値が見つからないときは、学習データから数値を思い出すモデルの能力に頼る",
-      "エージェントが顧客にもう一度尋ねる機会を増やせるよう、max_turnsを増やす",
-      "モデルがすべての質問でツールを呼び出すよう強制されるように、tool_choiceパラメータを'any'に切り替える",
-      "ツール出力を必要なフィールドだけに絞り込み、正確な金額のように必ず残したい数値は、要約から除外した永続的なcase-factsブロックに保存する"
-    ],
-    "answer": 3,
-    "explanation": "正解は、ツール出力を必要なフィールドだけに絞り込み、正確な金額のような必須の情報は要約しない指定のcase-factsブロックに保持する、という2つの手法の組み合わせです。モデルが学習データから顧客固有の金額を推測することはできないので、学習データに頼る方法は誤りです。max_turnsは関係のないCLI設定です。tool_choiceはツール呼び出しを強制するためのもので、コンテキストの保持とは関係ありません。",
-    "tags": [
-      "tool-output-trimming",
-      "case-facts-block"
-    ],
-    "ref": "D5 tool trimming + case facts"
-  },
-  {
-    "id": "context-012",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "In a Claude Code configuration for a long research task, a skill's rendered body was injected into the conversation as a single message early on. After several /compact cycles, the developer notices the skill's original instructions are no longer influencing behavior as strongly. What does the context management model say about this situation?",
-    "choices": [
-      "Skills are automatically re-read from disk on every turn, so this should never happen and indicates a bug",
-      "Compaction re-attaches only the 5 most recently used skills (first 5,000 tokens each, 25,000-token combined budget), so an older skill's influence can fade after compaction",
-      "Skills persist in full forever once injected, regardless of compaction, so degradation must be caused by something else entirely",
-      "Skills are stored in MEMORY.md automatically, so they always survive compaction identically to auto memory"
-    ],
-    "questionJa": "長時間のリサーチタスク用のClaude Code設定で、あるスキルのレンダリング済みの本文が、セッションの初期に1つのメッセージとして会話に注入されました。/compactのサイクルを何度か繰り返すと、スキル本来の指示が以前ほど強く動作に影響しなくなっていることに、開発者が気づきました。この状況について、コンテキスト管理のモデルに沿った説明はどれですか。",
-    "choicesJa": [
-      "スキルはターンごとにディスクから自動的に再読み込みされるので、こうしたことは起こるはずがなく、バグを示している",
-      "compactionは、直近に使われた5つのスキルだけを再アタッチする（各スキルの先頭5,000トークン、合計25,000トークンの上限）ので、古いスキルの影響はcompactionのあとに薄れることがある",
-      "スキルは一度注入されれば、compactionに関係なくずっと完全な形で残るので、劣化の原因はまったく別のところにあるに違いない",
-      "スキルは自動的にMEMORY.mdに保存されるので、auto memoryとまったく同じように、必ずcompactionを生き延びる"
-    ],
-    "answer": 1,
-    "explanation": "正解は、compactionが再アタッチするのは直近に使われた最大5つのスキルだけ（各スキルの先頭5,000トークン、合計25,000トークンの上限）で、それ以外は再アタッチされないため、古いスキルの影響が薄れる、という仕様です。毎ターン再読み込みされるという前提は誤りです。スキルが永続するという説明も誤りです。MEMORY.mdへ自動的に保存されるという主張は、事実に基づきません。",
-    "tags": [
-      "compact",
-      "skill-lifecycle"
-    ],
-    "ref": "D2/D5 skill lifecycle + compaction"
-  },
-  {
-    "id": "context-013",
-    "domain": "context",
-    "difficulty": 3,
-    "question": "A multi-agent research system's coordinator delegates a deep literature review to a subagent, which reads dozens of documents. The coordinator wants to avoid both (a) losing the subagent's key numeric findings to progressive summarization and (b) flooding its own context with every document detail. Which combined design best satisfies both goals?",
-    "choices": [
-      "Have the subagent return a concise summary via Explore-style delegation, with a structured facts block for exact figures/citations marked do-not-summarize, and place a key-findings summary at the start of what the coordinator receives",
-      "Have the subagent return its full raw transcript so the coordinator can decide what to keep",
-      "Have the coordinator periodically run /compact on the subagent's session to keep it lean",
-      "Disable summarization for the subagent entirely so nothing is ever lost"
-    ],
-    "questionJa": "マルチエージェントのリサーチシステムで、コーディネーターが深い文献レビューをサブエージェントに任せます。サブエージェントは数十の文書を読みます。コーディネーターは、次の2つを両方とも避けたいと考えています。（a）サブエージェントが出した重要な数値の調査結果が、段階的要約（progressive summarization）で失われること。（b）すべての文書の細かい情報で、自分のコンテキストがあふれること。この2つの目標を最もよく満たす、組み合わせの設計はどれですか。",
-    "choicesJa": [
-      "サブエージェントにExploreスタイルの委任で簡潔な要約を返させ、正確な数値や出典は、要約しないと明示した構造化されたfactsブロックに入れ、コーディネーターが受け取る内容の冒頭に主要な調査結果の要約を置く",
-      "サブエージェントに生のトランスクリプトの全文を返させ、何を残すかはコーディネーターに決めさせる",
-      "コーディネーターが、サブエージェントのセッションに対して定期的に/compactを実行し、軽く保つ",
-      "サブエージェントの要約を完全に無効にして、何も失われないようにする"
-    ],
-    "answer": 0,
-    "explanation": "正解は、Exploreのような委任で簡潔な要約だけを返させ、正確な数値や出典は要約しない指定のfactsブロックに保持し、さらに受け取る内容の冒頭にkey-findingsの要約を置くことで、lost-in-the-middleと数値の劣化の両方に対処する複合的な設計です。生のトランスクリプトの全文を返させる方法は、コンテキストが肥大化して、本来の目的に反します。コーディネーターがサブエージェントのセッションを/compactするという想定自体が誤りです（サブエージェントは独立したコンテキストを持ちます）。要約を完全に無効にする方法は非現実的で、コストと性能の問題を無視しています。",
-    "tags": [
-      "explore-subagent",
-      "case-facts-block",
-      "lost-in-the-middle"
-    ],
-    "ref": "D5 combined context strategies"
-  },
-  {
-    "id": "context-014",
-    "domain": "context",
-    "difficulty": 1,
-    "question": "Which of these is an accurate example of the numeric/detail loss caused by progressive summarization, as commonly cited for context management design?",
-    "choices": [
-      "\"$149.99\" being preserved exactly as \"$149.99\" through every summarization pass",
-      "A customer's exact order ID being duplicated across every summarized turn for redundancy",
-      "\"$149.99\" being compressed to \"approximately $150\", losing the exact figure needed for a refund calculation",
-      "A stack trace being expanded with additional debug detail after each summarization pass"
-    ],
-    "questionJa": "コンテキスト管理の設計でよく挙げられる、段階的要約（progressive summarization）による数値や詳細の損失の例として、正確なものはどれですか。",
-    "choicesJa": [
-      "「$149.99」が、どの要約パスを通しても「$149.99」のまま正確に保たれる",
-      "顧客の正確な注文IDが、冗長性のために、要約されたすべてのターンに重複して残る",
-      "「$149.99」が「約$150」に圧縮され、返金の計算に必要な正確な数値が失われる",
-      "スタックトレースが、要約パスのたびにデバッグの詳細を足されて膨らむ"
-    ],
-    "answer": 2,
-    "explanation": "正解は、段階的要約によって、正確な金額「$149.99」が「約$150」のようなあいまいな表現に劣化する典型例です。要約しても劣化しないとする例は誤りです。注文IDが要約のたびに複製されるとする例は、要約が詳細を保持して複製するという誤った説明です。要約のたびに詳細が追加されるとする例は、要約が詳細を減らすという実際とは逆の主張で、誤りです。",
-    "tags": [
-      "progressive-summarization"
-    ],
-    "ref": "D5 progressive summarization numeric loss"
-  },
-  {
-    "id": "context-015",
-    "domain": "context",
-    "difficulty": 3,
-    "question": "A structured data extraction pipeline attaches a confidence score to every extracted field, e.g. {\"value\": \"2024-03-15\", \"confidence\": 0.9}. The team wants these scores to be trustworthy enough to drive an automated escalation threshold. What must be true about the score of 0.9 for this design to be reliable, and how should escalation decisions be made?",
-    "choices": [
-      "0.9 must be calibrated to mean the field is correct about 90% of the time against a labeled validation set, and escalation should use a deterministic threshold on that calibrated score, never the model's self-reported confidence alone",
-      "0.9 is inherently trustworthy because the model generated it from the same extraction call, so no separate calibration step is needed",
-      "Escalation should rely on the model restating in text how confident it feels, since numeric confidence fields are redundant once the model can explain itself",
-      "Any confidence score above 0.5 can be treated as equally reliable, since the exact numeric value only matters for scores below 0.5"
-    ],
-    "questionJa": "構造化データ抽出のパイプラインが、抽出したすべてのフィールドに確信度スコアを付けています。たとえば、{\"value\": \"2024-03-15\", \"confidence\": 0.9}のような形です。チームは、このスコアを自動エスカレーションのしきい値に使えるほど信頼できるものにしたいと考えています。この設計が信頼できるものになるために、0.9というスコアに必要な条件と、エスカレーションの判断のしかたを述べているのはどれですか。",
-    "choicesJa": [
-      "0.9は、ラベル付きの検証セットに照らして、そのフィールドが約90%の確率で正しいことを意味するよう較正されている必要がある。エスカレーションは、その較正済みスコアに対する決定論的なしきい値で判断し、モデルが自己申告した確信度だけに頼ってはならない",
-      "0.9は、同じ抽出呼び出しの中でモデルが生成したものなので、もともと信頼できる。別に較正する手順は不要である",
-      "エスカレーションは、どれくらい自信があるかをモデルが文章で述べ直すことに頼るべきである。モデルが自分で説明できる以上、数値の確信度フィールドは冗長だからである",
-      "0.5を超える確信度スコアは、どれも同じくらい信頼できるとみなしてよい。正確な数値が意味を持つのは、0.5未満のスコアだけだからである"
-    ],
-    "answer": 0,
-    "explanation": "正解は、確信度スコア0.9は、ラベル付きの検証データセットに照らして実際に約90%の精度と一致するよう較正（キャリブレーション）されていなければ意味をなさない、という原則と、エスカレーションはモデルの自己申告ではなく決定論的なしきい値のロジックで判断すべきだという原則を、正しく述べています。較正は不要だとする説明は誤りです（モデル自身が生成したスコアは、検証なしには信頼できません）。モデルの自己申告の確信度に頼る説明は、誤ったパターンです（自己申告は較正が不十分です）。スコアの数値の精度を軽視する説明は、較正の必要性そのものを否定する誤りです。",
-    "tags": [
-      "confidence-calibration",
-      "deterministic-escalation"
-    ],
-    "ref": "D5 field-level confidence calibration; escalation via deterministic threshold"
-  },
-  {
-    "id": "context-016",
-    "domain": "context",
-    "difficulty": 1,
-    "question": "A customer support agent built on Claude is handling a billing dispute. Which of the following should trigger immediate escalation to a human agent?",
-    "choices": [
-      "The customer's messages show strongly negative sentiment throughout the conversation",
-      "The customer explicitly asks to speak with a human representative",
-      "The conversation has grown to more than 20 turns",
-      "The agent's self-reported confidence score for its last answer is 0.4"
-    ],
-    "questionJa": "Claude上に構築された顧客サポートエージェントが、請求の異議（billing dispute）に対応しています。次のうち、人の担当者への即時エスカレーションの引き金にすべきものはどれですか。",
-    "choicesJa": [
-      "会話の間ずっと、顧客のメッセージに強いネガティブな感情が表れている",
-      "顧客が、人の担当者と話したいと明確に求めている",
-      "会話が20ターンを超えている",
-      "エージェントが最後の回答について自己申告した確信度スコアが0.4である"
-    ],
-    "answer": 1,
-    "explanation": "正解は「顧客が人の担当者との対応を明確に求めた」ことで、これは即時エスカレーションの正当なきっかけの1つです。感情の強さだけでは問題の複雑さを意味しないので、ネガティブな感情を理由にするのは誤りです。会話の長さそのものは、エスカレーションの基準になりません。エージェントの自己申告の確信度は較正されていないことが多く、信頼できる根拠にはなりません。",
-    "tags": [
-      "escalation-triggers",
-      "customer-support",
-      "human-handoff"
-    ],
-    "ref": "D5 escalation triggers"
-  },
-  {
-    "id": "context-017",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "In a customer support resolution agent, a customer is extremely angry (all caps, multiple exclamation points) about a simple $12 duplicate charge that is clearly documented in the order history. What is the correct next action for the agent?",
-    "choices": [
-      "Escalate immediately because the customer's sentiment indicates a high-severity issue",
-      "Ask the customer to lower their tone before proceeding",
-      "Escalate because any all-caps message is treated as a policy exception",
-      "Resolve the issue directly since it is a simple, well-documented billing error despite the tone"
-    ],
-    "questionJa": "顧客サポートの解決エージェントの場面です。顧客が、注文履歴にはっきり記録されている単純な12ドルの二重請求について、非常に怒っています（全部大文字で、感嘆符がいくつも並んでいます）。エージェントがとるべき正しい次の対応はどれですか。",
-    "choicesJa": [
-      "顧客の感情が深刻度の高い問題を示しているので、すぐにエスカレーションする",
-      "先に進む前に、顧客に口調を和らげるよう求める",
-      "全部大文字のメッセージは、どれもポリシー例外として扱われるので、エスカレーションする",
-      "口調にかかわらず、単純でよく記録された請求エラーなので、直接解決する"
-    ],
-    "answer": 3,
-    "explanation": "正解は、感情が強くても問題そのものは単純な請求エラーなので、エージェントがそのまま解決すべきだという点です。感情の強さだけでエスカレーションするのは、感情と複雑さは別物（sentiment ≠ complexity）という原則に反するので誤りです。顧客に口調を改めるよう求めるのは、適切な業務対応ではありません。全部大文字だからといって、自動的にポリシー例外として扱う根拠はありません。",
-    "tags": [
-      "sentiment-vs-complexity",
-      "customer-support",
-      "resolve-vs-escalate"
-    ],
-    "ref": "D5 sentiment vs complexity"
-  },
-  {
-    "id": "context-018",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "A calm, polite customer asks whether their data can be stored only in the EU due to a data residency requirement tied to a multi-region SLA clause. The agent is uncertain whether current infrastructure supports this guarantee. What should the agent do?",
-    "choices": [
-      "Escalate to a human, since this involves policy complexity beyond straightforward resolution even though the customer is calm",
-      "Resolve it directly since the customer's calm tone indicates low complexity",
-      "Tell the customer their data is already EU-only to keep the conversation short",
-      "Escalate only if the customer becomes upset about the delay"
-    ],
-    "questionJa": "冷静で丁寧な顧客が、マルチリージョンのSLA条項に結びついたデータレジデンシー要件のために、自分のデータをEU内だけに保存できるかを尋ねています。エージェントは、現在のインフラがこの保証に対応しているのか確信が持てません。エージェントがとるべき対応はどれですか。",
-    "choicesJa": [
-      "顧客は冷静でも、単純な解決の範囲を超えたポリシー上の複雑さがあるので、人にエスカレーションする",
-      "顧客の冷静な口調は複雑さが低いことを示しているので、直接解決する",
-      "会話を短く済ませるために、顧客のデータはすでにEU内だけに保存されていると伝える",
-      "対応の遅れに対して顧客が不満を示したときにだけ、エスカレーションする"
-    ],
-    "answer": 0,
-    "explanation": "正解は、顧客の口調が穏やかでも、データレジデンシーやSLAのようなポリシー上の複雑な例外はエスカレーションの対象だという点です。穏やかな口調だから単純な問題だという判断は誤りで、感情と複雑さは独立した軸です。確認できていない事実を断定的に伝えるのは不適切です。エスカレーションが必要かどうかは、顧客の感情ではなく問題の性質で決まります。",
-    "tags": [
-      "sentiment-vs-complexity",
-      "escalation-triggers",
-      "policy-gap"
-    ],
-    "ref": "D5 calm+policy-complex escalation"
-  },
-  {
-    "id": "context-019",
-    "domain": "context",
-    "difficulty": 1,
-    "question": "Which of the following is explicitly NOT a valid reason, by itself, to escalate a customer support conversation to a human agent?",
-    "choices": [
-      "The customer explicitly requests to speak with a human",
-      "There has been no progress after multiple reasonable resolution attempts",
-      "A genuine gap exists in the documented policy for this situation",
-      "The conversation has run long, regardless of whether progress is being made"
-    ],
-    "questionJa": "次のうち、それだけでは、顧客サポートの会話を人の担当者にエスカレーションする正当な理由にならないと明示されているものはどれですか。",
-    "choicesJa": [
-      "顧客が、人と話したいと明確に求めている",
-      "合理的な解決の試みを何度か重ねても、進展がない",
-      "この状況について、文書化されたポリシーに本当の空白がある",
-      "進展しているかどうかに関係なく、会話が長引いている"
-    ],
-    "answer": 3,
-    "explanation": "正解は会話の長さそのもので、進捗の有無に関係なく、エスカレーションの根拠にならないとされています。人の対応を明確に求める場合、合理的な試行を重ねても進展がない場合、ポリシーに空白がある場合は、いずれも正当なエスカレーションのきっかけです。そのため、この3つは誤答です。",
-    "tags": [
-      "escalation-triggers",
-      "non-triggers",
-      "conversation-length"
-    ],
-    "ref": "D5 non-triggers"
-  },
-  {
-    "id": "context-020",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "During a support session, the agent looks up a customer record and finds two accounts with the same first and last name and similar order history, but different email addresses. The agent is fairly confident account A is the correct one. What should the agent do?",
-    "choices": [
-      "Proceed with account A since it is the statistically most likely match",
-      "Ask the customer for disambiguating information such as their email or the last 4 digits of their phone number",
-      "Merge both accounts to avoid asking the customer extra questions",
-      "Escalate the case immediately without attempting to resolve the ambiguity"
-    ],
-    "questionJa": "サポートセッションの途中で、エージェントが顧客レコードを検索したところ、姓名が同じで注文履歴も似ているものの、メールアドレスが違うアカウントが2つ見つかりました。エージェントは、アカウントAが正しいとかなり確信しています。エージェントがとるべき対応はどれですか。",
-    "choicesJa": [
-      "統計的にいちばんありそうな一致なので、アカウントAで進める",
-      "顧客に、メールアドレスや電話番号の下4桁など、見分けるための情報を尋ねる",
-      "顧客に余計な質問をしなくて済むよう、2つのアカウントを統合する",
-      "あいまいさを解消しようとせず、すぐにケースをエスカレーションする"
-    ],
-    "answer": 1,
-    "explanation": "正解は、顧客の照合があいまいなときに、メールアドレスや電話番号の下4桁など、見分けるための情報を顧客に確認することです。いちばんありそうだという理由だけでアカウントを選ぶと、誤った顧客のデータにアクセスするリスクがあり、禁止されている典型的なアンチパターンです。確認せずにアカウントを統合するのは危険な操作です。あいまいさは解消できる問題で、必ずしもすぐにエスカレーションする必要はありません。",
-    "tags": [
-      "ambiguous-match",
-      "disambiguation",
-      "customer-support"
-    ],
-    "ref": "D5 ambiguous customer matches"
-  },
-  {
-    "id": "context-021",
-    "domain": "context",
-    "difficulty": 3,
-    "question": "A support agent finds three customer profiles matching the name on a request; one has an order matching the amount mentioned by the customer, but none of the profiles have been confirmed by any unique identifier the customer has provided. The agent's internal similarity score for the best match is 0.92. What is the correct action?",
-    "choices": [
-      "Proceed with the 0.92-scored match since it clears a high internal confidence bar",
-      "Pick the profile with the matching order amount, since it is strong corroborating evidence",
-      "Ask the customer to provide a unique identifier (e.g., email or phone last-4) before proceeding",
-      "Escalate to a human immediately since multiple profiles exist"
-    ],
-    "questionJa": "サポートエージェントが、リクエストに書かれた名前に一致する顧客プロファイルを3件見つけました。そのうち1件には、顧客が話した金額と一致する注文がありますが、どのプロファイルも、顧客が示した一意の識別子では確認できていません。エージェントの内部の類似度スコアは、最も近い一致で0.92です。エージェントがとるべき正しい対応はどれですか。",
-    "choicesJa": [
-      "0.92のスコアは内部の高い確信度の基準を超えているので、そのスコアの一致で進める",
-      "注文金額が一致していて有力な裏付けになるので、そのプロファイルを選ぶ",
-      "先に進む前に、顧客に一意の識別子（例: メールアドレスや電話番号の下4桁）を示してもらう",
-      "プロファイルが複数あるので、すぐに人にエスカレーションする"
-    ],
-    "answer": 2,
-    "explanation": "正解は、一意の識別子で確認できていない以上、内部スコアや注文金額が一致していても、顧客に見分けるための情報を求めるべきだという点です。内部の類似度スコアが高くても、「最もありそうな」候補を選ぶのは、禁止されているアンチパターンです。注文金額の一致は補強材料にすぎず、確証にはなりません。あいまいさは追加の情報を求めれば解消できるので、すぐにエスカレーションする必要はありません。",
-    "tags": [
-      "ambiguous-match",
-      "disambiguation",
-      "confidence-score"
-    ],
-    "ref": "D5 ambiguous customer matches"
-  },
-  {
-    "id": "context-022",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "An agent decides to hand off a billing dispute to a human agent. The human agents on this team work from a queue and do NOT have access to the full chat transcript when a case lands in their queue. What must the structured handoff payload include to be usable?",
-    "choices": [
-      "Just the customer ID and a link to re-run the conversation if needed",
-      "A raw dump of the entire conversation transcript so the human can read through it",
-      "A structured summary: customer ID, issue type, actions already taken, relevant amounts, and a recommended next action",
-      "Only the last message the customer sent, since that reflects their current concern"
-    ],
-    "questionJa": "エージェントが、請求の異議の対応を人の担当者に引き継ぐことにしました。このチームの人の担当者はキューで作業していて、ケースがキューに入った時点では、チャットのトランスクリプト全文を見られません。構造化されたハンドオフのペイロードが使えるものになるために、含めるべきものはどれですか。",
-    "choicesJa": [
-      "顧客IDと、必要なときに会話を再実行するためのリンクだけ",
-      "人が読み通せるよう、会話のトランスクリプト全体を加工せずそのまま書き出したもの",
-      "顧客ID、問題の種類、すでにとった対応、関連する金額、推奨する次の対応を含む構造化された要約",
-      "顧客が最後に送ったメッセージだけ。それが顧客の今の関心事を反映しているため"
-    ],
-    "answer": 2,
-    "explanation": "正解は、顧客ID・問題の種類・これまでの対応・関連する金額・推奨する次の対応を含む構造化された要約を渡すことです。人の担当者は通常トランスクリプトを見られないので、リンクだけでは不十分です。生のトランスクリプト全文も、担当者側では見られない前提なので、要件を満たしません。最後のメッセージだけでは、経緯や実施済みの対応がわからず、不十分です。",
-    "tags": [
-      "escalation-handoff",
-      "structured-summary",
-      "human-handoff"
-    ],
-    "ref": "D5 structured escalation handoff"
-  },
-  {
-    "id": "context-023",
-    "domain": "context",
-    "difficulty": 1,
-    "question": "In a well-designed escalation handoff for a customer support agent, which piece of information is typically included so the receiving human agent understands financial exposure of the case?",
-    "choices": [
-      "The customer's IP address and browser user-agent string",
-      "A list of every tool call the agent made internally, including failed attempts",
-      "Refund amounts and any approval limits relevant to the case",
-      "The customer's full previous purchase history going back multiple years"
-    ],
-    "questionJa": "顧客サポートエージェントのエスカレーションで、ハンドオフがよく設計されている場合、受け取る人の担当者がそのケースの金銭面のリスクを把握できるように、通常含まれる情報はどれですか。",
-    "choicesJa": [
-      "顧客のIPアドレスとブラウザのユーザーエージェント文字列",
-      "失敗した試行も含め、エージェントが内部で実行したツール呼び出しのすべての一覧",
-      "返金額と、そのケースに関係する承認限度額",
-      "数年前までさかのぼる、顧客の過去の全購入履歴"
-    ],
-    "answer": 2,
-    "explanation": "正解は、返金額や承認限度額のように、金銭面のリスクがわかる情報です。これがあれば、人の担当者がすばやく判断できます。IPアドレスやユーザーエージェントは、通常このハンドオフには不要です。内部のツール呼び出しの全ログ（失敗も含む）は、詳しすぎて、人向けの要約には向きません。数年分の購入履歴の全体は多すぎて、要点を絞ったサマリーという目的に反します。",
-    "tags": [
-      "escalation-handoff",
-      "structured-summary",
-      "refund-amounts"
-    ],
-    "ref": "D5 structured escalation handoff"
-  },
-  {
-    "id": "context-024",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "A structured data extraction pipeline needs to decide when a low-confidence extracted field should trigger a human review. The team is debating between two designs: (A) have the LLM state in free text whether it is confident, or (B) compare a numeric confidence score against a fixed threshold set in code. Which is the correct approach and why?",
-    "choices": [
-      "Design A, because the model has direct insight into its own reasoning process",
-      "Either design is equally acceptable as long as the threshold is documented somewhere",
-      "Design A, but only if the model is explicitly instructed to 'be honest about uncertainty'",
-      "Design B, because deterministic threshold logic in code is reproducible and auditable, unlike LLM self-assessment"
-    ],
-    "questionJa": "構造化データ抽出のパイプラインで、確信度の低い抽出フィールドを、どんなときに人によるレビューに回すかを決める必要があります。チームは2つの設計で迷っています。（A）LLMに、確信があるかどうかを自由な文章で述べさせる。（B）数値の確信度スコアを、コードで決めた固定のしきい値と比べる。正しいアプローチとその理由の組み合わせはどれですか。",
-    "choicesJa": [
-      "設計Aである。モデルは自分自身の推論の過程を直接見通せているため",
-      "しきい値がどこかに文書化されていれば、どちらの設計でも同じように許容できる",
-      "設計Aである。ただし、モデルに「不確実性について正直であるように」と明示的に指示した場合に限る",
-      "設計Bである。コードで決める決定論的なしきい値のロジックは、LLMの自己評価と違って、再現でき、監査できるため"
-    ],
-    "answer": 3,
-    "explanation": "正解は、コード側で固定したしきい値と数値スコアを比べる決定論的なロジック（設計B）です。これは再現でき、監査もできます。モデル自身の内省に基づく自己申告（設計A）は、較正されておらず信頼性に欠けるので誤りです。しきい値を文書化するだけでは、自己申告の信頼性が低いという根本的な課題は解決しません。「正直に」と指示しても、自己申告の確信度の不確実さはなくなりません。",
-    "tags": [
-      "deterministic-threshold",
-      "llm-self-assessment",
-      "escalation-logic"
-    ],
-    "ref": "D5 deterministic threshold logic"
-  },
-  {
-    "id": "context-025",
-    "domain": "context",
-    "difficulty": 3,
-    "question": "A multi-agent research system's search subagent reports a tool failure to the coordinator using only `{\"failure_type\": \"timeout\"}` with no other detail. The coordinator cannot tell which service failed, what query was attempted, whether a retry is worthwhile, or whether any partial data was already gathered. Which set of fields would a properly structured error context have included to make this actionable?",
-    "choices": [
-      "`failure_type`, `service`, `attempted_query`, `timeout_duration_ms`, `partial_results`, `alternative_approaches`, `is_retryable`, `retry_after_ms`",
-      "Only a longer, more emotionally emphatic natural-language description of how serious the failure was",
-      "`confidence`, `data_as_of`, `source_published`, `retrieved_on`, since temporal fields resolve all failure ambiguity",
-      "Just `stop_reason` and `stop_details.category`, since those already fully describe any tool failure"
-    ],
-    "questionJa": "マルチエージェントのリサーチシステムで、検索サブエージェントがコーディネーターにツールの失敗を報告しましたが、内容は`{\"failure_type\": \"timeout\"}`だけで、ほかの詳細はありません。コーディネーターは、どのサービスが失敗したのか、どのクエリを試したのか、リトライする価値があるのか、部分的なデータがすでに集まっているのかを判断できません。コーディネーターが対処できるようにするために、適切に構造化されたエラーコンテキストに含まれているべきだったフィールドの組み合わせはどれですか。",
-    "choicesJa": [
-      "`failure_type`、`service`、`attempted_query`、`timeout_duration_ms`、`partial_results`、`alternative_approaches`、`is_retryable`、`retry_after_ms`",
-      "失敗がどれほど深刻かを、もっと長く、もっと感情を込めて強調した自然言語の説明だけ",
-      "`confidence`、`data_as_of`、`source_published`、`retrieved_on`。時間に関するフィールドが、失敗にまつわるあいまいさをすべて解消するため",
-      "`stop_reason`と`stop_details.category`だけ。これらだけで、どんなツール失敗も十分に説明できるため"
-    ],
-    "answer": 0,
-    "explanation": "構造化されたエラーコンテキストに`failure_type`・`service`・`attempted_query`・`timeout_duration_ms`・`partial_results`・`alternative_approaches`・`is_retryable`・`retry_after_ms`といったフィールドを含めておけば、コーディネーターは、どのサービスで何を試みたのか、リトライすべきか、部分的なデータがすでにあるのかを判断できます。感情を込めて強調しただけの自然言語の説明は、機械的に扱えず、判断の材料になりません。`data_as_of`などの時間に関するフィールドは、情報の鮮度を管理するためのもので、ツール失敗のコンテキストとは目的が違います。`stop_reason`と`stop_details`は、エージェントループが止まった理由を示すAPIレベルの概念で、個々のツール呼び出しの失敗の詳細を表すものではありません。",
-    "tags": [
-      "structured-error-context",
-      "failure-fields",
-      "multi-agent"
-    ],
-    "ref": "D5 structured error context fields"
-  },
-  {
-    "id": "context-026",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "A structured data extraction system outputs each field as {\"value\": ..., \"confidence\": 0.9}. During a QA audit, the team samples all fields with confidence 0.9 across the validation set and finds only 55% of them are actually correct. What does this indicate?",
-    "choices": [
-      "The confidence scores are fine because 0.9 only needs to be an ordinal ranking, not a literal probability",
-      "The extraction model needs a higher temperature setting to improve calibration",
-      "The confidence scores are poorly calibrated, since a 0.9 score should correspond to roughly 90% accuracy on labeled data",
-      "This is expected behavior since confidence scores are inherently approximate and cannot be validated"
-    ],
-    "questionJa": "構造化データ抽出システムが、各フィールドを{\"value\": ..., \"confidence\": 0.9}の形式で出力しています。QA監査で、チームが検証セット全体から確信度0.9のフィールドをすべて抜き出して調べたところ、実際に正しかったのは55%だけでした。これが示していることはどれですか。",
-    "choicesJa": [
-      "確信度スコアに問題はない。0.9は、文字どおりの確率ではなく、順序を表すランキングであればよいため",
-      "較正を改善するために、抽出モデルのtemperatureをもっと高く設定する必要がある",
-      "確信度スコアの較正が不十分である。0.9というスコアは、ラベル付きデータでおおよそ90%の正解率に対応しているべきだから",
-      "確信度スコアは本来おおよその値で、検証できないため、これは想定どおりの挙動である"
-    ],
-    "answer": 2,
-    "explanation": "正解は、確信度スコアが較正されていないという指摘です。0.9というスコアは、ラベル付きデータで約90%の正解率に対応するはずで、55%しかないなら、スコアは「意味をなさない」状態です。単なる順位づけとして扱うのは、較正の要件の趣旨に反します。temperatureの設定で較正の問題が直接解決するわけではありません。較正は検証できないという主張も誤りで、まさにこの検証によって、較正の不良が見つかっています。",
-    "tags": [
-      "confidence-calibration",
-      "field-level-confidence",
-      "structured-extraction"
-    ],
-    "ref": "D5 field-level confidence + calibration"
-  },
-  {
-    "id": "context-027",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "During a multi-hour Claude Code session doing a large codebase migration, the main context is filling up with dozens of file-exploration results. To make sure important findings (e.g., 'auth logic lives in src/core/auth.ts, not src/auth/') survive an eventual `/compact` and can be re-read later even after the conversation history is gone, what strategy is recommended?",
-    "choices": [
-      "Rely on auto-memory alone, since MEMORY.md always captures every discovery automatically with no further action needed",
-      "Persist key findings to scratchpad markdown files on disk that can be explicitly re-read later, since they survive compaction independently of the conversation history",
-      "Increase `--max-turns` so the session never needs to compact in the first place",
-      "Repeat the finding verbatim in every subsequent message so it stays near the 'end' of context at all times"
-    ],
-    "questionJa": "数時間にわたるClaude Codeセッションで、大規模なコードベースの移行作業をしています。メインのコンテキストは、数十件のファイル探索の結果で埋まりつつあります。重要な発見（例: 「認証ロジックはsrc/auth/ではなくsrc/core/auth.tsにある」）を、いずれ実行される`/compact`のあとも残し、会話履歴がなくなったあとでも読み直せるようにするために推奨される戦略はどれですか。",
-    "choicesJa": [
-      "MEMORY.mdが、追加の対応なしに、すべての発見を常に自動で記録してくれるので、auto-memoryだけに頼る",
-      "重要な発見を、ディスク上のスクラッチパッド用のMarkdownファイルに残しておく。会話履歴とは別にcompactionを生き延び、あとで明示的に読み直せるため",
-      "セッションがそもそもcompactを必要としないよう、`--max-turns`を増やす",
-      "コンテキストの「末尾」付近にいつも置いておくために、以降のすべてのメッセージで、その発見をそのまま繰り返す"
-    ],
-    "answer": 1,
-    "explanation": "重要な発見をスクラッチパッド用のMarkdownファイルとしてディスクに残しておく戦略が推奨されます。こうしておけば、`/compact`で会話履歴が失われたあとでも、ファイルを明示的に読み直して発見を復元できます。auto-memoryは便利ですが、すべての発見を自動的に確実に記録する保証はなく、それだけに頼るのは危険です。`--max-turns`を増やしても、コンテキストウィンドウの限界そのものは変わらず、圧縮を避けられるわけではありません。発見をメッセージのたびに繰り返すのは、非現実的で非効率な運用です。",
-    "tags": [
-      "scratchpad",
-      "compact-survival",
-      "degradation-signs"
-    ],
-    "ref": "D5 scratchpad files strategy"
-  },
-  {
-    "id": "context-028",
-    "domain": "context",
-    "difficulty": 3,
-    "question": "A support agent finds a candidate customer match with an internal similarity score of 0.93, which the team knows (from prior calibration audits) is reliable — 0.93 really does correspond to roughly 93% correctness on labeled data. An engineer argues that since the score is well-calibrated, the agent should now just proceed automatically above 0.90 without asking the customer anything. What is the flaw in this reasoning?",
-    "choices": [
-      "A well-calibrated similarity score still means roughly 7% of matches at that score are wrong; for identity-sensitive actions the correct practice is to request a disambiguating identifier from the customer rather than act on probabilistic confidence alone, regardless of calibration quality",
-      "There is no flaw; a well-calibrated 0.93 score is mathematically equivalent to human-confirmed identity and can always be trusted for any action",
-      "The flaw is that similarity scores can only be calibrated for numeric fields, never for identity-matching use cases",
-      "The flaw is that 0.90 is too low a cutoff; calibration would only justify skipping confirmation above 0.99"
-    ],
-    "questionJa": "サポートエージェントが、内部の類似度スコアが0.93の顧客候補を見つけました。過去の較正監査から、このスコアは信頼できることがチームにはわかっています。0.93は、ラベル付きデータで実際におよそ93%の正解率に対応しています。あるエンジニアは、「スコアがよく較正されているのだから、0.90を超えたら、顧客に何も尋ねずに自動で進めればよい」と主張しています。この推論の欠陥を指摘しているのはどれですか。",
-    "choicesJa": [
-      "よく較正された類似度スコアでも、そのスコアの一致のうち約7%は誤りだという意味である。顧客の特定に関わる行動では、較正の質にかかわらず、確率的な確信度だけで行動せず、顧客に見分けるための識別子を求めるのが正しいやり方である",
-      "欠陥はない。よく較正された0.93のスコアは、人が本人であることを確認したのと数学的に同等で、どんな行動でも常に信頼できる",
-      "欠陥は、類似度スコアが較正できるのは数値フィールドだけで、顧客の特定というユースケースには決して較正できないことである",
-      "欠陥は、0.90というカットオフが低すぎることである。較正によって確認を省略してよいと言えるのは、0.99を超える場合だけである"
-    ],
-    "answer": 0,
-    "explanation": "確信度スコアが較正されていても、保証されるのは、そのスコアがおよそ93%の正解率に対応するという統計的な性質だけで、残りの約7%では誤りの可能性があるということです。本人確認のような取り返しのつかない行動では、較正の良し悪しにかかわらず、顧客にメールアドレスや電話番号の下4桁などの見分けるための情報を確認するのが正しいやり方です。較正されたスコアが人による確認と数学的に同等だという主張は誤りです。類似度スコアは数値フィールドにしか較正できないという主張も誤りです。カットオフの数値そのものは問題の本質ではなく、確率的な確信度だけで本人確認を省略すべきではない、という点が論点です。",
-    "tags": [
-      "confidence-calibration",
-      "ambiguous-match",
-      "disambiguation"
-    ],
-    "ref": "D5 calibration does not eliminate need for disambiguation"
-  },
-  {
-    "id": "context-029",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "A customer support agent has been handling an unusually long, multi-issue conversation for over two hours. A supervisor reviewing the transcript notices the agent has started answering based on 'typically, refund policies work like X' instead of citing the specific policy document it looked up earlier, and it has started re-asking for the order number it was already given. What is this most likely a sign of, and what should the supervisor do?",
-    "choices": [
-      "This is normal end-of-conversation behavior with no cause for concern; no action is needed",
-      "This indicates context degradation in a long session (assumptions replacing verification, forgotten discoveries); a proactive summary or fresh session with a case-facts block should be introduced rather than waiting for further drift",
-      "This means the customer is being deliberately difficult; the agent should end the conversation immediately",
-      "This means the model's temperature setting is too high and must be lowered mid-conversation"
-    ],
-    "questionJa": "顧客サポートエージェントが、2時間以上にわたって、異例に長く、複数の問題を含む会話に対応しています。スーパーバイザーがトランスクリプトを確認すると、エージェントは、以前に調べた具体的なポリシー文書を引用せず、「通常、返金ポリシーはXのようになっています」という説明で答えるようになっていました。また、すでに伝えられている注文番号を、もう一度尋ねるようになっていました。この状況が示している可能性が最も高いことと、スーパーバイザーがとるべき対応の組み合わせはどれですか。",
-    "choicesJa": [
-      "会話の終盤に見られる通常の挙動を示しており、心配する理由はない。対応は不要である",
-      "長時間セッションでのコンテキスト劣化（仮定が検証に取って代わる、発見したことを忘れる）を示している。さらにずれていくのを待たず、先回りして要約を導入するか、case-factsブロックを付けた新しいセッションに切り替える",
-      "顧客がわざと面倒な態度をとっていることを示している。エージェントはすぐに会話を終了する",
-      "モデルのtemperature設定が高すぎることを示している。会話の途中で下げる必要がある"
-    ],
-    "answer": 1,
-    "explanation": "調べて確認した具体的なポリシー文書ではなく「通常はこうなっている」という一般論に頼り始めたり、すでに伝えられた注文番号をもう一度尋ねたりするのは、長時間セッションでのコンテキスト劣化の兆候です（検証済みの発見が忘れられ、検証の代わりに一般的なパターンによる推測が使われます）。これを放っておかず、先回りした要約の導入や、case-factsブロックを付けた新しいセッションへの切り替えを検討すべきです。問題なしとするのは、劣化の兆候を見逃すことになります。顧客の態度の問題にすり替えるのは的外れです。temperatureの調整は、会話履歴の劣化とは関係ありません。",
-    "tags": [
-      "degradation-signs",
-      "case-facts-block",
-      "customer-support"
-    ],
-    "ref": "D5 context degradation signs in long sessions"
-  },
-  {
-    "id": "context-030",
-    "domain": "context",
-    "difficulty": 3,
-    "question": "A support agent is mid-conversation with a customer who is calm and asks a routine question about return policy, but then adds: 'Also, can you just get me a real person, I don't want to deal with a bot.' The agent has made good progress and could technically answer the return policy question itself. What is the correct next action?",
-    "choices": [
-      "Continue resolving the return policy question since the agent has already made progress and the request is simple",
-      "Escalate to a human because the customer explicitly requested one, regardless of the simplicity of the underlying question",
-      "Ignore the request for a human since the customer's tone is calm, indicating low complexity",
-      "Ask the customer to rate their confidence in the bot's abilities before deciding whether to escalate"
-    ],
-    "questionJa": "サポートエージェントが、冷静な顧客と会話しています。顧客は返品ポリシーについて通常の質問をしたあと、こう付け加えました。「あと、本物の人につないでもらえますか。ボットとやり取りしたくないので」。エージェントはここまで順調に進めていて、返品ポリシーの質問には、技術的には自分で答えられます。エージェントがとるべき正しい次の対応はどれですか。",
-    "choicesJa": [
-      "エージェントはすでに順調に進めていて、依頼も単純なので、返品ポリシーの質問の解決を続ける",
-      "もとの質問が単純かどうかにかかわらず、顧客が人を明確に求めているので、人にエスカレーションする",
-      "顧客の口調が冷静で、複雑さが低いことを示しているので、人を求める依頼は無視する",
-      "エスカレーションするかどうかを決める前に、顧客にボットの能力をどれくらい信頼しているか評価してもらう"
-    ],
-    "answer": 1,
-    "explanation": "正解は、顧客が人の対応を明確に求めた以上、問題の単純さにかかわらずエスカレーションすべきだという点です。進捗があることや質問が単純なことは、人の対応を明確に求めているという優先されるきっかけを覆す理由になりません。穏やかな口調だからといって、明確な依頼を無視するのは誤りです。顧客に確信度を尋ねること自体、この状況の要件とは関係ありません。",
-    "tags": [
-      "escalation-triggers",
-      "explicit-human-request",
-      "customer-support"
-    ],
-    "ref": "D5 escalation triggers"
-  },
-  {
-    "id": "context-031",
-    "domain": "context",
-    "difficulty": 1,
-    "question": "In a multi-agent research system, a search subagent's tool call times out. Which structured error context field should carry the number of milliseconds the tool waited before giving up?",
-    "choices": [
-      "attempted_query",
-      "failure_type",
-      "timeout_duration_ms",
-      "retry_after_ms"
-    ],
-    "questionJa": "マルチエージェントのリサーチシステムで、検索サブエージェントのツール呼び出しがタイムアウトしました。ツールがあきらめるまでに待ったミリ秒数を持たせるべき、構造化エラーコンテキストのフィールドはどれですか。",
-    "choicesJa": [
-      "attempted_query",
-      "failure_type",
-      "timeout_duration_ms",
-      "retry_after_ms"
-    ],
-    "answer": 2,
-    "explanation": "timeout_duration_msは、タイムアウトするまでに実際に待った時間（ミリ秒）を表すフィールドです。retry_after_msは次にリトライするまでの待ち時間で、意味が違います。attempted_queryは実行しようとしたクエリの内容、failure_typeは失敗の種類を表すので、どちらもタイムアウトまでの時間そのものを記録するためのものではありません。",
-    "tags": [
-      "structured-error-context",
-      "timeout"
-    ],
-    "ref": "D5 structured error context fields"
-  },
-  {
-    "id": "context-032",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "A developer productivity tool's data-fetch subagent fails against a downstream service. The coordinator wants to know whether it should attempt automatic recovery or must involve a human. Which field is designed specifically to answer that question?",
-    "choices": [
-      "service",
-      "partial_results",
-      "attempted_query",
-      "is_retryable"
-    ],
-    "questionJa": "開発者生産性ツールのデータ取得サブエージェントが、下流のサービスに対する処理で失敗しました。コーディネーターは、自動で復旧を試みるべきか、人を関与させる必要があるのかを知りたいと考えています。この問いに答えるために専用に設計されているフィールドはどれですか。",
-    "choicesJa": [
-      "service",
-      "partial_results",
-      "attempted_query",
-      "is_retryable"
-    ],
-    "answer": 3,
-    "explanation": "is_retryableは、この失敗が自動リトライで解決できるかどうかをコーディネーターに伝えるための、専用のフラグです。serviceは失敗したサービスの名前、partial_resultsは途中まで得られた結果、attempted_queryは試したクエリの内容を表し、どれもリトライできるかどうかを判断する材料にはなりません。",
-    "tags": [
-      "structured-error-context",
-      "is_retryable"
-    ],
-    "ref": "D5 structured error context fields"
-  },
-  {
-    "id": "context-033",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "In a structured data extraction pipeline, a document-fetch subagent hits a transient 503 from an internal API. Following the recommended subagent error recovery pattern, what should the subagent do first, before escalating anything to the coordinator?",
-    "choices": [
-      "Immediately propagate the raw 503 to the coordinator with no further action",
-      "Abort the entire multi-step workflow to avoid wasting further calls",
-      "Perform local retries with exponential backoff before considering escalation",
-      "Silently return an empty result so the pipeline can continue uninterrupted"
-    ],
-    "questionJa": "構造化データ抽出のパイプラインで、文書取得サブエージェントが、内部APIから一時的な503エラーを受け取りました。推奨されるサブエージェントのエラー復旧パターンに従うと、コーディネーターに何かをエスカレーションする前に、サブエージェントが最初にすべきことはどれですか。",
-    "choicesJa": [
-      "ほかに何もせず、生の503をすぐにコーディネーターへ伝える",
-      "これ以上呼び出しを無駄にしないよう、複数ステップのワークフロー全体を中止する",
-      "エスカレーションを検討する前に、指数バックオフを使ったローカルなリトライをする",
-      "パイプラインが止まらずに続けられるよう、何も言わずに空の結果を返す"
-    ],
-    "answer": 2,
-    "explanation": "一時的な障害（503など）には、まずサブエージェントがローカルでバックオフ付きのリトライをするのが推奨パターンです。すぐにコーディネーターへ伝えたり、ワークフロー全体を中止したり、空の結果を黙って返したりするのは、リトライの機会を捨てるか、問題を隠してしまうアンチパターンです。",
-    "tags": [
-      "subagent-error-recovery",
-      "backoff-retry"
-    ],
-    "ref": "D5 subagent error recovery"
-  },
-  {
-    "id": "context-034",
-    "domain": "context",
-    "difficulty": 3,
-    "question": "A CI/CD automation subagent retried a flaky deployment-status API three times with backoff and it still fails. Per the recommended recovery pattern, what should the subagent send up to the coordinator?",
-    "choices": [
-      "Nothing, since retries were exhausted the step should just be dropped from the report",
-      "Only a boolean indicating the step failed, so the coordinator can decide independently",
-      "A generic \"Operation failed\" message to keep the payload small",
-      "Details of the attempts made, any partial results obtained, and whether it is retryable"
-    ],
-    "questionJa": "CI/CD自動化のサブエージェントが、不安定なデプロイステータスAPIを、バックオフをはさんで3回リトライしましたが、それでも失敗します。推奨される復旧パターンに従うと、サブエージェントがコーディネーターに送るべきものはどれですか。",
-    "choicesJa": [
-      "何も送らない（リトライを使い切ったので、そのステップはレポートから外すだけでよい）",
-      "ステップが失敗したことを示すブール値だけ。コーディネーターが独自に判断できるようにするため",
-      "ペイロードを小さく保つための、「操作に失敗しました」という汎用的なメッセージだけ",
-      "行った試行の詳細、得られた部分的な結果、リトライ可能かどうか"
-    ],
-    "answer": 3,
-    "explanation": "ローカルでのリトライで解決しないときは、サブエージェントは、試行の詳細・部分的な結果・リトライできるかどうかを含めて、コーディネーターに伝えるべきです。ステップを黙って落とす、ブール値だけを返す、汎用的な失敗メッセージだけを返す、というやり方は、どれも情報が足りず、コーディネーターが適切に判断できなくなるアンチパターンです。",
-    "tags": [
-      "subagent-error-recovery",
-      "propagate-unresolvable"
-    ],
-    "ref": "D5 subagent error recovery"
-  },
-  {
-    "id": "context-035",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "You are designing crash recovery for a long-running multi-agent research pipeline so that a mid-run process crash doesn't force a full restart. Which design correctly implements this?",
-    "choices": [
-      "The coordinator keeps all agent state only in its in-memory conversation history for fastest access",
-      "Each agent re-derives all prior results from scratch on restart to guarantee consistency",
-      "Each agent exports its state to a known path, and the coordinator maintains a manifest so the run can resume from the last completed step",
-      "Only the coordinator's final output is persisted, since intermediate subagent state is not needed"
-    ],
-    "questionJa": "長時間動くマルチエージェントのリサーチパイプラインで、実行の途中でプロセスがクラッシュしても、全体を最初から再起動しなくて済むよう、クラッシュからの復旧を設計しています。これを正しく実装している設計はどれですか。",
-    "choicesJa": [
-      "最速でアクセスできるよう、コーディネーターがすべてのエージェントの状態を、インメモリの会話履歴にだけ保持する",
-      "一貫性を保証するために、各エージェントが再起動のたびに、それまでの結果をすべてゼロから導き直す",
-      "各エージェントが既知のパスに状態をエクスポートし、コーディネーターがマニフェストを管理して、最後に完了したステップから実行を再開できるようにする",
-      "途中のサブエージェントの状態は不要なので、コーディネーターの最終出力だけを永続化する"
-    ],
-    "answer": 2,
-    "explanation": "各エージェントが既知のパスに状態をエクスポートし、コーディネーターがマニフェストで進捗を管理すれば、クラッシュのあとも最後に完了したステップから再開できます。メモリ上の履歴だけに頼る案、毎回ゼロから再計算する案、最終出力だけを保存する案は、どれもクラッシュ時に途中の状態が失われ、再実行のコストが大きくなります。",
-    "tags": [
-      "crash-recovery",
-      "state-export"
-    ],
-    "ref": "D5 crash recovery pattern"
-  },
-  {
-    "id": "context-036",
-    "domain": "context",
-    "difficulty": 1,
-    "question": "In the crash recovery pattern for multi-agent workflows, where does each agent typically write its exportable state?",
-    "choices": [
-      "A known filesystem path such as /tmp/workflow/agent-X-state.json, tracked via a coordinator manifest",
-      "An environment variable scoped to the agent's own process",
-      "The coordinator's system prompt for the next turn",
-      "A random temp file whose location is discovered by grepping logs after a crash"
-    ],
-    "questionJa": "マルチエージェントのワークフローのクラッシュ復旧パターンで、各エージェントがエクスポート可能な状態を書き込む先として、通常あてはまるのはどれですか。",
-    "choicesJa": [
-      "コーディネーターのマニフェストで追跡する、/tmp/workflow/agent-X-state.jsonのような既知のファイルシステムパス",
-      "エージェント自身のプロセスに限定された環境変数",
-      "次のターンに使う、コーディネーターのシステムプロンプト",
-      "ランダムな一時ファイル。場所は、クラッシュのあとでログをgrepして探す"
-    ],
-    "answer": 0,
-    "explanation": "推奨されるパターンでは、各エージェントが/tmp/workflow/agent-X-state.jsonのような既知のパスに状態を書き出し、コーディネーターがマニフェストでそれらを追跡します。環境変数やシステムプロンプトに入れる方法や、クラッシュのあとにログを検索して見つける方法は、再現性と信頼性に欠けるので、推奨されません。",
-    "tags": [
-      "crash-recovery",
-      "known-paths"
-    ],
-    "ref": "D5 crash recovery pattern"
-  },
-  {
-    "id": "context-037",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "A structured data extraction system routes extracted fields to human review before finalizing. Records are classified as high-risk, medium-risk, or low-risk. Following stratified random sampling guidance, what sampling rates should be applied to each tier respectively?",
-    "choices": [
-      "10% high-risk, 20% medium-risk, 5% low-risk",
-      "50% high-risk, 25% medium-risk, 10% low-risk",
-      "20% high-risk, 10% medium-risk, 5% low-risk",
-      "5% high-risk, 10% medium-risk, 20% low-risk"
-    ],
-    "questionJa": "構造化データ抽出システムが、抽出したフィールドを確定する前に、人によるレビューに回しています。レコードは、高リスク、中リスク、低リスクに分類されています。層別ランダムサンプリングのガイダンスに従うと、それぞれの層に適用すべきサンプリング率はどれですか。",
-    "choicesJa": [
-      "高リスク10%、中リスク20%、低リスク5%",
-      "高リスク50%、中リスク25%、低リスク10%",
-      "高リスク20%、中リスク10%、低リスク5%",
-      "高リスク5%、中リスク10%、低リスク20%"
-    ],
-    "answer": 2,
-    "explanation": "推奨される層別サンプリングでは、高リスク20%、中リスク10%、低リスク5%のように、リスクが高いほどレビューの比率を高くします。ほかの選択肢は、比率の割り当てが逆になっていたり、値そのものが指定と違っていたりするので誤りです。",
-    "tags": [
-      "stratified-sampling",
-      "human-review"
-    ],
-    "ref": "D5 stratified human review sampling"
-  },
-  {
-    "id": "context-038",
-    "domain": "context",
-    "difficulty": 3,
-    "question": "A structured data extraction system processes 100,000 mixed documents (printed forms, handwritten notes, and foreign-language scans). To decide review sampling depth and QA priorities, the team currently only tracks overall accuracy. Why is this insufficient, and what's the fix?",
-    "choices": [
-      "It's fine because 97% overall accuracy already exceeds any reasonable production threshold",
-      "It's insufficient because a high overall figure can mask much lower accuracy on specific document types like handwritten notes; break accuracy down by document type and field",
-      "It's insufficient only because overall accuracy doesn't include confidence scores, which should be added instead",
-      "It's insufficient because aggregate accuracy should be replaced entirely by field-level confidence scores rather than any breakdown by document type"
-    ],
-    "questionJa": "構造化データ抽出システムが、印刷フォーム、手書きメモ、外国語のスキャンが混在する10万件の文書を処理しています。レビューのサンプリングの深さとQAの優先順位を決めるために、チームは今のところ全体の精度だけを追跡しています。これがなぜ不十分で、どう直せばよいかを述べているのはどれですか。",
-    "choicesJa": [
-      "問題ない。全体の精度97%は、妥当な本番のしきい値をすでに超えているため",
-      "不十分である。全体の数値が高くても、手書きメモのような特定の文書タイプでは精度がはるかに低いことが隠れてしまうため、精度を文書タイプとフィールドごとに分けて見るべきである",
-      "不十分である。ただし、その理由は全体精度に確信度スコアが含まれていないからにすぎず、代わりに確信度スコアを追加するべきである",
-      "不十分である。全体精度は、文書タイプ別に分けるのではなく、フィールド単位の確信度スコアに完全に置き換えるべきだから"
-    ],
-    "answer": 1,
-    "explanation": "97%のような全体精度は、手書きの文書では45%しか正解していないといった弱点を隠してしまうので、文書タイプとフィールド単位に分けて確認する必要があります。全体精度が高いから問題ないという判断も、確信度スコアだけを追加する案も、内訳をやめてフィールドの確信度だけに置き換える案も、集計した指標が個別のカテゴリの深刻な弱点を隠してしまう問題を解決しません。",
-    "tags": [
-      "aggregate-accuracy-masking",
-      "document-type-breakdown"
-    ],
-    "ref": "D5 aggregate accuracy masking"
-  },
-  {
-    "id": "context-039",
-    "domain": "context",
-    "difficulty": 3,
-    "question": "After breaking down accuracy by document type, a team finds handwritten notes score only 45% while typed forms score 98%. They now want to set the stratified human-review sampling rate for the 'handwritten notes' subgroup specifically, rather than using one blanket rate across all document types. What is the most defensible way to set this subgroup's review rate, consistent with both the stratified-sampling and aggregate-accuracy-masking guidance?",
-    "choices": [
-      "Apply the same flat 5% low-risk sampling rate used for typed forms, since stratified sampling only varies by customer-facing risk category, not by measured accuracy",
-      "Treat handwritten notes as a distinct high-risk stratum given its measured 45% accuracy, and sample it at a materially higher rate (e.g., the ~20% high-risk tier) than the well-performing typed-form stratum",
-      "Stop measuring accuracy by document type once the sampling rate is set, since the breakdown's only purpose was to pick an initial rate",
-      "Apply a 100% review rate to all document types uniformly going forward, since any known weak subgroup invalidates sampling entirely"
-    ],
-    "questionJa": "あるチームが文書タイプ別に精度を分解したところ、手書きメモの精度は45%しかなく、活字のフォームは98%だとわかりました。そこでチームは、すべての文書タイプに一律の率を使うのをやめて、「手書きメモ」というサブグループ専用に、人によるレビューの層別サンプリング率を設定したいと考えています。層別サンプリングと、全体精度が弱点を隠してしまう問題の両方のガイダンスに合わせて、このサブグループのレビュー率を設定する方法のうち、最も妥当なものはどれですか。",
-    "choicesJa": [
-      "層別サンプリングが変わるのは顧客に見えるリスクの区分だけで、実測した精度では変わらないので、活字のフォームに使っているのと同じ一律5%の低リスクのサンプリング率を適用する",
-      "実測した精度45%を踏まえて、手書きメモを独立した高リスク層として扱い、成績のよい活字のフォームの層よりもかなり高い率（例: 高リスク層の目安である約20%）でサンプリングする",
-      "内訳を出す目的は最初の率を選ぶことだけだったので、サンプリング率が決まったら、文書タイプ別の精度の測定をやめる",
-      "既知の弱いサブグループがあるとサンプリングそのものが成り立たなくなるので、今後はすべての文書タイプに一律100%のレビュー率を適用する"
-    ],
-    "answer": 1,
-    "explanation": "文書タイプ別の精度の内訳（全体精度が弱点を隠してしまう問題への対策）で、手書きメモの精度が45%と低いことがわかった以上、これを高リスク層として扱い、層別サンプリングの原則に従って、より高い割合（例: 高リスク層の目安である約20%）でレビューするのが筋が通っています。顧客に見えるリスクの区分だけで機械的に判断して実測の精度を無視すると、まさに全体精度による隠蔽を再び持ち込むことになります。サンプリング率を決めたあとで内訳の追跡をやめると、精度が変動したときに気づけなくなります。すべての文書タイプを一律100%でレビューするのは、層別サンプリングの目的（リスクに応じた資源配分）を放棄していて、非効率です。",
-    "tags": [
-      "aggregate-accuracy-masking",
-      "stratified-sampling",
-      "document-type-breakdown"
-    ],
-    "ref": "D5 combining aggregate-accuracy-masking with stratified sampling"
-  },
-  {
-    "id": "context-040",
-    "domain": "context",
-    "difficulty": 1,
-    "question": "A research synthesis system logs `{claim: '...', evidence: '...'}` for each generated statement, but analysts still can't verify claims because they can't tell which document, or which time period, each claim came from. What is missing from the provenance design?",
-    "choices": [
-      "Nothing — pairing each claim with its evidence text is sufficient for verification",
-      "Structured source metadata alongside each claim (e.g. source_url, document_name, publication_date, source_type) so each claim can be traced to a specific, dated source",
-      "A confidence score field so analysts know how much to trust each claim",
-      "A retry/error-handling field so failed extractions can be automatically retried"
-    ],
-    "questionJa": "リサーチ統合システムが、生成した文ごとに`{claim: '...', evidence: '...'}`をログに記録しています。しかしアナリストは、各主張がどの文書の、どの時期のものかがわからないので、主張を検証できません。このプロベナンス（出所の追跡）の設計に足りないものはどれですか。",
-    "choicesJa": [
-      "足りないものはない。各主張とその根拠のテキストを組にしておけば、検証には十分である",
-      "各主張に添える、構造化された出典メタデータ（source_url、document_name、publication_date、source_typeなど）。これで、各主張を日付つきの特定の出典までたどれる",
-      "各主張をどれだけ信頼してよいかがわかる、信頼度スコアのフィールド",
-      "抽出に失敗したときに自動でリトライできるようにする、リトライやエラー処理用のフィールド"
-    ],
-    "answer": 1,
-    "explanation": "プロベナンス（出所の追跡）では、claimとevidenceの組だけでなく、source_url・document_name・publication_date・source_typeのような構造化された出典メタデータを各主張に添えて、はじめて、特定の日付つきの文書までさかのぼって検証できるようになります。信頼度スコアのフィールドは「どれだけ信じてよいか」を示すだけで、出典はたどれません。リトライ用のフィールドはエラー処理の関心事で、プロベナンスとは関係ありません。",
-    "tags": [
-      "provenance",
+      "obj-X1",
+      "subagent-output",
       "claim-source-mapping"
     ],
-    "ref": "D5 information provenance"
+    "ref": "https://academy.claude.com/ja/courses/introduction-to-subagents/designing-effective-subagents"
   },
   {
-    "id": "context-041",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "While synthesizing a multi-agent research report, two credible sources give conflicting figures for the same statistic. What is the correct way to handle this in the final synthesis?",
-    "choices": [
-      "Annotate the conflict, showing both figures with their respective source attribution, and let the reader or downstream process decide",
-      "Silently pick the figure from the source with the more recent publication_date",
-      "Silently pick the figure from the source judged more authoritative and omit the other",
-      "Average the two figures to produce a single reconciled number"
-    ],
-    "questionJa": "マルチエージェントのリサーチレポートを統合している途中で、信頼できる2つの情報源が、同じ統計について食い違う数値を示していました。最終的な統合で、これを扱う正しい方法はどれですか。",
-    "choicesJa": [
-      "食い違いに注記をつけ、2つの数値をそれぞれの出典とともに示して、読者や下流の処理に判断を任せる",
-      "publication_dateが新しいほうの出典の数値を、黙って選ぶ",
-      "より権威があると判断した出典の数値を黙って選び、もう一方は省く",
-      "2つの数値を平均して、調整した1つの数値を出す"
-    ],
-    "answer": 0,
-    "explanation": "情報源が食い違うときは、両方の数値をそれぞれの出典とともに示し、判断は読者や下流の処理に任せるのが正しい方法です。公開日が新しいほうを黙って選ぶ、より権威があると判断したほうを黙って選ぶ、平均をとる、といった対応は、どちらか一方（または両方）の情報を隠したり歪めたりする、「無断で片方を選ぶ」アンチパターンです。",
-    "tags": [
-      "conflicting-sources",
-      "annotate-both"
-    ],
-    "ref": "D5 conflicting data annotation"
-  },
-  {
-    "id": "context-042",
-    "domain": "context",
-    "difficulty": 3,
-    "question": "A multi-agent research system pulls a market-size figure from Source A (published last year) and a conflicting figure from Source B (published last week, retrieved today). The coordinator wants to synthesize this without misleading the reader. Which combination of fields and handling is correct?",
-    "choices": [
-      "Attach data_as_of, source_published, and retrieved_on to each figure, and present both figures with per-source attribution rather than silently choosing one",
-      "Attach only retrieved_on to both figures since that is the most recent and reliable timestamp",
-      "Discard the older figure automatically since source_published age alone determines which is authoritative",
-      "Merge both figures into a single averaged estimate labeled with today's retrieved_on date"
-    ],
-    "questionJa": "マルチエージェントのリサーチシステムが、情報源A（昨年公開）から市場規模の数値を、情報源B（先週公開、今日取得）から食い違う数値を取得しました。コーディネーターは、読者を誤解させないようにこれを統合したいと考えています。正しいフィールドと扱い方の組み合わせはどれですか。",
-    "choicesJa": [
-      "各数値にdata_as_of、source_published、retrieved_onを付け、片方を黙って選ぶのではなく、出典ごとに出所を示して両方の数値を提示する",
-      "retrieved_onが最も新しく信頼できるタイムスタンプなので、両方の数値にretrieved_onだけを付ける",
-      "source_publishedの古さだけでどちらが権威あるかが決まるので、古いほうの数値を自動的に捨てる",
-      "両方の数値を、今日のretrieved_onの日付でラベルをつけた、平均した1つの推定値にまとめる"
-    ],
-    "answer": 0,
-    "explanation": "各数値にdata_as_of・source_published・retrieved_onを付けて時期の混同を防ぎ、食い違う数値は片方を無断で選ばず、両方を出典つきで示すのが正しい対応です。retrieved_onだけを付ける、公開日の新しさだけで古いほうを自動的に捨てる、平均して1つの数値にまとめる、といったやり方は、どれも時系列の情報が欠けたり、食い違いが隠れたりします。",
-    "tags": [
-      "temporal-fields",
-      "conflicting-sources"
-    ],
-    "ref": "D5 temporal fields + conflicting data"
-  },
-  {
-    "id": "context-043",
+    "id": "context-102",
     "domain": "context",
     "difficulty": 1,
-    "question": "A research synthesis pipeline pulls data from multiple sources over several days. A stakeholder later discovers the report cited a statistic as \"current\" when it was actually published six months earlier and simply re-fetched last week. What design change would have prevented this confusion?",
+    "question": "A platform team has built a custom Claude Code subagent that researches unfamiliar parts of a large monorepo and reports back to the main session. The subagent often keeps searching far longer than necessary, and the reports it returns differ in structure from run to run, which makes them hard for the main session to use. The team wants to fix both problems without reducing the subagent's tool access. Which change is the most appropriate approach?",
     "choices": [
-      "Rely on the model's own judgment about whether cited data still feels current",
-      "Attach three separate timestamp fields to each source — the date the data applies to, when the source was published, and when it was retrieved — so each stage of the timeline is distinguishable",
-      "Always use the retrieval date as the single timestamp for every citation",
-      "Drop timestamps entirely and cite only the most recently retrieved sources"
+      "Define an output format in the subagent's system prompt that lists the sections and fields its report must contain, giving it a clear point of completion.",
+      "Add a statement to the subagent's system prompt declaring that it is a senior expert in this monorepo, so that it approaches the research with more confidence and finishes sooner.",
+      "Change the subagent's model field to the most capable model available, so that it reaches its conclusions in fewer searches and returns more polished reports.",
+      "Instruct the main session to interrupt the subagent after a fixed number of minutes, putting a hard cap on research time."
     ],
-    "questionJa": "リサーチ統合のパイプラインが、複数の情報源から数日かけてデータを取得しています。あとになって、ステークホルダーが、あるレポートが統計を「最新」として引用していたのに、実際にはそれが6か月前に公開されたもので、先週再取得しただけだったと気づきました。この混乱を防げたはずの設計変更はどれですか。",
+    "questionJa": "あるプラットフォームチームは、大規模なモノレポの見慣れない領域を調査してメインセッションに報告する、Claude Code のカスタムサブエージェントを構築しました。このサブエージェントは必要以上に長く検索を続けることが多く、返されるレポートの構成も実行のたびに異なるため、メインセッションで活用しにくくなっています。チームは、サブエージェントのツールアクセスを減らすことなく、両方の問題を解決したいと考えています。最も適切なアプローチはどれですか。",
     "choicesJa": [
-      "引用したデータが今も最新に感じられるかどうかを、モデル自身の判断に任せる",
-      "各情報源に、データが指す時点、情報源が公開された時点、取得した時点の、3つの別々のタイムスタンプフィールドを付け、時間軸の各段階を区別できるようにする",
-      "すべての引用に、取得日を唯一のタイムスタンプとして使う",
-      "タイムスタンプをいっさい使わず、直近に取得した情報源だけを引用する"
-    ],
-    "answer": 1,
-    "explanation": "data_as_of（データの対象時点）、source_published（情報源の公開時点）、retrieved_on（取得時点）の3つの時間軸のフィールドを分けて持てば、「データがいつのものか」「いつ公開されたか」「いつ取得したか」を区別でき、時期の取り違えを防げます。取得日だけを使うと、古い情報源を再取得しただけなのに「最新のデータ」と誤解してしまいます。モデルの主観的な判断に頼る方法や、タイムスタンプをなくして直近に取得した情報源だけを引用する方法は、どちらも確実な防止策になりません。",
-    "tags": [
-      "temporal-fields",
-      "period-confusion"
-    ],
-    "ref": "D5 temporal fields"
-  },
-  {
-    "id": "context-044",
-    "domain": "context",
-    "difficulty": 2,
-    "question": "A research coordinator is finalizing a synthesized report that mixes a well-established fact, a contested claim with two disagreeing sources, and a single-source data point. How should the coordinator render this to preserve synthesis quality?",
-    "choices": [
-      "Distinguish certainty levels explicitly (well-established / contested / single-source) and render each according to its content type, such as side-by-side for the dispute",
-      "Present all claims with uniform confident phrasing so the report reads smoothly and consistently",
-      "Omit the single-source data point entirely since it cannot be corroborated",
-      "Merge the contested claim into a single averaged statement to avoid confusing the reader with a dispute"
-    ],
-    "questionJa": "リサーチのコーディネーターが、よく確立された事実、2つの情報源が食い違う異論のある主張、単一の情報源だけのデータポイントが混ざった統合レポートを仕上げています。統合の品質を保つために、コーディネーターがこれを表現するときにとるべき方法はどれですか。",
-    "choicesJa": [
-      "確度のレベル（確立済み／異論あり／単一情報源）をはっきり区別し、対立点は並べて示すなど、内容の種類に応じてそれぞれ表現する",
-      "レポートがなめらかで一貫して読めるよう、すべての主張を同じ自信のある言い回しで示す",
-      "裏付けが取れないので、単一情報源のデータポイントは完全に省く",
-      "読者が対立で混乱しないよう、異論のある主張を平均した1つの記述にまとめる"
+      "レポートに含めるべきセクションと項目を列挙した出力フォーマットをシステムプロンプトで定義し、作業の完了を判断できる明確な時点を与える。",
+      "このモノレポに精通した上級エキスパートであると宣言する一文をサブエージェントのシステムプロンプトに追加することで、より確信を持って調査に取り組ませ、早期に完了させる。",
+      "サブエージェントの model フィールドを利用可能な最も高性能なモデルに変更することで、より少ない検索で結論に到達させ、より洗練されたレポートを返させる。",
+      "一定時間の経過後にサブエージェントを中断するようメインセッションに指示し、調査時間に上限を設ける。"
     ],
     "answer": 0,
-    "explanation": "統合の品質を保つには、確度のレベル（確立済み／異論あり／単一情報源）をはっきり示し、内容の性質に合った表現（対立点は並べて示すなど）にする必要があります。すべてを同じ自信のある表現にそろえる、単一情報源のデータを省く、対立する主張を平均して1つにまとめる、といったやり方は、どれも重要な不確実性やニュアンスを読者から隠してしまいます。",
+    "explanation": "【かみくだくと】調査用のサブエージェントが、なかなか終わらないうえに、毎回ちがう形のレポートを返してきます。2つの問題を一度に直す方法を選ぶ問題です。【正解】システムプロンプトで出力フォーマット（何を埋めれば報告が完成か）を決めると、サブエージェントに自然な終わりどころができ、調べすぎを防げます。返ってくるレポートの形もそろいます。【誤答】「上級エキスパートです」と宣言させる案は、Claude がもともと持つ知識に何も足さず、終わりどころも作りません。最も高性能なモデルに変える案は、何を返せば完了なのかが決まっていない問題が残ります。一定時間で中断させる案は、調査の途中で中身の欠けた結果が返るおそれがあり、形もそろいません。（目標 X1）",
     "tags": [
-      "synthesis-certainty",
-      "content-type-rendering"
+      "obj-X1",
+      "subagent-output",
+      "output-format"
     ],
-    "ref": "D5 synthesis quality"
+    "ref": "https://academy.claude.com/ja/courses/introduction-to-subagents/designing-effective-subagents"
   },
   {
-    "id": "context-045",
+    "id": "context-103",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A CI pipeline runs Claude Code non-interactively to generate tests for each pull request, and the main agent delegates environment setup checks to a subagent. In one run, the subagent discovered that the integration tests pass only with a special flag and that one dependency must be pinned to an older version, but its summary said only 'Environment verified.' The main agent then spent many turns rediscovering both issues, which raised the cost of the run. Which change is the most appropriate approach to prevent this from happening again?",
+    "choices": [
+      "Instruct the subagent to keep its summary to a single sentence, so that the main agent's context stays as small as possible throughout the pipeline run.",
+      "Have the main agent repeat the subagent's environment investigation after each delegation, double-checking the result.",
+      "Give the subagent Edit and Write permissions in addition to its current tools, so that it can correct the environment directly instead of reporting on it.",
+      "Add a required section to the subagent's output format for obstacles encountered, workarounds found, and commands that needed special flags."
+    ],
+    "questionJa": "ある CI パイプラインでは、プルリクエストごとに Claude Code を非対話で実行してテストを生成しており、メインエージェントは環境構築の確認をサブエージェントに委任しています。ある実行で、サブエージェントは、結合テストが特別なフラグを付けた場合にのみ成功することと、ある依存関係を古いバージョンに固定する必要があることを発見しましたが、その要約には「環境を確認しました」としか記載されていませんでした。その後、メインエージェントは同じ2つの問題を再発見するために多くのターンを費やし、実行コストが増大しました。この事象の再発を防ぐために、最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "サブエージェントの要約を1文に収めるよう指示することで、パイプラインの実行全体を通じてメインエージェントのコンテキストを可能な限り小さく保つ。",
+      "委任のたびにメインエージェントにも同じ環境調査を繰り返させ、結果を二重に確認する。",
+      "現在のツールに加えて Edit と Write の権限をサブエージェントに付与することで、報告する代わりに環境を直接修正できるようにする。",
+      "遭遇した障害、発見した回避策、および特別なフラグを要したコマンドを記載する必須セクションを、出力フォーマットに追加する。"
+    ],
+    "answer": 3,
+    "explanation": "【かみくだくと】サブエージェントが大事な発見（特別なフラグ、バージョンの固定）をしたのに「確認しました」としか報告しなかったので、メイン側が同じことを調べ直しました。これを防ぐ方法を選ぶ問題です。【正解】サブエージェントの会話は終わると捨てられるので、要約に書かれなかった発見はメインに届きません。出力フォーマットに「ぶつかった障害・見つけた回避策・特別なフラグが要ったコマンド」の必須セクションを設ければ、こうした情報が必ず表に出ます。【誤答】要約を1文に縮める案は、まさにこの情報が落ちます。メインエージェントにも同じ環境調査を繰り返させる案は、任せた意味がなくなり、コストも増えます。Edit と Write の権限を与える案は、何が起きたかがメインに伝わらない問題を解決しません。（目標 X1）",
+    "tags": [
+      "obj-X1",
+      "subagent-output",
+      "obstacle-reporting"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/introduction-to-subagents/designing-effective-subagents"
+  },
+  {
+    "id": "context-104",
     "domain": "context",
     "difficulty": 3,
-    "question": "A research synthesis subagent must present three kinds of content in one report: quarterly revenue figures, a chronological sequence of company events, and a technical spec comparison across two products. Per content-type rendering guidance, what is the correct approach?",
+    "question": "In a research pipeline, a document analysis subagent returns, for every paper, its full chain of reasoning, long verbatim passages, and commentary. The synthesis subagent that receives these outputs runs with a much smaller context budget. It has begun dropping findings from papers near the end of its input and sometimes fails by exceeding its context limit. Citations must remain available in the final report. Which change is the most appropriate approach?",
     "choices": [
-      "Render all three sections as the same free-form narrative prose to keep a consistent voice throughout the report",
-      "Render revenue as a table, events in chronological prose, and specs as lists, matching structure to content type",
-      "Convert all three into a single large table since tables are the most information-dense format",
-      "Render everything as bullet lists since lists are the safest default for structured synthesis output"
+      "Move the synthesis subagent to a model with a larger context window while keeping the current outputs, so that all papers fit without changing the upstream subagent.",
+      "Change the document analysis subagent to return structured data for each paper, consisting of key facts, short citations, and a relevance score, instead of reasoning chains and long passages.",
+      "Add an intermediate step that has Claude condense each analysis into a free-form paragraph before synthesis, so that the synthesis subagent receives shorter inputs.",
+      "Remove citations from the document analysis output, so that more findings fit within the synthesis subagent's limited context budget on each run."
     ],
-    "questionJa": "リサーチ統合のサブエージェントが、四半期の売上高の数値、会社の出来事の時系列、2つの製品の技術仕様の比較という3種類の内容を、1つのレポートで示さなければなりません。コンテンツタイプ別のレンダリングのガイダンスに従うと、正しい方法はどれですか。",
+    "questionJa": "あるリサーチのパイプラインでは、文書分析サブエージェントが論文ごとに、推論の過程のすべて、長い原文の引用、および論評を返しています。これらの出力を受け取る統合サブエージェントは、はるかに小さいコンテキスト予算で動作しています。統合サブエージェントは、入力の後半にある論文の調査結果を欠落させるようになり、コンテキストの上限を超えて失敗することもあります。最終レポートでは引用を引き続き示す必要があります。最も適切なアプローチはどれですか。",
     "choicesJa": [
-      "レポート全体で一貫した語り口を保つため、3つのセクションをすべて同じ自由形式の文章で表現する",
-      "売上高は表、出来事は時系列の文章、仕様は箇条書きで表現し、内容の種類に構造を合わせる",
-      "表がいちばん情報密度の高い形式なので、3つすべてを1つの大きな表にする",
-      "箇条書きが、構造化された統合出力の既定として最も安全なので、すべてを箇条書きで表現する"
+      "現在の出力は維持したまま、統合サブエージェントをより大きなコンテキストウィンドウを持つモデルに移行することで、上流のサブエージェントを変更せずにすべての論文を収める。",
+      "推論の過程や長い引用の代わりに、主要な事実、短い引用、および関連度スコアから成る構造化データを論文ごとに返すよう、文書分析サブエージェントを変更する。",
+      "統合の前に各分析を自由形式の1段落に要約させる中間ステップを追加することで、統合サブエージェントが受け取る入力を短縮する。",
+      "文書分析の出力から引用を削除することで、各実行において統合サブエージェントの限られたコンテキスト予算により多くの調査結果を収める。"
     ],
     "answer": 1,
-    "explanation": "統合の品質に関するガイドラインでは、財務データは表、出来事は時系列の文章、仕様は箇条書き、というように、内容の種類に合った形式を使うべきだとされています。すべてを同じ文章にする、すべてを1つの表にまとめる、すべてを箇条書きにする、といった画一的なやり方は、それぞれの内容の性質に合わず、読みやすさと正確な伝達を損ないます。",
+    "explanation": "【かみくだくと】上流のサブエージェントが長すぎる出力を返すので、容量の小さい下流のサブエージェントがあふれています。引用は残したまま、どう直すかを選ぶ問題です。【正解】下流の容量が限られているときは、推論の過程や長い引用ではなく、主要な事実・短い引用・関連度スコアだけを構造化して返させます。量が減っても、統合に必要な情報と出典は保てます。【誤答】統合サブエージェントを大きいモデルに移す案は、不要な情報で下流を埋めている原因がそのままで、長い入力の途中を見落としやすい問題も残ります。自由形式の1段落に縮める工程を挟む案は、主張と出典の対応が失われやすく、工程も増えます。引用を削除する案は、最終レポートで引用を示すという条件を満たせません。（目標 X1）",
     "tags": [
-      "content-type-rendering",
-      "synthesis-quality"
+      "obj-X1",
+      "subagent-output",
+      "context-budget"
     ],
-    "ref": "D5 synthesis quality content-type rendering"
+    "ref": "https://academy.claude.com/ja/courses/introduction-to-subagents/designing-effective-subagents"
   },
   {
-    "id": "context-046",
+    "id": "context-105",
     "domain": "context",
     "difficulty": 2,
-    "question": "In a multi-agent research system, the search tool returns about 40 fields per result, and just a few calls put heavy pressure on the context window. In addition, when all the collected results are passed to the synthesis agent at once, important findings located in the middle of the input are dropped from the final report. Which two improvements are appropriate?",
+    "question": "In a multi-agent research system, a report-generation subagent receives findings that include quarterly revenue figures, recent news coverage, and technical benchmark results. It currently converts everything into uniform bullet points of similar length. Executives complain that the revenue figures cannot be compared across quarters and that the news items lose their context. Which design of the upstream subagents' output schema is the most appropriate approach to support better reports?",
     "choices": [
-      "Combine the collected results into one long block of prose before passing them on",
-      "Limit the agent to a single search tool call",
-      "Trim tool results down to only the needed fields before keeping them in the conversation",
-      "Clear the entire conversation history before each new search",
-      "Place a summary of key findings at the beginning of the input, and lay out the detailed results in sections with clear headings"
+      "Tag each finding with its content type and keep numeric data in structured fields such as value, unit, and period, so the report can choose a suitable rendering for each.",
+      "Require every subagent to return bullet points of the same length and format, keeping the final report visually consistent.",
+      "Have each subagent return a fully formatted Markdown section for the final report, so that the report-generation subagent can paste the sections together without further processing.",
+      "Ask every subagent to rewrite its findings as narrative prose, so that the final report reads smoothly from beginning to end regardless of the kind of source material involved."
     ],
-    "questionJa": "マルチエージェントのリサーチシステムで、検索ツールは1件の結果につき約40のフィールドを返し、数回呼び出しただけでコンテキストウィンドウが強く圧迫されます。さらに、集めた結果をすべて一度に統合エージェントに渡すと、入力の真ん中あたりにある重要な発見が、最終レポートから抜け落ちます。適切な改善はどれですか。2つ選んでください。",
+    "questionJa": "あるマルチエージェントのリサーチシステムでは、レポート作成サブエージェントが、四半期ごとの売上の数値、最近のニュース報道、および技術的なベンチマーク結果を含む調査結果を受け取っています。現在、このサブエージェントはすべての内容を同程度の長さの画一的な箇条書きに変換しています。役員からは、売上の数値を四半期間で比較できず、ニュースの項目からは文脈が失われているという苦情が寄せられています。よりよいレポートを支える上流のサブエージェントの出力スキーマの設計として、最も適切なアプローチはどれですか。",
     "choicesJa": [
-      "集めた結果を、1つの長い文章のかたまりにまとめてから、次に渡す",
-      "エージェントが使える検索ツールの呼び出しを、1回までに制限する",
-      "ツールの結果を、必要なフィールドだけに絞り込んでから会話に残す",
-      "新しい検索の前に、毎回、会話履歴をすべて消す",
-      "重要な発見の要約を入力の冒頭に置き、詳しい結果は、わかりやすい見出しをつけたセクションに分けて並べる"
+      "各調査結果にコンテンツの種類を付与し、数値データは値・単位・期間などの構造化されたフィールドで保持して、内容に応じた表現をレポート側で選べるようにする。",
+      "すべてのサブエージェントに同じ長さと形式の箇条書きを返させ、最終レポートの見た目の一貫性を保つ。",
+      "各サブエージェントに最終レポート用の書式設定済みの Markdown セクションを返させることで、レポート作成サブエージェントが追加の処理なしにセクションを結合できるようにする。",
+      "すべてのサブエージェントに調査結果を叙述的な文章として書き直させることで、元の資料の種類にかかわらず、最終レポートを冒頭から末尾まで滑らかに読めるようにする。"
     ],
-    "answer": [
-      2,
-      4
-    ],
-    "explanation": "ツールの結果を必要なフィールドだけに絞ってから会話に残すと、コンテキストの圧迫を防げます。また、長い入力の真ん中は見落とされやすい（lost in the middle）ので、重要な発見の要約を冒頭に置き、詳細は見出しで区切って整理します。結果を1つの長い文章にまとめる方法は、真ん中の見落としをさらに起こりやすくします。呼び出しを1回に制限する方法は、必要な情報まで集められなくなります。毎回履歴をすべて消す方法は、それまでの文脈が失われます。",
+    "answer": 0,
+    "explanation": "【かみくだくと】売上の数字もニュースも技術データも、全部同じ箇条書きにされてしまい、読みにくいレポートになっています。上流のサブエージェントにどんな形でデータを返させればよいか、という問題です。【正解】内容の種類と数値の中身（値・単位・期間）を構造化して渡せば、レポート側で財務データは表、ニュースは文章、技術的な結果はリストのように、内容に合った見せ方を選べます。【誤答】同じ長さと形式の箇条書きにそろえる案は、比べにくいという今の問題がそのまま残ります。完成した Markdown のセクションを返させる案は、サブエージェントごとに書き方がばらつき、レポート側で並べ替えや統合ができません。すべてを叙述的な文章に書き直させる案は、数字の比較がさらに難しくなります。（目標 X1）",
     "tags": [
-      "context-window",
+      "obj-X1",
+      "subagent-output",
+      "content-type-rendering"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/introduction-to-subagents/designing-effective-subagents"
+  },
+  {
+    "id": "context-106",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "In a multi-agent research system, two subagents reported different adoption rates for the same technology: one reported 31% and the other 54%. Investigation showed that the first figure came from a 2021 survey and the second from a 2025 survey, but neither subagent's output recorded this. Consequently, the synthesis agent reported the two values as a contradiction. Which change to the subagents' output schema is the most appropriate approach to prevent this?",
+    "choices": [
+      "Add a self-reported confidence score from 1 to 10 to each finding, so that the synthesis agent can favor the value that the subagent was more certain about.",
+      "Add a field that counts how many sources mention each figure, so that the synthesis agent can favor the value that appears in a larger number of sources.",
+      "Add an optional free-text notes field that subagents can fill in whenever they judge it useful for the synthesis agent.",
+      "Require a publication date or data collection date for every finding, so that the synthesis agent can interpret differences between values in their correct time context."
+    ],
+    "questionJa": "あるマルチエージェントのリサーチシステムで、2つのサブエージェントが同じ技術の導入率について異なる値を報告しました。一方は31%、もう一方は54%でした。調査の結果、前者は2021年の調査、後者は2025年の調査に基づく数値であることが判明しましたが、どちらのサブエージェントの出力にもその情報は記録されていませんでした。そのため、統合エージェントは2つの値を矛盾として報告しました。この事象を防ぐためのサブエージェントの出力スキーマの変更として、最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "各調査結果に1〜10の自己申告の信頼度スコアを追加することで、サブエージェントがより確信していた値を統合エージェントが優先できるようにする。",
+      "各数値に言及している情報源の数を数えるフィールドを追加することで、より多くの情報源に現れる値を統合エージェントが優先できるようにする。",
+      "統合エージェントに有用だとサブエージェントが判断した場合に記入できる、任意の自由記述の備考フィールドを追加する。",
+      "すべての調査結果に公開日またはデータ収集日を必須とすることで、値の違いを正しい時間的文脈の中で統合エージェントが解釈できるようにする。"
+    ],
+    "answer": 3,
+    "explanation": "【かみくだくと】2つの数字は調査した年が違うだけなのに、年が書かれていなかったせいで「食い違い」と判断されました。サブエージェントの出力に何を加えればよいか、という問題です。【正解】公開日やデータ収集日が必ず付いていれば、統合エージェントは2つの値を「時期の違う測定」として読めるので、時間の差を矛盾と取り違えません。【誤答】自己申告の信頼度スコアを加える案は、どちらの値も正しい今回のような違いを説明できず、そもそも当てになりません。言及している情報源の数を数える案は、いつの数値なのかが分かりません。任意の自由記述の備考欄を加える案は、書くかどうかがサブエージェント次第なので、日付が毎回そろう保証がありません。（目標 X1）",
+    "tags": [
+      "obj-X1",
+      "subagent-output",
+      "temporal-metadata"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/introduction-to-subagents/designing-effective-subagents"
+  },
+  {
+    "id": "context-107",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A contract analysis system uses a document analysis subagent to answer questions about long contract PDFs. A downstream review interface must highlight the exact passage that supports each statement. Today the prompt asks Claude to append a page reference such as '(p. 12)' after each sentence, but the page numbers are sometimes wrong. Which approach is the most appropriate for reliably providing this citation metadata?",
+    "choices": [
+      "Add few-shot examples that demonstrate the '(p. 12)' format, so that Claude writes page references more consistently after every sentence it produces.",
+      "Enable citations on the document blocks, and pass each citation's cited text, document title, and location through in the subagent's output.",
+      "Have Claude copy the entire relevant page into its answer, so that reviewers can search the copied text themselves to find the supporting passage.",
+      "Run a regular-expression check on the output afterward that deletes any sentence lacking a page reference, so that only cited sentences remain."
+    ],
+    "questionJa": "ある契約書分析システムでは、文書分析サブエージェントが長い契約書の PDF に関する質問に回答しています。下流のレビュー画面では、各記述を裏づける正確な箇所を強調表示する必要があります。現在はプロンプトで各文の後に「(p.12)」のようなページ参照を付記させていますが、ページ番号が誤っている場合があります。この引用メタデータを確実に提供する方法として、最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "「(p.12)」の形式を示す few-shot の例を追加することで、Claude が生成するすべての文の後に、より一貫した形でページ参照を記述させる。",
+      "ドキュメントブロックで引用機能を有効にし、各引用の引用テキスト、文書のタイトル、および位置をサブエージェントの出力にそのまま引き継ぐ。",
+      "関連するページ全体を回答に転記させることで、根拠となる箇所をレビュー担当者が転記されたテキストから自ら検索できるようにする。",
+      "ページ参照を欠く文を削除する正規表現のチェックを事後に出力へ適用することで、引用付きの文だけが残るようにする。"
+    ],
+    "answer": 1,
+    "explanation": "【かみくだくと】AI に自分でページ番号を書かせたら、ときどき間違えます。根拠の場所を正確に示すいちばん確かな方法を選ぶ問題です。【正解】引用機能を有効にすると、応答に「根拠となる原文の文字列」「どの文書か」「文書のどこか」が構造化された情報として付きます。これをそのまま下流に渡せば、モデルが手で書くページ番号より確実に元の箇所へたどれます。【誤答】「(p.12)」の形式を示す few-shot の例を足す案は、書き方をそろえるだけで、番号が正しいことは保証しません。ページ全体を回答に書き写させる案は、出力がふくらみ、どの文がどの記述の根拠かも分かりません。ページ参照のない文を正規表現で消す案は、番号の誤りを直せず、正しい内容まで失うことがあります。（目標 X1）",
+    "tags": [
+      "obj-X1",
+      "citations",
+      "citation-metadata"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/building-with-the-claude-api/citations"
+  },
+  {
+    "id": "context-108",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "A market research system produces reports that executives use for investment planning. For the same segment and period, two credible industry sources give different growth rates: 12% and 18%. The synthesis agent currently writes 'The segment grew 18%,' choosing the figure from the larger publisher. Which synthesis behavior is the most appropriate approach?",
+    "choices": [
+      "Report the average of the two figures, 15%, as the best estimate, so that the report presents a single figure that balances both sources.",
+      "Keep only the figure from the larger publisher, as it does now, but add a brief note saying that other estimates of the growth rate also exist.",
+      "Present both figures with their sources and annotate that the sources disagree, without arbitrarily selecting either of the two values.",
+      "Leave the growth rate out of the report entirely, since the available evidence is inconsistent and cannot support any single figure."
+    ],
+    "questionJa": "ある市場調査システムは、役員が投資計画に用いるレポートを作成しています。同じ分野・同じ期間について、信頼できる2つの業界情報源が12%と18%という異なる成長率を示しています。現在、統合エージェントは規模の大きい発行元の数値を選択し、「この分野は18%成長した」と記述しています。統合エージェントの振る舞いとして、最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "2つの数値の平均である15%を最も確からしい推定値として報告することで、両方の情報源の釣り合いを取った単一の数値をレポートに示す。",
+      "現在と同様に規模の大きい発行元の数値のみを保持しつつ、成長率についてはほかの推定値も存在するという短い注記を追加する。",
+      "どちらかの値を恣意的に選択することなく、2つの数値をそれぞれの情報源とともに提示し、情報源の間で見解が異なることを注記する。",
+      "入手可能な根拠が一致せず、いかなる単一の数値も裏づけられないため、成長率をレポートから完全に除外する。"
+    ],
+    "answer": 2,
+    "explanation": "【かみくだくと】信頼できる2つの資料で数字が食い違っているのに、AI が片方だけを選んで言い切っています。どう書くのが正しいかを選ぶ問題です。【正解】信頼できる情報源どうしが食い違うときは、どちらかを勝手に選ばず、出典つきで両方を載せて「食い違っている」と注記します。読み手が自分で判断できます。【誤答】平均の15%を報告する案は、どの資料も言っていない数字を作り出してしまいます。規模の大きい発行元の数値だけを残す案は、「発行元が大きい」ことが選ぶ根拠にならず、「ほかの推定もある」の一言では中身も出典も分かりません。成長率をレポートから外す案は、必要な情報が失われます。（目標 X2）",
+    "tags": [
+      "obj-X2",
+      "synthesis",
+      "conflicting-statistics"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/building-with-the-claude-api/citations"
+  },
+  {
+    "id": "context-109",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A multi-agent research system produces reports on emerging medical technologies for a hospital's procurement committee. Each report currently lists every finding in the same confident tone, regardless of how well it is supported. Committee members have begun treating a single small pilot study with 40 participants as if it represented settled consensus. Which change to the synthesis output is the most appropriate approach?",
+    "choices": [
+      "Separate well-established findings from contested ones in explicit sections, preserving each source's characterization and methodological details such as sample size.",
+      "Add a general disclaimer at the end of the report noting that some findings may be uncertain, urging careful reading.",
+      "Remove every finding that is supported by only a single source, so that the report contains only those conclusions on which multiple sources have already agreed.",
+      "Instruct the synthesis agent to attach hedging words such as 'may' or 'possibly' to every finding, so that no statement anywhere in the report sounds overly certain to readers."
+    ],
+    "questionJa": "あるマルチエージェントのリサーチシステムは、病院の調達委員会向けに新しい医療技術に関するレポートを作成しています。現在の各レポートでは、裏づけの強さにかかわらず、すべての調査結果が同じ確信的な調子で列挙されています。委員の間では、参加者40人の小規模なパイロット研究1件を、確立した合意であるかのように扱う傾向が生じています。統合の出力の変更として、最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "十分に確立された調査結果と議論の余地がある調査結果とでセクションを分け、各情報源での位置づけやサンプルサイズなどの方法論上の詳細を保持する。",
+      "不確実な結果もあり得るという一般的な注意書きをレポートの末尾に加え、慎重な解釈を促す。",
+      "単一の情報源によってのみ裏づけられている調査結果をすべて削除することで、複数の情報源がすでに一致している結論だけがレポートに含まれるようにする。",
+      "すべての調査結果に「〜の可能性がある」「おそらく」などの断定を避ける表現を付けるよう統合エージェントに指示することで、レポート内のいずれの記述も過度に確実に聞こえないようにする。"
+    ],
+    "answer": 0,
+    "explanation": "【かみくだくと】レポートがどの結果も同じ自信満々の調子で書いているため、小さな研究1件の結果まで「確かなこと」と受け取られています。レポートの書き方をどう変えるかを選ぶ問題です。【正解】「確かな結果」と「意見が分かれる結果」をセクションで分け、元の研究での位置づけや参加人数などの方法論の情報を残せば、読み手はどれが強く裏づけられているかを区別できます。【誤答】末尾に一般的な注意書きを加える案は、どの結果が不確かなのかが分かりません。情報源が1つの結果をすべて削除する案は、新しい研究など価値のある情報まで失います。すべての結果にぼかす言葉を付ける案は、確かな結果と不確かな結果の差がかえって見えなくなります。（目標 X2）",
+    "tags": [
+      "obj-X2",
+      "synthesis",
+      "established-vs-contested"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/building-with-the-claude-api/citations"
+  },
+  {
+    "id": "context-110",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "In a corporate research pipeline, a document analysis subagent reviews a company's filings, and the coordinator then passes the results to a synthesis agent. The subagent found that the annual report states 4,200 employees, while a sustainability report from the same year states 3,850. Because its prompt says 'resolve any inconsistencies before returning results,' the subagent silently keeps the higher number. Which redesign of the subagent's behavior is the most appropriate approach?",
+    "choices": [
+      "Stop the analysis and return an error to the coordinator, so that a human can correct the source documents before any results are passed on.",
+      "Keep the value from the document that appears more official, and record the reason for that choice only in the subagent's internal reasoning.",
+      "Omit the employee count from the results entirely, since the documents disagree with each other.",
+      "Complete the analysis with both values annotated with their source documents, and let the coordinator decide how to reconcile them."
+    ],
+    "questionJa": "ある企業調査のパイプラインでは、文書分析サブエージェントが企業の開示資料を分析し、その結果をコーディネーターが統合エージェントに渡しています。このサブエージェントは、年次報告書には従業員数が4,200人、同じ年のサステナビリティレポートには3,850人と記載されていることを発見しました。プロンプトに「結果を返す前にあらゆる不整合を解消すること」とあるため、サブエージェントは何も示さずに大きいほうの数値を保持しています。サブエージェントの振る舞いの再設計として、最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "分析を停止してコーディネーターにエラーを返すことで、いかなる結果も渡される前に、人が元の文書を修正できるようにする。",
+      "より公式であると見なされる文書の値を保持し、その選択の理由はサブエージェントの内部の推論の中にのみ記録する。",
+      "文書間で値が一致しないため、従業員数を結果から完全に除外する。",
+      "両方の値を出典の文書とともに注記して分析を完了し、統合の前の整合のさせ方はコーディネーターに判断させる。"
+    ],
+    "answer": 3,
+    "explanation": "【かみくだくと】2つの資料で従業員数が違うのに、サブエージェントが黙って片方を選んでいます。サブエージェントをどう作り直すべきかを選ぶ問題です。【正解】食い違う値は両方とも出典つきで残し、「食い違っている」と明記したまま分析を終えます。どう整合させるかは、全体を見ているコーディネーターに任せます。下流から不確かさが見える状態を保てます。【誤答】分析を止めてエラーを返す案は、1か所の食い違いのためにほかの結果まで届かなくなります。公式らしく見える文書の値を残し、理由を内部の推論にだけ記録する案は、黙って選ぶのと同じで、下流からは見えません。従業員数を結果から除外する案は、食い違いがあったという事実ごと失われます。（目標 X2）",
+    "tags": [
+      "obj-X2",
+      "synthesis",
+      "conflict-annotation"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/introduction-to-subagents/using-subagents-effectively"
+  },
+  {
+    "id": "context-111",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A research coordinator divides a global market study by region and assigns one subagent to each region. The subagent covering Asia-Pacific timed out repeatedly and returned no findings. Nevertheless, the final report presents global conclusions as though every region had been covered. The report must still be delivered on schedule. Which behavior of the synthesis output is the most appropriate approach?",
+    "choices": [
+      "Fill in the Asia-Pacific section using the model's general knowledge of the region, so that the report remains complete and every region is represented.",
+      "Include coverage annotations indicating which conclusions are well supported and that the Asia-Pacific region has a gap because its sources were unavailable.",
+      "Remove every reference to individual regions from the report, so that the missing regional coverage does not stand out to the readers of the report.",
+      "Withhold the entire report until the Asia-Pacific subagent eventually succeeds, so that the report is published only when its coverage is complete."
+    ],
+    "questionJa": "あるリサーチのコーディネーターは、世界市場の調査を地域ごとに分割し、各地域に1つのサブエージェントを割り当てています。アジア太平洋地域を担当するサブエージェントはタイムアウトを繰り返し、調査結果を1件も返しませんでした。それにもかかわらず、最終レポートはすべての地域を調査したかのように世界全体の結論を示しています。レポートは予定どおりの期日に提出しなければなりません。統合の出力の振る舞いとして、最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "当該地域に関するモデルの一般知識を用いてアジア太平洋地域のセクションを補完することで、レポートの網羅性を保ち、すべての地域を記載する。",
+      "どの結論が十分に裏づけられているかと、情報源が利用できなかったためにアジア太平洋地域に欠落があることを示すカバレッジの注記を含める。",
+      "個々の地域への言及をレポートからすべて削除することで、地域ごとの調査範囲の欠落がレポートの読み手に目立たないようにする。",
+      "アジア太平洋地域のサブエージェントが最終的に成功するまでレポート全体の提出を保留することで、調査範囲が完全な場合にのみレポートを公開する。"
+    ],
+    "answer": 1,
+    "explanation": "【かみくだくと】1つの地域の調査が失敗したのに、レポートは全地域を調べたかのように書かれています。期日も守る必要がある中で、どう書くべきかを選ぶ問題です。【正解】「ここは裏づけが十分」「ここは情報源が使えず抜けている」というカバレッジの注記を付ければ、読み手は結論がどこまで当てはまるかを判断でき、追加の調査も検討できます。【誤答】モデルの一般知識でアジア太平洋地域を埋める案は、出典のない内容を調査結果のように見せることになります。地域への言及をすべて削除する案は、抜けている事実を隠すだけです。成功するまでレポート全体を保留する案は、期日を守れず、成功する保証もありません。（目標 X2）",
+    "tags": [
+      "obj-X2",
+      "synthesis",
+      "coverage-annotations"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/introduction-to-subagents/using-subagents-effectively"
+  },
+  {
+    "id": "context-112",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A research system is preparing a report on how remote work has changed over time. It received two dated findings for the same metric and definition: a 2019 survey found that 22% of employees worked mostly remotely, and a 2024 survey found 38%. The synthesis agent placed both values under a 'Conflicting findings' heading. The stated purpose of the report is to describe the trend. Which handling of these findings is the most appropriate approach?",
+    "choices": [
+      "Present the two values as a change over time, stating each survey's date and source, rather than as a contradiction between the two sources.",
+      "Keep only the 2024 figure and discard the 2019 figure, on the grounds that newer data supersedes older data on the same metric.",
+      "Keep both values under the 'Conflicting findings' heading, and let readers decide for themselves which of the two surveys to trust.",
+      "Average the two figures and report the result as the typical share of employees who worked mostly remotely across the whole period."
+    ],
+    "questionJa": "あるリサーチシステムは、在宅勤務が時間の経過とともにどのように変化したかについてのレポートを作成しています。同じ指標・同じ定義について、日付付きの2つの調査結果を受け取りました。2019年の調査では従業員の22%が主に在宅勤務をしており、2024年の調査では38%でした。統合エージェントは、両方の値を「矛盾する調査結果」という見出しの下に配置しました。このレポートの目的は推移を説明することです。これらの調査結果の扱いとして、最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "情報源の間の矛盾としてではなく、各調査の実施時期と情報源を明記したうえで、2つの値を時間の経過に伴う変化として提示する。",
+      "同じ指標については新しいデータが古いデータに優先するという理由で、2024年の数値のみを保持し、2019年の数値は破棄する。",
+      "両方の値を「矛盾する調査結果」の見出しの下に置いたまま、2つの調査のどちらを信頼するかの判断を読み手に委ねる。",
+      "2つの数値を平均し、その結果を期間全体を通じて主に在宅勤務をしていた従業員の典型的な割合として報告する。"
+    ],
+    "answer": 0,
+    "explanation": "【かみくだくと】2019年の22%と2024年の38%は、同じ物差しで時期だけが違う数字です。それを「矛盾」として扱っているのをどう直すか、という問題です。【正解】定義が同じで時期だけが違うなら、値の差は矛盾ではなく「変化」です。日付と出典を添えて推移として書けば、レポートの目的にも合います。日付が構造化されて届いているからこそできる判断です。【誤答】2024年の数値だけを残す案は、推移を説明するというレポートの目的に必要な情報がなくなります。「矛盾する調査結果」の見出しのまま読み手に任せる案は、誤った「不確かさ」を伝えます。2つの数値を平均する案は、どの時点にも当てはまらない数字になります。（目標 X2）",
+    "tags": [
+      "obj-X2",
+      "synthesis",
+      "temporal-data"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/building-with-the-claude-api/citations"
+  },
+  {
+    "id": "context-113",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "In a multi-agent research system, two subagents independently found the same claim, each from a different source. A third claim is supported by only one source. When merging the findings, the synthesis agent removes duplicate claims and keeps just one citation per claim, chosen arbitrarily. Which statement best describes the problem with this behavior and the most appropriate approach?",
+    "choices": [
+      "There is no real problem; one citation per claim is sufficient for a report, and keeping any additional citations would only lengthen the final document.",
+      "It wastes tokens; the synthesis agent should remove inline citations entirely and provide a single bibliography at the end of the final report instead.",
+      "It hides how strongly each claim is supported; duplicates should be merged into one entry that retains all of their sources.",
+      "It breaks formatting; duplicate claims should stay as separate entries exactly as each subagent returned them."
+    ],
+    "questionJa": "あるマルチエージェントのリサーチシステムで、2つのサブエージェントがそれぞれ異なる情報源から、同じ主張を独立に発見しました。一方、3つ目の主張は1つの情報源によってのみ裏づけられています。統合エージェントは調査結果をマージする際に重複する主張を取り除き、恣意的に選んだ1つの引用だけを主張ごとに残しています。この振る舞いの問題点と、最も適切なアプローチを最もよく説明しているものはどれですか。",
+    "choicesJa": [
+      "実質的な問題はない。レポートには主張ごとに1つの引用があれば十分であり、追加の引用を保持しても最終的な文書が長くなるだけである。",
+      "トークンを浪費している。統合エージェントは本文中の引用をすべて削除し、代わりにレポートの末尾に単一の参考文献一覧を提示すべきである。",
+      "各主張の裏づけの強さが見えなくなる。重複する主張は、すべての情報源を保持した1つの項目にマージすべきである。",
+      "書式が崩れる。重複する主張は、各サブエージェントの出力のまま別々の項目として保持すべきである。"
+    ],
+    "answer": 2,
+    "explanation": "【かみくだくと】同じ主張を2つの別々の資料が支えているのに、まとめ役のエージェントが引用を1つに減らしています。何がまずくて、どうすべきかを選ぶ問題です。【正解】「2つの独立した資料が支える主張」と「1つの資料だけの主張」は、確かさが違います。重複する主張は1つの項目にまとめても、出典はすべて残せば、この違いが見え、確かな結果と不確かな結果を分ける手がかりになります。【誤答】主張ごとに引用1つで十分とする案は、裏づけの強さの違いが消えます。本文の引用を消して末尾の参考文献一覧だけにする案は、どの主張がどの資料に基づくかが分かりません。重複する主張を別々の項目のまま残す案は、同じ主張が何度も出て、かえって裏づけの強さが読み取りにくくなります。（目標 X2）",
+    "tags": [
+      "obj-X2",
+      "synthesis",
+      "claim-source-mapping"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/building-with-the-claude-api/citations"
+  },
+  {
+    "id": "context-114",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "A coordinator in a research system asks each subagent to 'summarize your findings in three sentences' before passing the results to the synthesis agent. The final reports read smoothly and are internally consistent. However, almost none of their statements can be traced back to a specific source. What is the most likely cause?",
+    "choices": [
+      "The synthesis agent lacks web search access, so it cannot look up the original sources for the statements that it writes in the report.",
+      "The temperature setting is too high, so the synthesis agent is generating statements that are not based on any of the findings it receives.",
+      "The report agent's max_tokens value is too small, so there is not enough room in its output for the citations to be included.",
+      "The summarization step compressed the findings without preserving which claim came from which source, so attribution was lost before synthesis."
+    ],
+    "questionJa": "あるリサーチシステムのコーディネーターは、結果を統合エージェントに渡す前に、各サブエージェントに「調査結果を3文で要約してください」と指示しています。最終レポートは滑らかに読め、内容にも矛盾がありません。しかし、その記述のほとんどを特定の情報源までたどることができません。この原因として最も可能性が高いものはどれですか。",
+    "choicesJa": [
+      "統合エージェントに Web 検索の権限がないため、レポートに記述する内容について元の情報源を調べることができない。",
+      "temperature の設定が高すぎるため、統合エージェントが受け取った調査結果のいずれにも基づかない記述を生成している。",
+      "レポート担当の max_tokens の値が小さすぎるため、その出力の中に引用を含めるだけの余地がない。",
+      "要約の段階で、どの主張がどの情報源に由来するかを保持せずに調査結果が圧縮されたため、統合の前に情報源の帰属が失われた。"
+    ],
+    "answer": 3,
+    "explanation": "【かみくだくと】「3文で要約して」と頼んだら、読みやすいレポートはできたのに、どの記述も出典が分かりません。原因としていちばんありそうなものを選ぶ問題です。【正解】「3文で要約」という指示には出典を残す要求がないので、主張と出典の対応はこの要約の段階で落ちます。一度落ちた対応は、後の工程では取り戻せません。【誤答】Web 検索の権限がないことを原因とする案は、統合エージェントの仕事が渡された結果をまとめることであり、検索し直すことは前提ではない点を見落としています。temperature が高すぎるとする案は、レポートが読みやすく内容もそろっているので、作り話を疑う根拠がありません。max_tokens が小さすぎるとする案は、出力の上限を増やしても、入力に出典がなければ引用を付けられない点で外れています。（目標 X2）",
+    "tags": [
+      "obj-X2",
+      "synthesis",
+      "provenance-loss"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/introduction-to-subagents/using-subagents-effectively"
+  },
+  {
+    "id": "context-115",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A research system produces weekly competitive analysis reports for an executive team. An executive asked for 'one clear, confident conclusion' at the top of each report, and the synthesis prompt was changed accordingly. Since then, contested findings have begun appearing in the summary as settled facts. The executive team still wants a short summary at the top. Which approach most appropriately meets this need while preserving source-level uncertainty?",
+    "choices": [
+      "Remove the summary at the top and give the executives the full report instead, so that no finding is presented with more certainty than the evidence supports.",
+      "Keep a short summary, but require it to label contested points as contested and to refer readers to a section that lists the competing sources.",
+      "Have the synthesis agent output one self-reported confidence score for the whole report, so that readers can judge how far to trust the conclusion.",
+      "Add only the instruction 'Be careful not to overstate anything' to the synthesis prompt."
+    ],
+    "questionJa": "あるリサーチシステムは、役員チーム向けに毎週の競合分析レポートを作成しています。ある役員が各レポートの冒頭に「明確で確信を持った結論を1つ」記載するよう求め、統合のプロンプトはそれに合わせて変更されました。それ以降、議論の余地がある調査結果が、確定した事実として要約に記載されるようになりました。役員チームは引き続き、冒頭の短い要約を求めています。ソースレベルの不確実性を保持しながらこの要望を満たす方法として、最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "冒頭の要約を廃止して代わりにレポート全体を役員に渡すことで、根拠が裏づける以上の確実性を伴って調査結果が提示されないようにする。",
+      "短い要約は維持しつつ、議論の余地がある点にはその旨を明記させ、対立する情報源を列挙したセクションへの参照を付けさせる。",
+      "レポート全体について自己申告の信頼度スコアを1つ統合エージェントに出力させることで、結論をどの程度信頼すべきかを読み手が判断できるようにする。",
+      "統合のプロンプトに「いかなる点も誇張しないよう注意すること」という指示だけを追加する。"
+    ],
+    "answer": 1,
+    "explanation": "【かみくだくと】「冒頭にズバッと結論を」という要望に合わせたら、意見の分かれる話まで確定したことのように書かれるようになりました。短い要約は残したまま、不確かさも伝える方法を選ぶ問題です。【正解】要約は短いまま、意見が分かれる点には「意見が分かれる」と明記させ、対立する情報源を並べたセクションへ案内します。読みやすさと、確かな結果・争いのある結果の区別を両立できます。【誤答】冒頭の要約を廃止する案は、冒頭の短い要約がほしいという役員の要望を満たせません。レポート全体に自己申告の信頼度スコアを1つ付ける案は、どの結論が不確かなのかが分からず、自己申告の点数自体も当てになりません。「誇張しないよう注意すること」と加える案は、何をどう書き分けるかが決まらず、同じ問題が起きやすいままです。（目標 X2）",
+    "tags": [
+      "obj-X2",
+      "synthesis",
+      "source-level-uncertainty"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/building-with-the-claude-api/citations"
+  },
+  {
+    "id": "context-116",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "An engineer at a payments company has spent several hours in a single Claude Code session mapping a legacy billing system. Claude has started giving inconsistent answers and saying things like 'billing systems typically handle this in a service layer' instead of naming the specific classes it found earlier. The investigation will continue for at least two more days. Which approach is the most appropriate for keeping the exploration consistent?",
+    "choices": [
+      "Switch to a model with a larger context window and continue in the same session, so that the earlier findings remain within the window for a longer time.",
+      "Have Claude record key findings such as class names, file paths, and call relationships in a scratchpad file, and refer to that file when answering later questions.",
+      "Repeat the earlier questions with stronger wording such as 'answer only from what you found,' so that Claude stops falling back on general patterns.",
+      "Run /clear and continue the exploration from scratch without any notes, so that the degraded context no longer influences any of Claude's answers."
+    ],
+    "questionJa": "ある決済企業のエンジニアは、1つの Claude Code セッションで数時間かけてレガシーな請求システムの構造を調査しています。Claude は一貫しない回答を返し始め、以前に発見した具体的なクラスを挙げる代わりに、「請求システムでは一般的にサービス層でこれを処理します」といった表現をするようになりました。調査は少なくともあと2日間続く予定です。探索の一貫性を維持するために、最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "より大きなコンテキストウィンドウを持つモデルに切り替えて同じセッションで継続することで、以前の発見がより長くウィンドウ内に残るようにする。",
+      "クラス名、ファイルパス、呼び出し関係などの主要な発見をスクラッチパッドファイルに記録させ、以降の質問に回答する際にはそのファイルを参照させる。",
+      "「発見した内容のみに基づいて回答すること」のような強い表現で以前の質問を繰り返すことで、Claude が一般的なパターンに依存しないようにする。",
+      "/clear を実行し、メモを一切残さずに最初から探索をやり直すことで、劣化したコンテキストが Claude の回答に影響しないようにする。"
+    ],
+    "answer": 1,
+    "explanation": "【かみくだくと】長いセッションで、Claude が前に見つけた具体的なクラス名を言わなくなり、「一般的には〜」という一般論を話し始めました。あと2日続く調査で、一貫性を保つ方法を選ぶ問題です。【正解】これは長いセッションで起きる「コンテキストの劣化」のサインです。分かったこと（クラス名、ファイルパス、呼び出し関係）をスクラッチパッドファイルに書き出し、後の質問ではそれを見て答えさせれば、コンテキストの区切りを越えても同じ事実に立ち返れます。日をまたぐ調査にも使えます。【誤答】コンテキストウィンドウの大きいモデルに替える案は、劣化が起きるまでの時間が延びるだけです。強い言い方で質問を繰り返す案は、すでに薄れた情報を取り戻せません。メモなしで /clear してやり直す案は、数時間分の発見をすべて捨てることになります。（目標 X3）",
+    "tags": [
+      "obj-X3",
+      "scratchpad",
+      "context-degradation"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/claude-code-101/context-management"
+  },
+  {
+    "id": "context-117",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "A developer is planning a refactor in Claude Code and needs to know which test files exercise the refund flow and which fixtures they share. Finding this out will require dozens of searches and file reads. However, the main session needs only the resulting list, and its context is already half full with the refactor plan. Which approach is the most appropriate?",
+    "choices": [
+      "Delegate the question to a subagent that searches and reads in its own context window and returns only a concise list of paths and shared fixtures.",
+      "Have the main session read every test file itself, so that the full details remain available in context for the later steps of the refactor.",
+      "Paste the full output of a repository-wide grep into the main session, and have Claude sort it into the list.",
+      "Ask a subagent to find the test files and return the full contents of every file it finds, so that the main session can examine them directly."
+    ],
+    "questionJa": "ある開発者は Claude Code でリファクタリングを計画しており、返金フローを検証しているテストファイルと、それらが共有するフィクスチャを把握する必要があります。これを調べるには数十回の検索とファイル読み取りが必要です。しかし、メインセッションに必要なのは結果の一覧だけであり、そのコンテキストはすでにリファクタリングの計画で半分が埋まっています。最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "独自のコンテキストウィンドウで検索と読み取りを行い、ファイルパスと共有フィクスチャの簡潔な一覧だけを返すサブエージェントに委任する。",
+      "リファクタリングの後続のステップで詳細を参照できるよう、メインセッション自身にすべてのテストファイルを読み取らせ、コンテキスト内に保持させる。",
+      "リポジトリ全体の grep の出力をメインセッションに貼り付け、Claude に整理させて一覧を作らせる。",
+      "テストファイルの検索をサブエージェントに依頼し、見つかったすべてのファイルの内容を丸ごと返させることで、メインセッションが直接確認できるようにする。"
+    ],
+    "answer": 0,
+    "explanation": "【かみくだくと】たくさん検索しないと分からない調べものがありますが、メインのセッションに欲しいのは「結果の一覧」だけです。しかもメインの容量はもう半分使っています。どう調べるのがよいかを選ぶ問題です。【正解】サブエージェントは自分専用のコンテキストウィンドウで動くので、大量の検索結果やファイルの中身はメインに入りません。メインは簡潔な一覧だけを受け取り、全体の計画に集中できます。【誤答】メインセッションですべてのテストファイルを読む案は、必要なのは一覧だけなのに、メインの容量を大量に使います。grep の出力を丸ごと貼る案も、同じ理由で不向きです。サブエージェントにファイルの中身を丸ごと返させる案は、サブエージェントに分けた意味がなくなります。（目標 X3）",
+    "tags": [
+      "obj-X3",
+      "subagent-isolation",
+      "codebase-exploration"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/introduction-to-subagents/what-are-subagents"
+  },
+  {
+    "id": "context-118",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A developer productivity tool built with the Claude Agent SDK investigates a large codebase in phases. In phase 1, subagents mapped the module structure, and the coordinator holds their results. In phase 2, newly spawned subagents trace data flows, but each one spends its first several turns rediscovering the module map. The team wants phase 2 to start from phase 1's results without repeating completed work. Which approach is the most appropriate?",
+    "choices": [
+      "Make no changes, because phase 2 subagents automatically share the phase 1 subagents' conversation histories.",
+      "Run phase 2 entirely in the coordinator's main context, so that the module map from phase 1 is already present while the data flows are traced.",
+      "Summarize the key phase 1 findings, and inject that summary into the initial prompt of each phase 2 subagent at the time it is spawned.",
+      "Instruct each phase 2 subagent to re-read every file that the phase 1 subagents read, so that it rebuilds the same understanding before starting."
+    ],
+    "questionJa": "Claude Agent SDK で構築された開発者の生産性向上ツールは、大規模なコードベースを段階的に調査しています。第1段階ではサブエージェントがモジュール構成を洗い出し、その結果をコーディネーターが保持しています。第2段階では新たに起動したサブエージェントがデータの流れを追跡していますが、いずれも最初の数ターンをモジュール構成の再調査に費やしています。チームは、完了済みの作業を繰り返すことなく、第1段階の結果から第2段階を開始したいと考えています。最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "第2段階のサブエージェントは第1段階の会話履歴を自動的に共有するため、何も変更しない。",
+      "データの流れを追跡する時点で第1段階のモジュール構成がすでに存在するよう、第2段階をすべてコーディネーターのメインのコンテキストで実行する。",
+      "第1段階の主要な発見を要約し、第2段階の各サブエージェントを起動する時点で、その要約を初期プロンプトに注入する。",
+      "作業を開始する前に同じ理解を再構築できるよう、第1段階のサブエージェントが読み取ったすべてのファイルを読み直すよう第2段階の各サブエージェントに指示する。"
+    ],
+    "answer": 2,
+    "explanation": "【かみくだくと】第1段階で分かったモジュールの構成を、第2段階のサブエージェントが毎回調べ直しています。やり直しをなくして第2段階を始める方法を選ぶ問題です。【正解】サブエージェントは渡されたプロンプトから仕事を始めます。第1段階で分かった要点をまとめて、第2段階のサブエージェントの最初のプロンプトに入れれば、調べ直さずに済みます。【誤答】会話履歴が自動で共有されるので何もしないという案は、事実に反します。サブエージェントどうしが会話を自動で共有することはないので、今の状態が続きます。第2段階をメインのコンテキストで行う案は、細かい調査の出力がメインのコンテキストを埋めてしまいます。すべてのファイルを読み直させる案は、第1段階で済ませた作業を繰り返すことになります。（目標 X3）",
+    "tags": [
+      "obj-X3",
+      "subagent-isolation",
+      "phase-summary-injection"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/introduction-to-subagents/what-are-subagents"
+  },
+  {
+    "id": "context-119",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A team is using Claude Code to modernize an e-commerce backend. Claude needs to understand how a single function, applyDiscount, behaves inside a 9,000-line legacy file. The session will continue exploring other modules for several more hours, so context must be conserved. Which approach is the most appropriate for obtaining the needed information?",
+    "choices": [
+      "Read the entire file once at the start of the session, so that every later question about the file can be answered from what is already in context.",
+      "Use Bash to print the whole file with cat, so that the entire file can be viewed without the size limits that apply to the Read tool.",
+      "Ask the developer to copy the function's source code into the conversation by hand, so that only the relevant code enters the context.",
+      "Use Grep to locate where applyDiscount is defined and called, and then use Read with offset and limit to read only the relevant lines."
+    ],
+    "questionJa": "あるチームは Claude Code を用いて EC サイトのバックエンドを刷新しています。Claude は、9,000行のレガシーなファイルの中にある applyDiscount という関数1つの動作を理解する必要があります。セッションはこの後も数時間にわたって他のモジュールの探索を続けるため、コンテキストを節約しなければなりません。必要な情報を取得する方法として、最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "ファイルに関する以降の質問にすべてコンテキスト内の情報から回答できるよう、作業の開始時にファイル全体を一度だけ読み取っておく。",
+      "Read ツールに適用されるサイズの制限を受けずに全体を確認できるよう、Bash の cat コマンドでファイル全体を出力させる。",
+      "関連するコードだけがコンテキストに入るよう、関数のソースコードを手作業で会話に貼り付けるよう開発者に依頼する。",
+      "Grep で applyDiscount の定義と呼び出し箇所を特定し、Read の offset と limit で関連する行だけを読み取る。"
+    ],
+    "answer": 3,
+    "explanation": "【かみくだくと】9,000行もあるファイルの中の関数1つだけを知りたい場面です。この後も長く作業が続くので、容量をなるべく使わない調べ方を選ぶ問題です。【正解】まず Grep で関数の定義と呼び出し箇所を見つけ、Read の offset と limit で必要な行だけを読みます。必要な部分だけがコンテキストに入るので、長いセッションでも容量を圧迫しません。【誤答】最初にファイル全体を読んでおく案は、使わない数千行が残りの作業のあいだずっと容量を占めます。Bash の cat で全体を出す案は、同じだけ容量を使い、むしろ大きすぎる読み込みを防ぐ仕組みを外すことになります。開発者に関数を貼り付けてもらう案は、Claude が自分で探せる作業を人に押しつけるだけです。（目標 X3）",
+    "tags": [
+      "obj-X3",
+      "targeted-reads",
+      "grep-then-read"
+    ],
+    "ref": "https://code.claude.com/docs/en/tools-reference"
+  },
+  {
+    "id": "context-120",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "A developer is using Claude Code to explore an unfamiliar repository. After a long session, the context has filled with verbose grep results and directory listings. The developer is midway through tracing the authentication flow and wants to continue without losing what has been learned about it. Which approach is the most appropriate?",
+    "choices": [
+      "Run /clear and ask Claude to start the authentication trace again from the beginning, so that the session continues with an empty context.",
+      "Run /compact with an instruction such as 'focus on the authentication flow findings and the files involved.'",
+      "Run /context to see which categories use the most space, and then continue the trace without making any change to the conversation.",
+      "Keep working and let the automatic compaction that runs near the limit decide what to keep."
+    ],
+    "questionJa": "ある開発者は Claude Code を用いて見慣れないリポジトリを探索しています。長時間のセッションの結果、コンテキストは冗長な grep の結果とディレクトリ一覧で埋まっています。開発者は認証フローの追跡の途中であり、それについてこれまでに判明した内容を失うことなく作業を継続したいと考えています。最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "/clear を実行し、認証フローの追跡を最初からやり直すよう Claude に依頼することで、空のコンテキストでセッションを継続する。",
+      "「認証フローの発見と関係するファイルに焦点を当てる」のような指示を付けて /compact を実行する。",
+      "/context を実行してどのカテゴリーが最も多くの容量を使用しているかを確認し、会話には一切手を加えずに追跡を継続する。",
+      "何を残すかは、上限が近づくと実行される自動のコンパクションに任せて作業を続ける。"
+    ],
+    "answer": 1,
+    "explanation": "【かみくだくと】容量が検索結果などのいらない出力で埋まってきましたが、今追っている認証フローの内容は失いたくありません。どのコマンドを使うのがよいかを選ぶ問題です。【正解】/compact は会話を要約して古いメッセージと置き換え、容量を空けます。後ろに「何に焦点を当てるか」を書けば、要約に残す内容を自分で決められます。【誤答】/clear してやり直す案は、すべてを消すので分かったことも失います。/context で確認する案は、使用状況を見せるだけで容量は空きません。自動のコンパクションに任せる案は、何が大事かが自動処理の推測で決まり、今追っている内容が残る保証がありません。（目標 X3）",
+    "tags": [
+      "obj-X3",
+      "compact",
+      "focused-summary"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/claude-code-in-action/steering-long-sessions"
+  },
+  {
+    "id": "context-121",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "Early in a long Claude Code session at a fintech company, a developer told Claude: 'Never edit files under generated/, and treat the legacy/payments module as read-only.' After an automatic compaction, Claude began proposing edits to files in generated/. These rules apply to the whole repository and must hold for every developer and every session. Where should these rules be placed so that they persist across compactions?",
+    "choices": [
+      "In the project-root CLAUDE.md, which Claude Code re-reads from disk and re-injects into the session after compaction.",
+      "In a .claude/rules/ file with paths: frontmatter matching generated/**, so that the rule loads only when a matching file is touched.",
+      "In a PostCompact hook whose command prints the rules to standard output each time a compaction completes.",
+      "Nowhere new; switching the session to a model with a larger context window will prevent the rules from being lost."
+    ],
+    "questionJa": "あるフィンテック企業の長時間の Claude Code セッションの冒頭で、開発者は Claude に「generated/ 配下のファイルは絶対に編集しないこと。legacy/payments モジュールは読み取り専用として扱うこと」と伝えました。自動のコンパクションの後、Claude は generated/ 内のファイルへの編集を提案するようになりました。これらのルールはリポジトリ全体に適用され、すべての開発者とすべてのセッションで守られなければなりません。コンパクションをまたいでこれらのルールを保持するための配置先として、最も適切なものはどれですか。",
+    "choicesJa": [
+      "コンパクションの後に Claude Code がディスクから読み直してセッションに再注入する、プロジェクトのルートにある CLAUDE.md。",
+      "一致するファイルが扱われたときにのみルールが読み込まれるよう、generated/** に一致する paths: フロントマターを付与した .claude/rules/ 内のファイル。",
+      "コンパクションが完了するたびに、ルールを標準出力に表示するコマンドを持つ PostCompact フック。",
+      "新たな配置先は不要であり、セッションをより大きなコンテキストウィンドウを持つモデルに切り替えれば、ルールが失われることはない。"
+    ],
+    "answer": 0,
+    "explanation": "【かみくだくと】会話の最初に口頭で伝えたルールが、自動のコンパクション（会話の要約）の後に忘れられました。ずっと守らせるには、ルールをどこに書けばよいかを選ぶ問題です。【正解】会話の中だけで伝えた指示は、要約で落ちることがあります。プロジェクトのルートにある CLAUDE.md は、コンパクションの後にディスクから読み直されて入れ直されるので、何度要約されても残ります。チーム全員にも共有されます。【誤答】paths: 付きの .claude/rules/ のファイルに書く案は、そのルールが対象のファイルを扱ったときに会話の履歴に入るため、コンパクションでほかの内容と一緒に要約され、次に対象のファイルを扱うまで戻りません。しかも legacy/payments は対象に入っていません。PostCompact フックで表示する案は、その出力が会話に戻らないので、ルールの入れ直しには使えません。大きいモデルに切り替える案は、コンパクションの仕組みが同じなので、いずれ同じことが起きます。（目標 X3）",
+    "tags": [
+      "obj-X3",
+      "compaction",
+      "claude-md"
+    ],
+    "ref": "https://code.claude.com/docs/en/context-window"
+  },
+  {
+    "id": "context-122",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "During a multi-day investigation of a legacy codebase, Claude Code keeps its key findings in a scratchpad file, notes/exploration.md, which it updates as it works. The developer wants the file's current contents placed back into Claude's context automatically every time the conversation is compacted, including automatic compactions. Re-reading the file at other times is unnecessary. Which configuration best meets this requirement?",
+    "choices": [
+      "A PostCompact hook whose command prints notes/exploration.md to standard output each time a compaction completes.",
+      "A team habit of typing 'then re-read notes/exploration.md' after /compact whenever a developer compacts manually.",
+      "A SessionStart hook with the compact matcher whose command prints notes/exploration.md to standard output.",
+      "A PreToolUse hook on the Read tool whose command prints notes/exploration.md to standard output before each read."
+    ],
+    "questionJa": "レガシーなコードベースを数日間にわたって調査する中で、Claude Code は主要な発見をスクラッチパッドファイル notes/exploration.md に記録し、作業の進行に応じて更新しています。開発者は、自動のコンパクションも含め、会話がコンパクションされるたびに、このファイルの最新の内容が自動的に Claude のコンテキストに戻されることを求めています。それ以外の時点でファイルを読み直す必要はありません。この要件を最もよく満たす構成はどれですか。",
+    "choicesJa": [
+      "コンパクションが完了するたびに、notes/exploration.md を標準出力に表示するコマンドを持つ PostCompact フック。",
+      "開発者が手動でコンパクションを行う際に、/compact の後に「その後 notes/exploration.md を読み直すこと」と入力するチームの習慣。",
+      "compact マッチャーを指定し、notes/exploration.md を標準出力に表示するコマンドを持つ SessionStart フック。",
+      "各ファイルの読み取りの前に、notes/exploration.md を標準出力に表示するコマンドを持つ、Read ツールを対象とした PreToolUse フック。"
+    ],
+    "answer": 2,
+    "explanation": "【かみくだくと】メモ用のファイルの中身を、会話が要約されるたびに自動で Claude に戻したい、という要望です。どのフックの設定が合うかを選ぶ問題です。【正解】compact マッチャー付きの SessionStart フックは、コンパクション（自動・手動とも）の直後に動き、標準出力に出した文字がそのままコンテキストに加わります。メモの最新の内容が要約の後に戻ります。【誤答】PostCompact フックの案は、コンパクションの後に動きますが、その出力は会話に戻らないので、文脈の入れ直しには使えません。手動の /compact のたびに読み直しを指示する習慣の案は、自動のコンパクションには効かず、入れ忘れも起きます。Read を対象にした PreToolUse フックの案は、標準出力の文字がそのままコンテキストに入るわけではなく、動くタイミングもコンパクションと関係がありません。（目標 X3）",
+    "tags": [
+      "obj-X3",
+      "scratchpad",
+      "sessionstart-compact-hook"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/claude-code-in-action/hooks"
+  },
+  {
+    "id": "context-123",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A developer is using Claude Code to track down an intermittent race condition in a payment service. Each new hypothesis depends on what the previous experiment revealed, so the chain of reasoning must stay intact. The context window is filling up, and the investigation is expected to take many more experiments. Which approach is the most appropriate for managing context during this task?",
+    "choices": [
+      "Split the work into a pipeline of subagents in which one reproduces the bug, one debugs it, and one fixes it, passing results along in sequence.",
+      "Delegate every test run to a subagent that reports only 'pass' or 'fail,' so that the main session's context grows as little as possible.",
+      "Run /clear after each hypothesis is tested, so that every new experiment begins with a clean context that is free of earlier output.",
+      "Keep the work in the main session, log each hypothesis and result in a scratchpad file, and run a focused /compact when space runs low."
+    ],
+    "questionJa": "ある開発者は Claude Code を用いて、決済サービスで断続的に発生する競合状態の原因を追跡しています。新しい仮説はいずれも直前の実験で判明した内容に依存しているため、推論の連鎖を保つ必要があります。コンテキストウィンドウは埋まりつつあり、調査にはさらに多くの実験が必要になる見込みです。この作業におけるコンテキスト管理として、最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "バグを再現するもの、デバッグするもの、修正するものから成るサブエージェントのパイプラインに作業を分割し、結果を順に受け渡す。",
+      "すべてのテストの実行を「成功」または「失敗」のみを報告するサブエージェントに委任することで、メインセッションのコンテキストの増加を最小限に抑える。",
+      "各仮説を検証した後に /clear を実行することで、新たな実験を毎回、以前の出力を含まないクリーンなコンテキストで開始する。",
+      "調査はメインセッションで続け、仮説と結果をスクラッチパッドファイルに記録し、容量が不足したら焦点を指示して /compact を実行する。"
+    ],
+    "answer": 3,
+    "explanation": "【かみくだくと】前の実験の結果を踏まえて次の仮説を立てる、という連続した調査です。容量が足りなくなってきたときに、どう管理するのがよいかを選ぶ問題です。【正解】各ステップが前のステップの発見に依存する作業では、途中の過程そのものが大事なので、サブエージェントに渡すと引き継ぎで情報が落ちます。メインで続けながら、仮説と結果をスクラッチパッドファイルに残し、焦点を決めて /compact すれば、流れを保ったまま容量を空けられます。【誤答】再現・デバッグ・修正を順につなぐサブエージェントのパイプラインの案は、まさにこうした依存関係のある作業で失敗しやすい形です。「成功・失敗」だけを返すテスト用サブエージェントの案は、原因を調べるのに必要な出力が隠れてしまいます。仮説ごとに /clear する案は、前の実験で分かったことを毎回捨てることになります。（目標 X3）",
+    "tags": [
+      "obj-X3",
+      "scratchpad",
+      "when-not-to-delegate"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/introduction-to-subagents/using-subagents-effectively"
+  },
+  {
+    "id": "context-124",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A customer support resolution agent built with the Claude Agent SDK summarizes older turns once a conversation grows long. In a 90-minute session, the agent promised a customer a $43.20 refund for order #A-1189 by March 14. After two rounds of summarization, the agent told the customer only that 'a partial refund was discussed' and could not state the amount or the date. Which approach is the most appropriate for preventing this?",
+    "choices": [
+      "Summarize after every turn instead of every 20 turns, so that each summary covers a smaller portion of the conversation and loses less detail.",
+      "Extract transactional facts such as order IDs, amounts, dates, and statuses into a case facts block kept outside the summarized history and sent with every request.",
+      "Switch to a model with a larger context window, so that summarization is needed far less often during long conversations with customers.",
+      "Send only the five most recent turns verbatim and drop all older turns, so that the request size stays constant without performing any summarization."
+    ],
+    "questionJa": "Claude Agent SDK で構築されたサポート窓口の対応エージェントは、会話が長くなると古いやり取りを要約しています。90分に及ぶセッションの中で、エージェントは顧客に対し、注文 #A-1189 について3月14日までに43.20ドルを返金すると約束しました。2回の要約を経た後、エージェントは顧客に「一部返金について話し合いました」とだけ伝え、金額も日付も示すことができませんでした。この事象を防ぐために、最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "20ターンごとではなく毎ターン要約することで、1回の要約が対象とする会話の範囲を小さくし、失われる詳細を減らす。",
+      "注文ID、金額、日付、ステータスなどの取引の事実を、要約される履歴とは別の「ケースの事実」ブロックに抽出し、毎回のリクエストに含める。",
+      "より大きなコンテキストウィンドウを持つモデルに切り替えることで、顧客との長い会話において要約が必要となる頻度そのものを大幅に減らす。",
+      "直近の5ターンのみをそのまま送信し、それ以前のターンはすべて破棄することで、要約を一切行わずにリクエストの大きさを一定に保つ。"
+    ],
+    "answer": 1,
+    "explanation": "【かみくだくと】長い会話を要約しているうちに、「43.20ドルを3月14日までに返金」という約束が「一部返金の話をした」にぼやけてしまいました。これを防ぐ方法を選ぶ問題です。【正解】要約を重ねると、金額・日付・パーセントなどの細かい数字があいまいな言葉に置き換わります。取引の事実を要約とは別の「ケースの事実」ブロックに構造化して持ち、毎回のリクエストに入れれば、何度要約しても数字は変わりません。【誤答】毎ターン要約する案は、要約を重ねる回数が増えて、むしろ劣化が進みます。大きいコンテキストウィンドウのモデルに切り替える案は、いつかは要約が必要になり、同じ情報が落ちます。直近の5ターンだけを送る案は、約束をした古いやり取りそのものが消えます。（目標 X4）",
+    "tags": [
+      "obj-X4",
+      "case-facts-block",
+      "progressive-summarization"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/claude-platform-101/context-management"
+  },
+  {
+    "id": "context-125",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "To control token usage, a customer support agent sends Claude only the last 10 turns of each conversation, as a sliding window. In long chats, the agent asks customers again for their account number. It also sometimes forgets a policy exception that a supervisor approved early in the chat. Token usage must remain bounded regardless of conversation length. Which approach is the most appropriate improvement?",
+    "choices": [
+      "Widen the window from 10 turns to 50 turns, so that details given early in the conversation stay within the window's range for a much longer period.",
+      "Remove the window and always send the complete conversation history in every request, regardless of length, so that no information is ever lost.",
+      "Ask customers to repeat their account number and any approvals they received whenever that information becomes relevant to the chat again.",
+      "Keep the window for recent turns, and add a structured state object with the account number, order IDs, approved exceptions, and commitments to every request."
+    ],
+    "questionJa": "トークンの使用量を抑えるため、あるサポート窓口のエージェントは、スライディングウィンドウとして各会話の直近10ターンのみを Claude に送信しています。長いチャットでは、エージェントが顧客にアカウント番号を再度尋ねています。また、チャットの序盤にスーパーバイザーが承認したポリシーの例外を失念することもあります。トークンの使用量は、会話の長さにかかわらず一定の範囲内に収める必要があります。最も適切な改善のアプローチはどれですか。",
+    "choicesJa": [
+      "ウィンドウを10ターンから50ターンに拡大することで、会話の序盤に示された詳細が、より長い期間にわたってウィンドウの範囲内に残るようにする。",
+      "ウィンドウを廃止し、会話がどれほど長くなっても、すべてのリクエストで常に完全な会話履歴を送信することで、情報の欠落を防ぐ。",
+      "アカウント番号や承認された内容が再びチャットに関係するようになるたびに、それらを繰り返し伝えるよう顧客に依頼する。",
+      "直近のターンはウィンドウで逐語的に送り続け、アカウント番号、注文ID、承認済みの例外、約束を持つ構造化された状態オブジェクトを毎回追加する。"
+    ],
+    "answer": 3,
+    "explanation": "【かみくだくと】「直近10ターンだけを送る」やり方にしたら、最初のほうで聞いたアカウント番号や、上司が認めた例外を忘れるようになりました。トークンは増やせない条件で、どう改善するかを選ぶ問題です。【正解】スライディングウィンドウは直近のやり取りをそのまま残せますが、範囲から外れた古い事実は消えます。会話の長さに関係なく必要な事実を「構造化された状態オブジェクト」として毎回渡せば、両方のよいところを生かせます。【誤答】ウィンドウを50ターンに広げる案は、もっと長い会話では同じことが起き、トークンも増えます。ウィンドウをやめて常に全部を送る案は、トークンを一定の範囲に収めるという条件を満たせません。顧客に繰り返してもらう案は、仕組みの問題を顧客の負担に置き換えるだけです。（目標 X4）",
+    "tags": [
+      "obj-X4",
+      "sliding-window",
+      "structured-state-object"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/claude-platform-101/context-management"
+  },
+  {
+    "id": "context-126",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "A customer support agent uses a lookup_order tool that returns more than 40 fields per order, including warehouse codes and internal audit data. For return requests, the agent needs only about 5 of these fields. In long sessions involving several orders, the context runs out before the conversation ends. What should be done first to address this?",
+    "choices": [
+      "Trim each lookup_order result to the return-relevant fields before it is added to the conversation.",
+      "Instruct the agent in the system prompt to ignore all fields that are unrelated to returns whenever it reads the results of lookup_order.",
+      "Move to a model that is better at locating the relevant fields among many, so that the extra fields no longer cause the agent to make mistakes.",
+      "Summarize the entire conversation after every lookup_order call to compress the earlier tool results."
+    ],
+    "questionJa": "あるサポート窓口のエージェントが使用する lookup_order ツールは、倉庫コードや社内監査データを含め、注文ごとに40を超えるフィールドを返します。返品の依頼において、エージェントが必要とするのはそのうち約5つのフィールドのみです。複数の注文を扱う長いセッションでは、会話が終わる前にコンテキストが不足します。これに対処するために、まず行うべきことはどれですか。",
+    "choicesJa": [
+      "lookup_order の各結果を、会話に追加される前の段階で、返品に関連するフィールドのみに切り詰める。",
+      "lookup_order の結果を読む際には返品と無関係なフィールドをすべて無視するよう、システムプロンプトでエージェントに指示する。",
+      "多数のフィールドの中から関連するものを見つけ出すことに長けたモデルに移行することで、余分なフィールドが誤りの原因とならないようにする。",
+      "lookup_order を呼び出すたびに会話全体を要約し、以前のツール結果を圧縮する。"
+    ],
+    "answer": 0,
+    "explanation": "【かみくだくと】注文を調べるツールが毎回40以上の項目を返し、使うのは5つほどなのに、残りもすべて会話にたまって容量が足りなくなっています。まず何をすべきかを選ぶ問題です。【正解】ツールの結果は会話に積み重なり、役に立つ量以上にトークンを使います。会話に入る前に返品に必要な項目だけに絞れば、セッションが長くなってもムダがたまりません。【誤答】無関係なフィールドを無視するよう指示する案は、項目自体はコンテキストに入ってトークンを使い続けます。関連フィールドを見つけるのが得意なモデルに移る案は、不要なデータが積み重なること自体を変えません。呼び出しのたびに会話全体を要約する案は、必要な事実まであいまいになるおそれがあり、処理も増えます。（目標 X4）",
+    "tags": [
+      "obj-X4",
+      "selective-retention",
+      "tool-output-trimming"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/claude-platform-101/context-management"
+  },
+  {
+    "id": "context-127",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "A developer has built a chat support assistant directly on the Messages API. Customers complain that the assistant forgets what they said only two messages earlier. A review of the code shows that each request sends only the newest user message. Which approach is the most appropriate fix?",
+    "choices": [
+      "Increase max_tokens to give the model more capacity to remember earlier parts of the conversation.",
+      "Pass the previous response's ID in each request, so that the API can load the earlier conversation history from the server.",
+      "Keep all user and assistant messages in the application, and send the complete list with each request.",
+      "Add the instruction 'Remember everything the customer has said' to the system prompt of every request that is sent."
+    ],
+    "questionJa": "ある開発者は、Messages API を直接用いてチャット形式のサポートアシスタントを構築しました。顧客からは、わずか2つ前のメッセージで伝えた内容をアシスタントが忘れているという苦情が寄せられています。コードを確認したところ、各リクエストでは最新のユーザーメッセージのみが送信されていました。最も適切な修正のアプローチはどれですか。",
+    "choicesJa": [
+      "max_tokens を増やし、会話の以前の部分を記憶する容量をモデルに与える。",
+      "各リクエストで前回の応答の ID を渡すことで、以前の会話履歴を API がサーバーから読み込めるようにする。",
+      "すべてのユーザーとアシスタントのメッセージをアプリケーション側で保持し、毎回そのリスト全体を送信する。",
+      "「顧客が伝えた内容をすべて記憶すること」という指示を、送信するすべてのリクエストのシステムプロンプトに追加する。"
+    ],
+    "answer": 2,
+    "explanation": "【かみくだくと】アプリが毎回「最新の1通」しか送っていないので、AI が少し前の話を覚えていません。どう直すかを選ぶ問題です。【正解】Messages API は会話を保存しません。前のやり取りを踏まえて答えてもらうには、アプリの側で会話の履歴を持っておき、毎回まとめて送る必要があります。【誤答】max_tokens を増やす案は、max_tokens が出力の長さの上限であり、記憶とは関係ありません。前回の応答の ID を渡す案は、そうして履歴を読み込む仕組みが Messages API にはありません。「すべて記憶すること」とシステムプロンプトに書く案は、送られていない内容が Claude に届かないので効きません。（目標 X4）",
+    "tags": [
+      "obj-X4",
+      "conversation-history",
+      "stateless-api"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/building-with-the-claude-api/multi-turn-conversations"
+  },
+  {
+    "id": "context-128",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "In a single chat, a customer raises three issues with a support agent: a late delivery on order #5521, a duplicate charge of $89.00 on order #5530, and an address change for order #5544. As the session grows long and older turns are summarized, the agent begins associating the $89.00 amount with the wrong order. All three issues must be resolved within the same conversation. Which design is the most appropriate approach for preventing this?",
+    "choices": [
+      "Maintain one prose summary covering all three issues and update it every few turns, so that the agent always has an up-to-date overview of the whole conversation.",
+      "Keep a structured issue list, one entry per order with ID, amount, status, and next action, updated after each tool call and sent as a separate context layer.",
+      "Ask the customer to open a separate chat for each of the three issues, so that each conversation stays short enough that summarization is never needed.",
+      "Instruct the agent in the system prompt to read the full history carefully before mentioning any amount, so that it checks which order each amount belongs to."
+    ],
+    "questionJa": "1つのチャットの中で、顧客がサポート窓口のエージェントに3つの問題を提起しました。注文 #5521 の配送遅延、注文 #5530 の89.00ドルの二重請求、そして注文 #5544 の住所変更です。セッションが長くなり古いやり取りが要約されるにつれて、エージェントは89.00ドルという金額を誤った注文に関連付けるようになりました。3つの問題はすべて同じ会話の中で解決しなければなりません。この事象を防ぐ設計として、最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "3つの問題すべてを対象とする1つの文章による要約を維持して数ターンごとに更新することで、エージェントが常に会話全体の最新の概要を把握できるようにする。",
+      "注文ごとに ID・金額・ステータス・次の対応を持つ構造化された問題リストを維持・更新し、別のコンテキストレイヤーとして毎回のリクエストに含める。",
+      "要約が一切不要となる程度に各会話を短く保つため、3つの問題それぞれについて別のチャットを開始するよう顧客に依頼する。",
+      "金額に言及する前に履歴全体を注意深く読むようシステムプロンプトでエージェントに指示することで、各金額がどの注文に属するかを確認させる。"
+    ],
+    "answer": 1,
+    "explanation": "【かみくだくと】1つのチャットで3件の注文の話をしているうちに、要約のせいで「どの注文がいくらか」がごちゃ混ぜになりました。同じ会話の中で混同を防ぐ設計を選ぶ問題です。【正解】複数の問題を扱うときは、「注文番号と金額の組み合わせ」そのものが大事な事実です。注文ごとの項目として構造化し、要約とは別のコンテキストレイヤーとして毎回渡せば、要約が進んでも組み合わせは崩れません。【誤答】3つの問題を1つの文章で要約する案は、まさに取り違えを生んでいる形です。問題ごとに別のチャットを開いてもらう案は、同じ会話で解決するという条件に反し、顧客に負担も押しつけます。履歴を注意深く読むよう指示する案は、すでに要約であいまいになった履歴から正しい組み合わせを取り出せません。（目標 X4）",
+    "tags": [
+      "obj-X4",
+      "structured-state-object",
+      "multi-issue-session"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/claude-platform-101/context-management"
+  },
+  {
+    "id": "context-129",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "In a multi-agent research system, the coordinator concatenates 12 subagent reports in the order they finished and asks Claude to answer the user's question from the combined input. Findings from reports located in the middle of the input are often missing from the answer, even when they are directly relevant. The total input fits well within the context window. Which change to how the input is assembled is the most appropriate approach?",
+    "choices": [
+      "Increase max_tokens, so that the answer has enough room to cover the findings from all 12 subagent reports in detail.",
+      "Shuffle the reports randomly on each request, so that no single report is consistently placed in the middle of the input.",
+      "Merge all reports into one continuous block of text without headings, so that the combined input reads as a single coherent document.",
+      "Place a summary of the key findings at the beginning of the input, and then organize each detailed report under an explicit section header."
+    ],
+    "questionJa": "あるマルチエージェントのリサーチシステムで、コーディネーターは12個のサブエージェントのレポートを完了した順に連結し、その結合した入力に基づいてユーザーの質問に回答するよう Claude に依頼しています。入力の中ほどに位置するレポートの調査結果は、直接関連している場合でも、回答から欠落することが多くなっています。入力全体の量はコンテキストウィンドウに十分収まっています。入力の組み立て方の変更として、最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "max_tokens を増やすことで、12個すべてのサブエージェントのレポートの調査結果を詳細に扱えるだけの余地を回答に与える。",
+      "リクエストのたびにレポートの順序を無作為に入れ替えることで、特定のレポートが常に入力の中ほどに配置されないようにする。",
+      "すべてのレポートを見出しのない1つの連続したテキストに統合することで、結合した入力を一貫した単一の文書として読めるようにする。",
+      "主要な調査結果の要約を入力の冒頭に配置したうえで、詳細なレポートをそれぞれ明示的なセクション見出しの下に整理して並べる。"
+    ],
+    "answer": 3,
+    "explanation": "【かみくだくと】12個のレポートをつなげて AI に読ませると、真ん中あたりのレポートの内容が答えから抜け落ちます。量は容量に収まっているので、並べ方をどう変えるかを選ぶ問題です。【正解】長い入力では、最初と最後は確実に読まれる一方、真ん中は見落とされやすくなります（lost in the middle）。要点のまとめを冒頭に置き、詳細は見出しで区切れば、位置による見落としを減らせます。【誤答】max_tokens を増やす案は、max_tokens が出力の上限なので、入力の真ん中を見落とす問題には効きません。順番を無作為に入れ替える案は、毎回どれかのレポートが真ん中に来るだけです。見出しなしの1つの文章にまとめる案は、区切りが消え、かえって真ん中の情報を見つけにくくなります。（目標 X4）",
+    "tags": [
+      "obj-X4",
       "lost-in-the-middle",
-      "tool-results"
+      "input-ordering"
     ],
-    "ref": "試験ガイド v1.0 項目5.1（自作練習問題 ドメイン⑤ 問2）"
+    "ref": "https://academy.claude.com/ja/courses/claude-platform-101/context-management"
   },
   {
-    "id": "context-047",
+    "id": "context-130",
     "domain": "context",
     "difficulty": 2,
-    "question": "For a customer support agent, which two of the following situations should be escalated to a human agent?",
+    "question": "A product team uses Claude Code for long feature development sessions. After automatic compactions, Claude often loses the names of failing tests and the API design decisions made earlier in the session. The team wants every compaction, whether automatic or manual, to preserve this information by default for all members. Which setup is the most appropriate approach?",
     "choices": [
-      "Company policy only covers price adjustments on the company's own website, but the customer asks the agent to match a competitor's price",
-      "The customer is expressing frustration, but the request is a standard return that the agent can handle",
-      "A customer lookup returns three customers with the same name",
-      "Despite repeated attempts, the agent cannot obtain the information it needs and has no way to move the case forward",
-      "The agent's self-reported confidence score is 6 out of 10"
+      "Ask each developer on the team to make a habit of running /compact with a focus instruction before the context fills up, so that the summary keeps what matters.",
+      "Lower autoCompactWindow in the settings, so that automatic compaction runs at an earlier point in each of the team's sessions.",
+      "Use a 'Compact Instructions' section in the project's CLAUDE.md to require preserving failing test names and API design decisions.",
+      "Run /clear at regular intervals during each session, so that the context never grows to the size at which compaction would become necessary."
     ],
-    "questionJa": "カスタマーサポートのエージェントについて、次のうち、人の担当者にエスカレーションすべき状況はどれですか。2つ選んでください。",
+    "questionJa": "あるプロダクトチームは、長時間にわたる機能開発のセッションで Claude Code を使用しています。自動のコンパクションの後、Claude はセッションの前半で行われた API 設計の判断や、失敗しているテストの名前をしばしば見失います。チームは、自動・手動を問わずすべてのコンパクションにおいて、メンバー全員に対しこれらの情報が既定で保持されることを求めています。最も適切なアプローチはどれですか。",
     "choicesJa": [
-      "会社のポリシーが定めているのは自社サイトでの価格調整だけなのに、顧客から競合他社の価格に合わせてほしいと求められた",
-      "顧客が不満を口にしているが、依頼はエージェントが対応できる通常の返品である",
-      "顧客を検索したところ、同じ名前の顧客が3人見つかった",
-      "繰り返し試しても、エージェントが必要な情報を得られず、案件を前に進める手段がない",
-      "エージェントが自己申告した確信度スコアが10点中6点である"
+      "要約に重要な内容が残るよう、コンテキストが埋まる前に焦点を指示して /compact を実行することを、チームの各開発者に日頃から心がけてもらう。",
+      "設定で autoCompactWindow を小さくすることで、チームの各セッションにおいて自動のコンパクションがより早い時点で実行されるようにする。",
+      "プロジェクトの CLAUDE.md の「Compact Instructions」で、失敗しているテスト名と API 設計の判断の保持を指示する。",
+      "各セッション中に定期的に /clear を実行することで、コンパクションが必要となるほどの大きさにまでコンテキストが成長しないようにする。"
+    ],
+    "answer": 2,
+    "explanation": "【かみくだくと】自動の要約が起きるたびに、テストの名前や設計の決定が消えてしまいます。チーム全員、自動でも手動でも、いつも残るようにする設定を選ぶ問題です。【正解】コンパクションで何を残すかは、CLAUDE.md の「Compact Instructions」のセクションで指定できます。プロジェクトの CLAUDE.md はチーム全員に共有されるので、自動のコンパクションにも同じ方針が効きます。【誤答】各開発者に焦点つきの /compact を心がけてもらう案は、自動のコンパクションには効かず、人によってばらつきます。autoCompactWindow を小さくする案は、要約が始まるタイミングを変えるだけで、何を残すかは決めません。定期的に /clear する案は、必要な判断まで消えてしまいます。（目標 X4）",
+    "tags": [
+      "obj-X4",
+      "compaction",
+      "compact-instructions"
+    ],
+    "ref": "https://code.claude.com/docs/en/costs"
+  },
+  {
+    "id": "context-131",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "Error logs for a customer support agent show that it forgets commitments made to customers and overlooks facts buried in the middle of conversations. These errors occur even in sessions that use well under half of the model's context window. A team member proposes moving to a model with a 1-million-token context window as the fix. How should this proposal be evaluated?",
+    "choices": [
+      "It does not address the cause: response quality degrades as context grows, so structured state and trimmed tool outputs are still needed.",
+      "It solves the problem, because once the entire conversation always fits comfortably within a much larger context window, these errors will no longer occur.",
+      "It is unnecessary, because enabling prompt caching would reduce how much of the context window the conversation history occupies on each request.",
+      "It is unnecessary, because raising max_tokens would give the model more room to recall details from earlier parts of the conversation."
+    ],
+    "questionJa": "あるサポート窓口のエージェントのエラーログによると、エージェントは顧客との約束を失念したり、会話の中ほどに埋もれた事実を見落としたりしています。これらの誤りは、モデルのコンテキストウィンドウの半分にも満たない量しか使用していないセッションでも発生しています。チームのメンバーが、対策として100万トークンのコンテキストウィンドウを持つモデルへの移行を提案しました。この提案はどのように評価すべきですか。",
+    "choicesJa": [
+      "原因に対処していない。会話が長くなるほど応答の品質は下がるため、構造化された状態やツール出力の切り詰めなどが引き続き必要である。",
+      "問題を解決できる。会話全体が常にはるかに大きなコンテキストウィンドウに余裕を持って収まるようになれば、こうした誤りは発生しなくなる。",
+      "不要である。プロンプトキャッシュを有効にすれば、各リクエストにおいて会話履歴がコンテキストウィンドウに占める量を削減できる。",
+      "不要である。max_tokens を引き上げれば、会話の以前の部分の詳細を想起するためのより大きな余地がモデルに与えられる。"
+    ],
+    "answer": 0,
+    "explanation": "【かみくだくと】容量の半分も使っていないのに、AI が約束を忘れたり途中の事実を見落としたりしています。「もっと容量の大きいモデルにすれば直る」という提案が正しいかを判断する問題です。【正解】容量に余裕があっても誤りが起きているので、原因は容量不足ではありません。会話が長くなるほど応答の質は下がり、真ん中の情報も見落とされやすくなります。必要な事実を構造化して渡し、不要な情報を減らす工夫が引き続き必要です。【誤答】容量に収まれば誤りがなくなるという評価は、収まっているセッションでも誤りが起きていることをログ自体が示しているので成り立ちません。プロンプトキャッシュで足りるという評価は、キャッシュがコストと待ち時間を減らす仕組みで、容量の使い方は変わらない点を見落としています。max_tokens の引き上げで足りるという評価は、max_tokens が出力の上限で、入力を覚えておくこととは関係ない点で外れています。（目標 X4）",
+    "tags": [
+      "obj-X4",
+      "larger-context-trap",
+      "context-quality"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/claude-platform-101/context-management"
+  },
+  {
+    "id": "context-132",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A team is designing a selective retention policy for a customer support agent's long conversations. When older turns are condensed, the policy must decide what to keep word for word and what to summarize or drop. Later in the conversation, the agent must be able to quote exact commitments and the customer's own stated expectations. Which policy is the most appropriate approach?",
+    "choices": [
+      "Keep every assistant message verbatim and summarize all customer messages, because the agent's own statements are what matter most later in the conversation.",
+      "Keep the last N messages verbatim and drop everything older regardless of content, so that the retention policy stays simple and its behavior stays predictable.",
+      "Keep IDs, amounts, dates, commitments, and the customer's stated expectations verbatim in structured form; summarize or drop greetings, small talk, and superseded steps.",
+      "Keep all tool results verbatim because they come from systems of record, and summarize everything else."
+    ],
+    "questionJa": "あるチームは、サポート窓口のエージェントの長い会話に適用する選択的な保持の方針を設計しています。古いやり取りを圧縮する際、この方針は何を逐語的に保持し、何を要約または削除するかを決定しなければなりません。エージェントは会話の後の時点で、約束した内容と顧客自身が述べた期待を正確に引用できる必要があります。最も適切な方針はどれですか。",
+    "choicesJa": [
+      "会話の後の時点で最も重要となるのはエージェント自身の発言であるため、アシスタントのメッセージはすべて逐語的に保持し、顧客のメッセージはすべて要約する。",
+      "保持の方針を単純に保ち、その振る舞いを予測可能にするため、内容にかかわらず直近の N 件のメッセージを逐語的に保持し、それ以前のものはすべて削除する。",
+      "ID、金額、日付、約束、顧客が述べた期待は構造化して逐語的に保持し、あいさつ、雑談、不要になった手順は要約または削除する。",
+      "基幹システム由来の情報であるため、ツールの結果はすべて逐語的に保持し、ほかはすべて要約する。"
+    ],
+    "answer": 2,
+    "explanation": "【かみくだくと】古い会話を圧縮するとき、何をそのまま残し、何を縮めてよいかのルールを決める問題です。後で「約束した内容」や「お客様が言った希望」を正確に言えることが条件です。【正解】後で正確に使う事実（ID・金額・日付・約束・お客様の希望）は、要約であいまいになると困るので、構造化してそのまま残します。あいさつや、もう使わない手順は縮めても困りません。内容の大事さで残すものを選ぶのが「選択的な保持」です。【誤答】顧客のメッセージをすべて要約する案は、「金曜までに必要」のようなお客様自身の希望が失われます。直近の N 件だけを残す案は、内容を見ずに古い約束まで捨ててしまいます。ツールの結果をすべてそのまま残す案は、関係のない項目まで積み重なって容量を圧迫します。（目標 X4）",
+    "tags": [
+      "obj-X4",
+      "selective-retention",
+      "retention-policy"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/claude-platform-101/context-management"
+  },
+  {
+    "id": "context-133",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A long-running customer support agent uses the Claude API's context editing feature to clear old tool results automatically once the input exceeds a threshold. Old lookup_order results can safely be cleared. However, the result of verify_identity, which confirms the customer's identity at the start of the session, must remain available for the whole session. Which configuration of the clear_tool_uses_20250919 strategy best meets this requirement?",
+    "choices": [
+      "Set keep to 1, so that only the single most recent tool use and its result are kept whenever clearing occurs.",
+      "Add verify_identity to exclude_tools, so that its tool uses and results are excluded from clearing.",
+      "Set clear_tool_inputs to true, so that tool call parameters are cleared together with the tool results.",
+      "Lower the trigger threshold, so that clearing begins at an earlier point in each support session."
+    ],
+    "questionJa": "長時間稼働するあるサポート窓口のエージェントは、入力がしきい値を超えると古いツール結果を自動的に消去するよう、Claude API のコンテキスト編集の機能を使用しています。古い lookup_order の結果は消去しても問題ありません。しかし、セッションの開始時に顧客の本人確認を行う verify_identity の結果は、セッション全体を通じて参照可能でなければなりません。この要件を最もよく満たす clear_tool_uses_20250919 戦略の構成はどれですか。",
+    "choicesJa": [
+      "消去が発生するたびに直近の1件のツール使用とその結果のみが保持されるよう、keep を1に設定する。",
+      "exclude_tools に verify_identity を追加し、そのツール使用と結果を消去の対象から外す。",
+      "ツール呼び出しのパラメーターがツール結果と同時に消去されるよう、clear_tool_inputs を true に設定する。",
+      "各サポートセッションのより早い時点で消去が開始されるよう、trigger のしきい値を引き下げる。"
+    ],
+    "answer": 1,
+    "explanation": "【かみくだくと】古いツール結果を自動で消す機能を使っていますが、最初に行った本人確認の結果だけは消さずに残したい、という場面です。どの設定を使うかを選ぶ問題です。【正解】exclude_tools に書いたツールの呼び出しと結果は、消去の対象から外れます。大事な結果だけを選んで残せます。【誤答】keep を1にする案は、keep が「直近の何件を残すか」の設定で古い順に消されるため、最初に行った本人確認の結果がむしろ真っ先に消えます。clear_tool_inputs を true にする案は、入力まで消すかどうかの設定で、残したい結果を守る役には立ちません。trigger のしきい値を下げる案は、消去が早く始まるだけです。（目標 X4）",
+    "tags": [
+      "obj-X4",
+      "context-editing",
+      "selective-retention"
+    ],
+    "ref": "https://platform.claude.com/docs/en/build-with-claude/context-editing"
+  },
+  {
+    "id": "context-134",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "In a long Claude Code session, the first half consisted of trial and error to get the local environment to build. The second half is the feature implementation, whose details are still needed exactly. The context window is nearly full, and the developer wants to free space without losing the implementation details. Which approach is the most appropriate?",
+    "choices": [
+      "Run /compact without any instructions, so that the entire conversation is summarized evenly from the beginning to the most recent message.",
+      "Open the rewind menu, select the prompt where the implementation began, and then select 'Summarize from here' from the list of actions.",
+      "Run /clear, and paste a short note describing the implementation into the new conversation before continuing with the work.",
+      "Open the rewind menu, select the prompt where the implementation began, and choose 'Summarize up to here' from the list of actions."
+    ],
+    "questionJa": "長時間の Claude Code セッションの前半は、ローカル環境をビルド可能にするための試行錯誤で構成されていました。後半は機能の実装であり、その詳細は引き続き正確に必要とされています。コンテキストウィンドウはほぼ満杯であり、開発者は実装の詳細を失うことなく容量を確保したいと考えています。最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "指示を一切付けずに /compact を実行することで、会話全体を冒頭から最新のメッセージまで均等に要約する。",
+      "巻き戻しメニューを開き、実装を開始したプロンプトを選択したうえで、操作の一覧から「Summarize from here（ここから要約）」を選択する。",
+      "/clear を実行し、作業を再開する前に、実装について説明する短いメモを新しい会話に貼り付ける。",
+      "巻き戻しメニューを開き、実装を開始したプロンプトを選択したうえで、操作の一覧から「Summarize up to here（ここまで要約）」を選ぶ。"
+    ],
+    "answer": 3,
+    "explanation": "【かみくだくと】前半は環境づくりの試行錯誤、後半は実装です。実装の部分は詳しく残したまま、容量を空けたい場面です。どの操作が合うかを選ぶ問題です。【正解】実装を始めた地点で「Summarize up to here（ここまで要約）」を選ぶと、その地点より前だけが要約され、後ろのメッセージはそのまま残ります。長い準備の部分だけを縮められます。【誤答】指示なしで /compact を実行する案は、実装の部分も含めて会話全体を要約します。「Summarize from here（ここから要約）」を選ぶ案は、選んだ地点から後ろを要約するので、残したい実装の部分のほうが縮められます。/clear して短いメモを貼る案は、実装の詳細の大半が失われます。（目標 X4）",
+    "tags": [
+      "obj-X4",
+      "rewind-summarize",
+      "selective-retention"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/claude-code-in-action/steering-long-sessions"
+  },
+  {
+    "id": "context-135",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A CI job runs Claude Code non-interactively to fix failing tests on each pull request. The project's test command prints tens of thousands of lines of output. The run stopped with an error indicating that automatic compaction kept failing because the context refilled immediately after each summary. The job must complete without manual intervention. Which approach is the most appropriate fix?",
+    "choices": [
+      "Add a PreToolUse hook that rewrites the test command so that only failure lines and their surrounding context reach Claude.",
+      "Lower autoCompactWindow, so that automatic compaction starts at an earlier point during each of the CI runs.",
+      "Raise max_tokens, the output token limit, so that Claude can write longer and more complete summaries of the test command's output.",
+      "Raise --max-turns, so that the run has more attempts in which to finish compacting the context successfully."
+    ],
+    "questionJa": "ある CI ジョブは、プルリクエストごとに Claude Code を非対話で実行し、失敗しているテストを修正させています。プロジェクトのテストコマンドは数万行の出力を表示します。実行は、要約のたびにコンテキストが直ちに埋まり直したため自動のコンパクションが失敗し続けた、という趣旨のエラーで停止しました。このジョブは人手を介さずに完了しなければなりません。最も適切な修正のアプローチはどれですか。",
+    "choicesJa": [
+      "失敗した行とその周辺のみが Claude に届くようテストコマンドを書き換える PreToolUse フックを追加する。",
+      "各 CI 実行のより早い時点で自動のコンパクションが開始されるよう、autoCompactWindow を小さくする。",
+      "テストコマンドの出力について、より長く完全な要約を Claude が記述できるよう、出力トークンの上限である max_tokens を引き上げる。",
+      "コンテキストのコンパクションを正常に完了させるための試行回数が増えるよう、--max-turns を引き上げる。"
+    ],
+    "answer": 0,
+    "explanation": "【かみくだくと】テストの出力が何万行もあり、要約してもすぐにまた容量がいっぱいになって、自動の要約が止まってしまいました。人の手を借りずに完了させる直し方を選ぶ問題です。【正解】1つのツール出力が大きすぎると、要約しても直後にまた埋まり、Claude Code は何度か試した後に要約をやめてエラーにします。原因は出力の量なので、PreToolUse フックでテストの出力を「失敗した部分だけ」に絞ってから Claude に渡すのが根本的な対策です。【誤答】autoCompactWindow を小さくする案は、要約を早めても、巨大な出力が入れば同じことが起きます。max_tokens を引き上げる案は、要約を長くしても、入ってくる出力の量が変わりません。--max-turns を引き上げる案は、同じ失敗を繰り返すだけです。（目標 X4）",
+    "tags": [
+      "obj-X4",
+      "tool-output-trimming",
+      "ci-headless"
+    ],
+    "ref": "https://code.claude.com/docs/en/costs"
+  },
+  {
+    "id": "context-136",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A customer support agent includes a case facts block in every request. However, the block is filled by parsing the running summary after each round of summarization. Customers still report that, late in long chats, the agent states incorrect refund amounts. What is the most likely root cause, and what is the most appropriate fix?",
+    "choices": [
+      "The case facts block is placed at the end of the prompt; moving it to the beginning of the prompt will make the amounts the agent states accurate.",
+      "The summaries are too short to retain the amounts; allowing longer summaries will keep the refund amounts accurate throughout even the longest chats.",
+      "The facts come from the lossy summary; extract them from tool results and the customer's messages when they first appear, and update the block from there.",
+      "The model is weak at arithmetic; adding a calculator tool to the agent will ensure that every refund amount is computed and stated correctly."
+    ],
+    "questionJa": "あるサポート窓口のエージェントは、毎回のリクエストに「ケースの事実」ブロックを含めています。しかし、このブロックは、要約が行われるたびに、その時点の要約文を解析することによって作成されています。それでも顧客からは、長いチャットの終盤になるとエージェントが誤った返金額を伝えるという報告が続いています。この根本原因として最も可能性が高いものと、最も適切な対策はどれですか。",
+    "choicesJa": [
+      "ケースの事実ブロックがプロンプトの末尾に配置されている。ブロックをプロンプトの冒頭に移動すれば、エージェントが伝える金額は正確になる。",
+      "要約が短すぎて金額を保持できていない。より長い要約を許容すれば、長いチャットの全体を通じて返金額が正確に保たれるようになる。",
+      "要約から事実を転記している。事実は最初に現れた時点でツール結果や顧客の発言から直接抽出し、それを元にブロックを更新すべきである。",
+      "モデルが計算を苦手としている。エージェントに計算ツールを追加すれば、すべての返金額が正しく算出され、正しく伝えられることが保証される。"
+    ],
+    "answer": 2,
+    "explanation": "【かみくだくと】「ケースの事実」の欄は作ったのに、その中身を要約文から写しているので、終盤で金額が間違っています。本当の原因と直し方を選ぶ問題です。【正解】「ケースの事実」ブロックは、要約の外に事実を置くことに意味があります。要約から写すと、要約でぼやけたり変わったりした数字がそのまま入ります。事実は、ツールの結果やお客様の発言といった元の情報から、最初に出てきた時点で直接取り出す必要があります。【誤答】ブロックを冒頭に移す案は、位置を変えても中身が間違っていれば正しくなりません。要約を長くする案は、要約は要約なので、数字がぼやける問題を防げません。計算ツールを足す案は、今回の誤りが計算ではなく、記録された金額そのものの誤りである点を見落としています。（目標 X4）",
+    "tags": [
+      "obj-X4",
+      "case-facts-block",
+      "root-cause"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/claude-platform-101/context-management"
+  },
+  {
+    "id": "context-137",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "A customer support agent's conversations regularly exceed the practical token limit, and as a result the agent loses order numbers, amounts, and promised dates. The team cannot change the model or its context window. It needs techniques that keep this information available while the conversation stays within the limit. Which two techniques should the team apply?",
+    "choices": [
+      "Keep a case facts block with order numbers, amounts, dates, and statuses outside the summary, and include it in every request.",
+      "Switch to a larger-context model and keep sending the entire conversation history unchanged in every request to the API.",
+      "Enable prompt caching, so that the long conversation history takes up less of the context window in each request.",
+      "Trim verbose tool results down to only the relevant fields before they are added to the history, so that they do not accumulate.",
+      "Summarize the entire history, including the amounts and dates, into one short paragraph after every turn, so that each request stays small."
+    ],
+    "questionJa": "あるサポート窓口のエージェントの会話は実用的なトークン上限をたびたび超え、その結果、エージェントは注文番号、金額、および約束した日付を失っています。チームはモデルやそのコンテキストウィンドウを変更することができません。会話を上限内に収めながら、これらの情報を利用可能な状態に保つ手法が必要です。チームが適用すべき手法はどれですか。2つ選んでください。",
+    "choicesJa": [
+      "注文番号、金額、日付、ステータスを含むケースの事実ブロックを要約の外に保持し、毎回のリクエストに含める。",
+      "より大きなコンテキストを持つモデルに切り替え、API へのすべてのリクエストで会話履歴全体をそのまま送信し続ける。",
+      "プロンプトキャッシュを有効にすることで、各リクエストにおいて長い会話履歴がコンテキストウィンドウに占める量を削減する。",
+      "冗長なツール結果を、会話履歴に追加される前の段階で関連するフィールドのみに切り詰め、蓄積を防ぐ。",
+      "毎ターン、金額や日付を含めた履歴全体を1つの短い段落に要約し直すことで、リクエストを小さく保つ。"
     ],
     "answer": [
       0,
       3
     ],
-    "explanation": "ポリシーが想定していない要望（ポリシーの空白）と、手を尽くしても対応を進められない場合は、人にエスカレーションします。顧客が不満を口にしていても、エージェントが対応できる通常の返品なら、気持ちに寄り添いつつ解決策を提案します（それでも顧客が人との対応を望んだら、エスカレーションします）。同じ名前の顧客が複数見つかった場合は、推測で選ばず、生年月日や電話番号などの追加情報を聞いて特定します。AIが自己申告する確信度はあてにならないので、エスカレーションの判断基準には使えません。",
+    "explanation": "【かみくだくと】会話が長くなりすぎて、注文番号や金額や約束の日付が失われています。モデルは替えられない条件で、情報を守りつつ上限内に収める方法を2つ選ぶ問題です。【正解】ケースの事実ブロックを要約の外に持つ案と、ツール結果を関連するフィールドだけに切り詰める案の2つです。前者は大事な事実を要約の外に置き、要約でぼやけないようにします。後者はツール結果の不要な項目を最初から入れないことで、必要な情報のための容量を確保します。【誤答】大きいモデルに切り替える案は、モデルを替えられないという条件に反し、会話が長くなるほど応答の質が下がる問題も残ります。プロンプトキャッシュを有効にする案は、キャッシュがコストと待ち時間を減らす仕組みで、容量の使い方は変わりません。毎ターン全体を短い段落に要約し直す案は、金額や日付がぼやける「要約の重ねがけ」の劣化がかえって進みます。（目標 X4）",
     "tags": [
-      "escalation",
-      "human-handoff",
-      "customer-support"
+      "obj-X4",
+      "case-facts-block",
+      "tool-output-trimming"
     ],
-    "ref": "試験ガイド v1.0 項目5.2（自作練習問題 ドメイン⑤ 問4）"
+    "ref": "https://academy.claude.com/ja/courses/claude-platform-101/context-management"
   },
   {
-    "id": "context-048",
+    "id": "context-138",
     "domain": "context",
     "difficulty": 2,
-    "question": "A hotel reservation support agent escalates too many simple cases to human staff, such as date changes that fall within the standard change policy. At the same time, it tries to resolve complex cases on its own that actually require a policy exception, such as a request to refund a non-refundable rate because of a medical emergency. As a result, the first-contact resolution rate is low, and some customers receive incorrect answers. What is the most effective way to improve the agent's escalation decisions?",
+    "question": "An invoice extraction system sends a randomly selected 10% of documents to a small team of human reviewers. Audits show that most errors come from handwritten invoices and from the total_amount field on documents with several subtotals. Yet most of the documents that reach reviewers turn out to be correct. The team cannot add reviewers. Which redesign of review routing is the most appropriate approach?",
     "choices": [
-      "Have the agent report a confidence score from 1 to 10 for each case, and escalate whenever the score falls below a threshold",
-      "Train a separate classification model on past support tickets to predict which cases need a human",
-      "Add sentiment analysis, and escalate whenever the customer's frustration exceeds a set level",
-      "Write explicit escalation criteria in the system prompt, with few-shot examples of cases that should and should not be escalated"
+      "Increase the random sample from 10% to 20% of documents, so that the existing team of reviewers can catch a larger number and share of the errors.",
+      "Route documents based on low field-level confidence scores, error-prone document types, and ambiguous or conflicting source values.",
+      "Send every document to human review until overall extraction accuracy reaches 99%, and then return to using the current random sample.",
+      "Keep the current random sample unchanged, since the system's overall extraction accuracy is already above the target level for the business."
     ],
-    "questionJa": "ホテル予約のサポートエージェントが、通常の変更ポリシーの範囲に収まる日程変更のような単純な案件を、人のスタッフにエスカレーションしすぎています。その一方で、急病を理由に返金不可の料金を返金してほしいという依頼のように、実際にはポリシーの例外が必要な複雑な案件を、自分だけで解決しようとします。その結果、初回対応での解決率が低く、誤った回答を受け取る顧客も出ています。エージェントのエスカレーションの判断を改善する方法として、最も効果的なものはどれですか。",
+    "questionJa": "ある請求書の抽出システムは、無作為に選択した10%の文書を少人数のレビュー担当者のチームに回しています。監査によると、誤りの大半は手書きの請求書と、複数の小計を含む文書の total_amount フィールドから生じています。それにもかかわらず、レビュー担当者に届く文書のほとんどは正しい結果となっています。チームはレビュー担当者を増員することができません。レビューのルーティングの再設計として、最も適切なアプローチはどれですか。",
     "choicesJa": [
-      "案件ごとに1〜10の確信度スコアをエージェントに自己申告させ、スコアがしきい値を下回ったらエスカレーションする",
-      "過去のサポートチケットで別の分類モデルを訓練し、人が必要な案件を予測させる",
-      "感情分析を追加し、顧客の不満が一定のレベルを超えたらエスカレーションする",
-      "エスカレーションすべき案件とすべきでない案件のfew-shotの例をつけて、明確なエスカレーション基準をシステムプロンプトに書く"
+      "文書の無作為抽出の割合を10%から20%に引き上げることで、既存のレビュー担当者のチームが発見できる誤りの件数と割合を高める。",
+      "フィールドレベルの信頼度スコアの低さ、誤りの多い文書の種類、およびソースの値の曖昧さや矛盾に基づいて振り分ける。",
+      "抽出の全体的な精度が99%に達するまですべての文書を人によるレビューに回し、その後は現在の無作為抽出の運用に戻す。",
+      "システムの抽出の全体的な精度はすでに業務上の目標水準を上回っているため、現在の無作為抽出を変更せずに維持する。"
     ],
-    "answer": 3,
-    "explanation": "判断がずれる根本原因は、どんな案件を人に回すべきかの基準があいまいなことです。「ポリシーの範囲内なら自分で対応し、ポリシーの例外が必要なら人に回す」といった明確な基準を、すべき例とすべきでない例のfew-shotの例とあわせてシステムプロンプトに書くのが、最も直接的で効果的な改善です。確信度の自己申告は、難しい案件ほど自信をもって間違えることがあるので、あてになりません。別の分類モデルを訓練する方法は、まずプロンプトを改善するという段階を飛ばした、大がかりな対応です。感情分析は顧客の不満の強さを測るだけで、案件が複雑かどうかや、ポリシーの例外が必要かどうかとは関係ありません。",
+    "answer": 1,
+    "explanation": "【かみくだくと】今はランダムに10%を人が確認していますが、誤りは「手書きの請求書」と「小計が複数ある書類の合計金額」に集中していて、確認に回る書類はほとんど正しいものです。人は増やせない中で、確認に回す書類の選び方をどう変えるかを選ぶ問題です。【正解】誤りが出やすい場所が分かっているなら、フィールドレベルの信頼度スコア・文書の種類・ソースの値のあいまいさをもとに確認に回せば、同じ人数でずっと多くの誤りを見つけられます。【誤答】無作為抽出を20%に増やす案は、人数を増やせないのに作業量だけが倍になり、正しい書類を見る手間も同じだけ増えます。精度が99%になるまで全件を確認する案は、少人数のチームでは続きません。全体の精度が目標を超えているので今のままにする案は、特定の書類や項目の弱さが全体の数字に隠れている点を見落としています。（目標 X5）",
     "tags": [
-      "escalation",
-      "few-shot",
-      "customer-support"
+      "obj-X5",
+      "review-routing",
+      "confidence-based-routing"
     ],
-    "ref": "公式サンプル問題3（試験ガイド 9章）と同じ考え方（項目5.2）"
+    "ref": "https://academy.claude.com/ja/courses/building-with-the-claude-api/model-based-grading"
   },
   {
-    "id": "context-049",
+    "id": "context-139",
     "domain": "context",
     "difficulty": 2,
-    "question": "In a multi-agent research system, a document analysis subagent is asked to extract key figures from 20 industry reports. It processes 17 of them successfully, but 3 are scanned, image-only PDFs that its text extraction tool cannot read. How should the subagent report this outcome to the coordinator?",
+    "question": "An insurance company's claims-form extraction pipeline achieves 97% overall accuracy on a labeled validation set, against a target of 95%. The team wants to stop human review for all extractions. However, faxed forms make up 8% of volume, and on those forms the date fields are correct only about 70% of the time. What should the team do before reducing human review?",
     "choices": [
-      "Retry the failed files automatically several times, and if they still fail, return a generic message saying \"Document analysis failed\"",
-      "Return the results for the 17 processed reports as a complete success, without mentioning the 3 unreadable files",
-      "Raise an exception that stops the entire research workflow until someone fixes the 3 files",
-      "Return structured error context: the failure type (image-only PDFs whose text cannot be extracted), which files failed and what was attempted, the partial results from the 17 reports, and possible alternatives such as using an OCR tool"
+      "Measure accuracy by document type and by field, and keep human review for segments that fall short, such as dates on faxed forms.",
+      "Stop human review for all extractions, since the overall accuracy of 97% already exceeds the 95% target that was set for the pipeline.",
+      "Stop human review for all extractions except for a random 5% of documents drawn uniformly across all of the document types.",
+      "Instruct the model to take more care with faxed forms, and then stop human review for all of the extractions in the pipeline."
     ],
-    "questionJa": "マルチエージェントのリサーチシステムで、文書分析サブエージェントが、業界レポート20本から主要な数値を抽出するよう依頼されました。17本は正常に処理できましたが、残りの3本は画像だけのスキャンPDFで、テキスト抽出ツールでは読み取れません。サブエージェントがこの結果をコーディネーターに報告するときにとるべき方法はどれですか。",
+    "questionJa": "ある保険会社の請求フォームの抽出パイプラインは、95%という目標に対し、ラベル付きの検証セットで全体として97%の精度を達成しています。チームは、すべての抽出結果について人によるレビューを停止したいと考えています。しかし、ファックスで届くフォームは全体の量の8%を占めており、それらのフォームの日付フィールドは約70%しか正しくありません。人によるレビューを削減する前に、チームが行うべきことはどれですか。",
     "choicesJa": [
-      "失敗したファイルを自動で何回かリトライし、それでも失敗したら、「文書分析に失敗しました」という汎用的なメッセージだけを返す",
-      "処理できた17本のレポートの結果を、完全な成功として返し、読み取れなかった3本のファイルには触れない",
-      "例外を発生させ、3本のファイルが誰かに直されるまで、リサーチのワークフロー全体を止める",
-      "失敗の種類（テキストを抽出できない画像だけのPDF）、失敗したファイルと試したこと、17本のレポートの部分的な結果、OCRツールを使うなどの代替案を含む、構造化されたエラーコンテキストを返す"
+      "文書の種類別・フィールド別に精度を測定し、ファックスのフォームの日付のように基準に満たない区分では人によるレビューを維持する。",
+      "97%という全体の精度はすでにパイプラインに設定された95%の目標を上回っているため、すべての抽出結果について人によるレビューを停止する。",
+      "すべての文書の種類から均一に無作為抽出した5%の文書を除き、すべての抽出結果について人によるレビューを停止する。",
+      "ファックスのフォームをより慎重に扱うようモデルに指示したうえで、パイプライン内のすべての抽出結果について人によるレビューを停止する。"
+    ],
+    "answer": 0,
+    "explanation": "【かみくだくと】全体では97%正しいのですが、ファックスの書類の日付だけは70%しか正しくありません。人の確認をやめる前に何をすべきかを選ぶ問題です。【正解】全体の数字は、量の少ないグループの悪い成績を覆い隠します。文書の種類ごと・フィールドごとに精度を確かめ、ファックスの日付のような弱いところでは人の確認を残すべきです。【誤答】97%が目標を超えたので全部やめる案は、全体の数字だけで決めるという、まさにこの見落としを生む方法です。全体から無作為に5%だけ残す案は、ファックスの書類がその中のごく一部にしかならず、弱いところを守れません。慎重に扱うよう指示してからやめる案は、精度が上がったかを確かめないまま自動化することになります。（目標 X5）",
+    "tags": [
+      "obj-X5",
+      "segment-accuracy",
+      "aggregate-metrics"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/building-with-the-claude-api/a-typical-eval-workflow"
+  },
+  {
+    "id": "context-140",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "An insurance document extraction model outputs a confidence score for each field, and any value scoring 0.80 or higher is accepted automatically. A comparison with labeled data shows that many policy_number values scoring 0.90 or higher are wrong. Meanwhile, name values scoring around 0.70 are almost always correct. Reviewer capacity is limited. What is the most appropriate next step?",
+    "choices": [
+      "Instruct the model in the prompt to report lower confidence scores across all fields, so that fewer incorrect values exceed the 0.80 threshold.",
+      "Average all of the field scores into one document-level score, and route documents by that score.",
+      "Raise the threshold to 0.99 for every field, so that nearly all values with any degree of uncertainty are routed to human review.",
+      "Calibrate a threshold for each field on a labeled validation set, based on how often values at each score are actually correct."
+    ],
+    "questionJa": "ある保険書類の抽出モデルはフィールドごとに信頼度スコアを出力し、スコアが0.80以上の値は自動的に受け入れられています。ラベル付きのデータとの比較によると、policy_number フィールドではスコアが0.90以上の値の多くが誤っています。一方、name フィールドではスコアが0.70前後の値でもほぼ常に正しくなっています。レビュー担当者のキャパシティは限られています。次に行うべきこととして、最も適切なものはどれですか。",
+    "choicesJa": [
+      "0.80のしきい値を超える誤った値が減るよう、すべてのフィールドについてより低い信頼度スコアを報告するようプロンプトでモデルに指示する。",
+      "全フィールドの信頼度スコアの平均を文書単位のスコアとし、それを用いて文書を振り分ける。",
+      "わずかでも不確実性のある値がほぼすべて人によるレビューに回されるよう、すべてのフィールドのしきい値を0.99に引き上げる。",
+      "各スコアの値が実際にどの程度正しいかに基づき、ラベル付きの検証セットでフィールドごとにしきい値をキャリブレーションする。"
     ],
     "answer": 3,
-    "explanation": "サブエージェントが失敗したときは、失敗の種類、試したこと、部分的な結果、考えられる代替案をまとめた、構造化されたエラーコンテキストを返すのが正解です。コーディネーターはこれを見て、OCRで読み直す、レポートにその3本が抜けていると明記する、といった判断ができます。汎用的な失敗メッセージだけを返す方法では、17本分の結果まで失われ、コーディネーターは何が起きたのかを判断できません。読み取れなかった3本に触れずに成功として返す方法は、失敗を隠しているので、レポートに抜けがあることに誰も気づけません。ワークフロー全体を止める方法は、一部の失敗のために、正常に得られた結果まで無駄にしてしまいます。",
+    "explanation": "【かみくだくと】AI が付ける「自信の点数」（信頼度スコア。試験ガイドでは「確信度」）が、項目によって当てになったりならなかったりします。証券番号は高い点数でも間違いが多く、名前は低めの点数でもほぼ正しい、という状況です。次に何をすべきかを選ぶ問題です。【正解】点数と実際の正しさの関係は項目ごとに違います。正解の分かっているデータ（ラベル付きの検証セット）で項目ごとに確かめ、しきい値の目盛りを合わせて（キャリブレーションして）から振り分けに使います。【誤答】全体的に低めの点数を出させる案は、項目ごとのずれを直せません。全フィールドの平均で文書単位のスコアにする案は、間違いやすい項目の低い点数がほかの項目に埋もれます。すべてのしきい値を0.99にする案は、ほぼ正しい名前の値まで大量に確認に回り、限られた人手をムダにします。（目標 X5）",
     "tags": [
-      "error-handling",
-      "partial-results",
-      "subagents"
+      "obj-X5",
+      "calibration",
+      "field-level-confidence"
     ],
-    "ref": "公式サンプル問題8（試験ガイド 9章）と同じ考え方（項目5.3）"
+    "ref": "https://academy.claude.com/ja/courses/building-with-the-claude-api/a-typical-eval-workflow"
+  },
+  {
+    "id": "context-141",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "After calibration, an invoice extraction system automatically accepts extractions whose fields score above their calibrated thresholds and routes only low-confidence extractions to review. The team is concerned that a new error pattern could appear among high-confidence extractions and go unnoticed. For example, a vendor might change its invoice layout. Which addition is the most appropriate approach?",
+    "choices": [
+      "Add nothing, because extractions that exceed the calibrated thresholds have already been shown to be accurate and do not need to be checked again.",
+      "Lower the calibrated thresholds for every field, so that a larger number of extractions are routed to human review on each working day.",
+      "Regularly review a random sample of high-confidence extractions, stratified by document type and vendor, to measure error rates and detect new patterns.",
+      "Rely on the downstream finance teams to report each problem whenever they notice incorrect values in the data that they receive."
+    ],
+    "questionJa": "キャリブレーションの後、ある請求書の抽出システムは、各フィールドのスコアがキャリブレーション済みのしきい値を上回る抽出結果を自動的に受け入れ、信頼度の低い抽出結果のみをレビューに回しています。チームは、信頼度の高い抽出結果の中に新たな誤りのパターンが現れても気付けないのではないかと懸念しています。たとえば、取引先が請求書のレイアウトを変更する可能性があります。追加すべきものとして、最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "キャリブレーション済みのしきい値を上回る抽出結果はすでに正確であることが示されており、再確認は不要であるため、何も追加しない。",
+      "各営業日により多くの抽出結果が人によるレビューに回されるよう、すべてのフィールドについてキャリブレーション済みのしきい値を引き下げる。",
+      "誤り率の測定と新たなパターンの検出のため、文書の種類と取引先で層化した、信頼度の高い抽出結果の無作為標本を定期的にレビューする。",
+      "受け取ったデータの中に誤った値を見つけた場合には、下流の経理チームがその都度問題を報告してくれることに依存する。"
+    ],
+    "answer": 2,
+    "explanation": "【かみくだくと】点数の高い結果は自動で通していますが、取引先が書式を変えたときなどに、点数が高いまま間違う新しいパターンが出ても気付けないのでは、という心配です。何を足すべきかを選ぶ問題です。【正解】点数の高い結果から、文書の種類や取引先ごとに分けてランダムに少しずつ抜き出し（層化無作為抽出）、定期的に人が確認します。これは「どれを確認に回すか」の振り分けではなく、自動で通している部分の誤り率を測り、新しい誤りに気付くための見張りです。【誤答】何も追加しない案は、キャリブレーションが過去のデータに基づくので、書類の形が変わると点数と正しさの関係もずれる点を見落としています。しきい値を引き下げる案は、点数が高いまま間違う新しい誤りを相変わらず見つけられません。下流の経理チームの報告に頼る案は、誤りが業務に影響してから気付くことになります。（目標 X5）",
+    "tags": [
+      "obj-X5",
+      "stratified-sampling",
+      "monitoring"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/building-with-the-claude-api/model-based-grading"
+  },
+  {
+    "id": "context-142",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A contract extraction system processes thousands of agreements per month. Some contracts list two dates near the top, an effective date and a signing date, without clear labels, and the model sometimes extracts the wrong one as effective_date. Every other field in these contracts is usually extracted correctly. Reviewer time is limited. Which review design is the most appropriate approach for these cases?",
+    "choices": [
+      "Send any contract that contains more than one date to a reviewer for full manual re-entry of every field, so that no extraction error in that contract can slip through.",
+      "When several candidate dates appear, have the model flag effective_date as ambiguous and route only that field to review with the candidates and their source passages.",
+      "Have the model always select the first date that appears in the document as effective_date, so that the output stays consistent from one contract to the next.",
+      "Add these contracts to the existing random sample, so that a proportion of them are reviewed along with all of the other documents included in the sample."
+    ],
+    "questionJa": "ある契約書の抽出システムは、毎月数千件の契約書を処理しています。一部の契約書では、冒頭付近に効力発生日と署名日の2つの日付が明確なラベルなしに記載されており、モデルは effective_date として誤った日付を抽出することがあります。これらの契約書のほかのフィールドは、通常は正しく抽出されています。レビュー担当者の時間は限られています。このようなケースに対するレビューの設計として、最も適切なアプローチはどれですか。",
+    "choicesJa": [
+      "契約書内の抽出の誤りを一切見逃さないよう、複数の日付を含む契約書はすべて、全フィールドを手作業で再入力するためにレビュー担当者に回す。",
+      "候補の日付が複数ある場合は effective_date に曖昧である旨のフラグを立てさせ、候補の値と出典の文を添えてそのフィールドのみをレビューに回す。",
+      "少なくとも契約書間で出力の一貫性が保たれるよう、文書内で最初に現れる日付を常に effective_date として選択させる。",
+      "標本内のほかのすべての文書とともに一定の割合がレビューされるよう、これらの契約書を既存の無作為抽出の対象に加える。"
+    ],
+    "answer": 1,
+    "explanation": "【かみくだくと】契約書に日付が2つ並んでいて、どちらが「効力発生日」か分かりにくく、AI がときどき取り違えます。ほかの項目はたいてい正しい、という状況で、人の確認をどう設計するかを選ぶ問題です。【正解】日付の候補が複数あるときに、その項目だけに「あいまい」の印を付けて確認に回し、候補の値と元の文を見せます。フィールド単位であいまいさを扱えば、確認する人は問題の箇所だけをすぐ判断でき、限られた時間を有効に使えます。【誤答】契約書全体を手作業で再入力させる案は、たいてい正しいほかの項目まで手作業になります。常に最初の日付を選ばせる案は、そろってはいても誤りは残り、しかも見えにくくなります。既存の無作為抽出に加える案は、あいまいな契約書の多くが確認されないまま通ります。（目標 X5）",
+    "tags": [
+      "obj-X5",
+      "field-level-ambiguity",
+      "review-routing"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/building-with-the-claude-api/model-based-grading"
+  },
+  {
+    "id": "context-143",
+    "domain": "context",
+    "difficulty": 1,
+    "question": "A logistics company runs a document extraction system for shipping documents, and its pool of reviewers is limited. The team must decide which extractions should go to human review. Which set of signals is the most appropriate basis for this routing decision?",
+    "choices": [
+      "Low field-level confidence scores, ambiguous or contradictory source values, and document types with known weak accuracy.",
+      "A fixed random 5% of all documents, so that every document has exactly the same probability of being selected for human review.",
+      "Every tenth document in order of arrival, so that the reviewers' workload stays even and predictable from one day to the next.",
+      "The longest documents in each batch, on the assumption that longer documents contain more fields that have to be extracted."
+    ],
+    "questionJa": "ある物流企業は配送書類を対象とする文書抽出システムを運用しており、レビュー担当者の人数は限られています。チームは、どの抽出結果を人によるレビューに回すべきかを決定しなければなりません。このルーティングの判断の根拠となるシグナルの組み合わせとして、最も適切なものはどれですか。",
+    "choicesJa": [
+      "フィールドレベルの信頼度スコアの低さ、ソース文書の曖昧または矛盾した値、精度の低い文書の種類。",
+      "すべての文書が同じ確率で人によるレビューの対象に選ばれるよう、全文書の中から固定で無作為に抽出した5%の文書。",
+      "レビュー担当者の作業量が日々均等かつ予測可能に保たれるよう、到着順に10件ごとに選んだ1件。",
+      "長い文書ほど抽出すべきフィールドが多く含まれるという前提に基づく、各バッチの中で最も長い文書。"
+    ],
+    "answer": 0,
+    "explanation": "【かみくだくと】確認する人が少ないので、どの抽出結果を人に回すかの「選び方の目安」を決める問題です。【正解】信頼度スコアの低さ、元の書類のあいまいさや食い違い、精度が低いと分かっている文書の種類は、どれも「間違っていそう」に直結する目安です。限られた人手を、誤りが見つかりそうなものに集中できます。【誤答】全文書から無作為に5%を選ぶ案と、到着順に10件ごとに選ぶ案は、間違いやすさと関係なく選ぶので、確認の時間の多くが正しい結果を見ることに使われます（ランダムな抜き取りは、全体の誤り率を測る目的なら役立ちます）。最も長い文書を選ぶ案は、書類の長さだけでは間違いやすさを表しません。（目標 X5）",
+    "tags": [
+      "obj-X5",
+      "review-routing",
+      "routing-signals"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/building-with-the-claude-api/model-based-grading"
+  },
+  {
+    "id": "context-144",
+    "domain": "context",
+    "difficulty": 2,
+    "question": "In an accounts-payable extraction system, review routing flags about 600 extractions per day, but reviewers can process only about 200. The flagged items include low calibrated confidence on payment amounts, conflicting values between an invoice and its purchase order, and borderline confidence on optional notes fields. Unreviewed items can wait until the next day. How should the review queue be handled?",
+    "choices": [
+      "Process the flagged items first in, first out, and carry any items that remain over to the following day's queue.",
+      "Select 200 flagged items at random each day, so that every flagged item has an equal chance of being reviewed.",
+      "Quietly raise all thresholds until only about 200 items are flagged each day, so that the queue matches reviewer capacity.",
+      "Prioritize likely and costly errors, such as low-confidence payment amounts and source conflicts, over borderline optional fields."
+    ],
+    "questionJa": "ある買掛金の抽出システムでは、レビューのルーティングによって毎日約600件の抽出結果にフラグが立てられますが、レビュー担当者が処理できるのは約200件のみです。フラグが立てられた項目には、支払金額についてキャリブレーション後の信頼度が低いもの、請求書と発注書の間で値が矛盾しているもの、および任意の備考フィールドの信頼度が境界付近にあるものが含まれます。レビューされなかった項目は翌日まで待つことができます。レビューのキューはどのように扱うべきですか。",
+    "choicesJa": [
+      "フラグが立てられた項目を先入れ先出しで処理し、処理しきれずに残った項目は翌日のキューに繰り越す。",
+      "フラグが立てられたすべての項目が等しい確率でレビューされるよう、毎日フラグの立った項目から無作為に200件を選択する。",
+      "キューの量がレビュー担当者のキャパシティに一致するよう、毎日フラグが立つ項目が約200件になるまで、すべてのしきい値を周知せずに引き上げる。",
+      "誤りの可能性が高く誤った場合の影響も大きい、信頼度の低い支払金額やソースの値の矛盾を、境界付近の任意フィールドより優先する。"
+    ],
+    "answer": 3,
+    "explanation": "【かみくだくと】確認待ちが毎日600件出るのに、人がさばけるのは200件です。どの順番で確認すべきかを選ぶ問題です。【正解】限られた人手は、「間違っていそう」で「間違うと困る」もの（信頼度の低い支払金額、書類どうしの値の食い違い）から使うべきです。任意の備考欄のように影響の小さいものは後回しにできます。【誤答】先入れ先出しで処理する案や、無作為に200件を選ぶ案では、大事な誤りが後回しになったり、確認されないまま残ったりします。しきい値を周知せずに引き上げる案は、本当は確認すべき不確かな結果が、確認の対象から外れたまま自動で通ってしまいます。（目標 X5）",
+    "tags": [
+      "obj-X5",
+      "review-prioritization",
+      "reviewer-capacity"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/building-with-the-claude-api/model-based-grading"
+  },
+  {
+    "id": "context-145",
+    "domain": "context",
+    "difficulty": 3,
+    "question": "A healthcare claims extraction team plans to stop human review of high-confidence extractions in order to save reviewer time. The system processes several document types, and the model outputs a confidence score for each field. Before making this change, the team wants evidence that high-confidence extractions are reliably correct across the board. Which two practices should be in place before the team stops this review?",
+    "choices": [
+      "Confirm that overall accuracy across all documents exceeds the target, and use that overall figure as the sole criterion for the decision.",
+      "Verify accuracy on a labeled validation set separately for each document type and field segment.",
+      "Use the model's self-reported confidence for each whole document, without checking it against any labeled data.",
+      "Replace confidence-based routing with a uniform random sample of 10% of all documents.",
+      "Calibrate the field-level confidence thresholds against a labeled validation set."
+    ],
+    "questionJa": "ある医療請求の抽出チームは、レビュー担当者の時間を節約するため、信頼度の高い抽出結果に対する人によるレビューを停止することを計画しています。このシステムは複数の種類の文書を処理しており、モデルはフィールドごとに信頼度スコアを出力します。この変更を行う前に、チームは信頼度の高い抽出結果が全般にわたって確実に正しいという根拠を得たいと考えています。このレビューを停止する前に整えておくべき取り組みはどれですか。2つ選んでください。",
+    "choicesJa": [
+      "すべての文書を合わせた全体の精度が目標を上回っていることを確認し、その全体の数値を判断の唯一の基準とする。",
+      "ラベル付きの検証セットを用いて、文書の種類およびフィールドの区分ごとに個別に精度を検証する。",
+      "いかなるラベル付きのデータとも照合することなく、文書全体についてモデルが自己申告した信頼度を使用する。",
+      "信頼度に基づくルーティングを、全文書から一律に無作為抽出した10%の標本に置き換える。",
+      "ラベル付きの検証セットを用いて、フィールドレベルの信頼度のしきい値をキャリブレーションする。"
+    ],
+    "answer": [
+      1,
+      4
+    ],
+    "explanation": "【かみくだくと】「自信の点数が高い結果は、もう人が確認しなくてよい」とする前に、何を確かめておくべきかを2つ選ぶ問題です。【正解】文書の種類・フィールドの区分ごとに精度を検証する案と、フィールドレベルのしきい値をキャリブレーションする案の2つです。前者は全体の数字に隠れた弱いところを見つけます。後者は正解の分かっているデータで点数の目盛りを合わせ、「点数が高い＝本当に正しい」と言える状態にします。【誤答】全体の精度を唯一の基準にする案は、量の少ない書類や項目の悪い成績を見落とします。照合していない自己申告の信頼度を使う案は、実際の正しさの目安として当てになりません。一律の無作為抽出に置き換える案は、間違いやすい結果に人手を向けられなくなります。（目標 X5）",
+    "tags": [
+      "obj-X5",
+      "calibration",
+      "segment-accuracy"
+    ],
+    "ref": "https://academy.claude.com/ja/courses/building-with-the-claude-api/a-typical-eval-workflow"
   }
 ]

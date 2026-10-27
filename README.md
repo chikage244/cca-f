@@ -61,7 +61,14 @@ cca-f/
 - `difficulty` は 1-3 の整数。
 - 選択肢は英語 (本番同様)、`explanation` は日本語で正解根拠+誤答理由まで書く (選択肢はシャッフルされるので「選択肢B」ではなく内容で言及するのがおすすめ)。
 
-最終的な問題数の目標: 単一選択 agentic 83 / claude-code 64 / prompting 62 / mcp 56 / context 47 (計312問) + 複数選択 agentic 1 / claude-code 4 / prompting 2 / mcp 2 / context 2 (計11問)。
+最終的な問題数の目標: 単一選択 agentic 82 / claude-code 57 / prompting 58 / mcp 53 / context 43 (計293問) + 複数選択 agentic 3 / claude-code 3 / prompting 2 / mcp 2 / context 2 (計12問)。
+
+2026-10-27 に全問を作り直しました (旧323問 → 305問)。本番のスコアレポートに載っている37の試験目標を骨組みにし、Claude Academy (academy.claude.com) の日本語版を根拠にしています。
+
+- `tags` の先頭は目標コード (`obj-A1` など。A=agentic、C=claude-code、X=context、P=prompting、M=mcp)
+- `questionJa` / `choicesJa` は本番の日本語版と同じ硬い翻訳調、`explanation` は【かみくだくと】【正解】【誤答】の順で、最後に（目標 A1）
+- 試験ガイド v1.0 と最新の公式ドキュメントが食い違う点は、ガイドの説明を正解にし、解説に【補足】を付けている
+- id は各ドメイン 101 から振り直した (旧 id の学習履歴は使われない)
 
 ### フラッシュカードスキーマ (`data/flashcards.json`)
 
@@ -87,7 +94,7 @@ node scripts/validate.mjs          # スキーマ・ID一意性・SWプリキャ
 node scripts/validate.mjs --full   # 上記に加え、最終目標の問題数/カード数も検証
 ```
 
-`--full` は全323問 (単一選択312問+複数選択11問、ドメインごとに別枠で数える) +100カードが揃った状態でのみパスします (開発途中のシードデータでは意図的に失敗します)。問題を追加したら `scripts/validate.mjs` の `fullCount` (単一選択) / `fullMultiCount` (複数選択) も増やしてください。
+`--full` は全305問 (単一選択293問+複数選択12問、ドメインごとに別枠で数える) +100カードが揃った状態でのみパスします (開発途中のシードデータでは意図的に失敗します)。問題を追加したら `scripts/validate.mjs` の `fullCount` (単一選択) / `fullMultiCount` (複数選択) も増やしてください。
 
 新しい JS/CSS/データファイルを追加した場合は `sw.js` の `PRECACHE_URLS` にも忘れずに追加してください。`validate.mjs` がファイルシステムとの整合性 (双方向) をチェックします。
 
